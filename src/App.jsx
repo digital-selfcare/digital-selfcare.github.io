@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Download, 
@@ -15,6 +15,9 @@ function App() {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [pendingScroll, setPendingScroll] = useState(null);
+  
+  // Ref to track if we just returned from a subpage
+  const returningFromSubpage = useRef(false);
 
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
   const materialIcons = {
@@ -31,69 +34,80 @@ function App() {
     { id: 'contacts', title: 'Контакты' }
   ];
 
-  // Helper function for reliable scrolling
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const headerOffset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  // Helper for guaranteed scrolling
+  const performScroll = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 100;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = el.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: 'smooth'
       });
+      return true;
     }
+    return false;
   };
 
-  // Sync state with URL hash and handle scrolling
+  // 1. Listen for hash changes (for direct links and browser 'Back')
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
       setIsMenuOpen(false);
 
       if (hash.startsWith('#materials/')) {
-        const id = hash.replace('#materials/', '');
-        setSelectedMaterial(id);
+        setSelectedMaterial(hash.replace('#materials/', ''));
         setSelectedEvent(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#events/')) {
-        const id = hash.replace('#events/', '');
-        setSelectedEvent(id);
+        setSelectedEvent(hash.replace('#events/', ''));
         setSelectedMaterial(null);
         window.scrollTo(0, 0);
-      } else {
-        // We are going back to the main landing
-        const wasInSubpage = selectedMaterial || selectedEvent;
-        setSelectedMaterial(null);
-        setSelectedEvent(null);
-        
-        const sectionId = hash.replace('#', '');
-        if (sectionId && sectionId !== '!' && sectionId !== '') {
-          if (wasInSubpage) {
-            // Wait for landing to render before scrolling
-            setPendingScroll(sectionId);
+      } else if (hash.startsWith('#')) {
+        const id = hash.replace('#', '');
+        if (id && id !== '!' && id !== '') {
+          // If we are currently in a subpage, mark that we are returning
+          if (selectedMaterial || selectedEvent) {
+            returningFromSubpage.current = true;
+            setPendingScroll(id);
+            setSelectedMaterial(null);
+            setSelectedEvent(null);
           } else {
-            scrollToSection(sectionId);
+            performScroll(id);
           }
+        } else {
+          // Just clear subpages if hash is empty or #
+          setSelectedMaterial(null);
+          setSelectedEvent(null);
         }
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
     handleHashChange(); // Initial check
-
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [selectedMaterial, selectedEvent]);
 
-  // Observer for pending scrolls after returning from subpage
+  // 2. Observer for pending scrolls after landing page mounts
   useEffect(() => {
     if (!selectedMaterial && !selectedEvent && pendingScroll) {
       const target = pendingScroll;
       setPendingScroll(null);
-      // Extra micro-delay for DOM mounting
-      setTimeout(() => {
-        scrollToSection(target);
-      }, 100);
+      
+      // We need a sequence of checks because React rendering can be async
+      let attempts = 0;
+      const tryScroll = () => {
+        if (!performScroll(target) && attempts < 10) {
+          attempts++;
+          setTimeout(tryScroll, 50);
+        }
+      };
+      
+      setTimeout(tryScroll, 100);
     }
   }, [selectedMaterial, selectedEvent, pendingScroll]);
 
@@ -102,23 +116,24 @@ function App() {
     document.body.style.overflow = (isMenuOpen || selectedMaterial || selectedEvent) ? 'hidden' : 'unset';
   }, [isMenuOpen, selectedMaterial, selectedEvent]);
 
+  // Manual Menu Click Handler
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
-    // If we are currently in a subpage, we need to let the handleHashChange handle the transition
+    // Setting hash will trigger the hashchange effect which handles the transition
     window.location.hash = `#${id}`;
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. CONTENT AREA */}
+      {/* CONTENT AREA */}
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
           {selectedMaterial ? (
             <motion.div 
               key="material-detail"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
               style={{ zIndex: 100 }}
             >
@@ -160,9 +175,9 @@ function App() {
           ) : selectedEvent ? (
             <motion.div 
               key="event-detail"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
               style={{ zIndex: 100 }}
             >
@@ -304,7 +319,7 @@ function App() {
         </AnimatePresence>
       </div>
 
-      {/* 2. GLOBAL MENU OVERLAY */}
+      {/* GLOBAL MENU OVERLAY */}
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
          <div className="flex flex-col items-center gap-12">
             {menuItems.map((item) => (
@@ -320,14 +335,10 @@ function App() {
                 {item.title}
               </a>
             ))}
-            <div className="flex gap-8 text-gray-300 mt-8">
-               <Share2 size={24} />
-               <Mail size={24} />
-            </div>
          </div>
       </div>
 
-      {/* 3. ABSOLUTE GLOBAL BURGER BUTTON */}
+      {/* GLOBAL BURGER BUTTON */}
       <button 
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="burger-btn"
