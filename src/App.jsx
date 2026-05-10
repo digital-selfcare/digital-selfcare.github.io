@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Download, 
   Database, Info, Calendar, BookOpen,
   Mail, MessageCircle, Send, X, Menu,
   Sparkles, Bell, Lightbulb, Zap, Share2,
-  FileSearch, BarChart3, GraduationCap
+  FileSearch, BarChart3, GraduationCap,
+  ArrowLeft, FileDown, Clock
 } from 'lucide-react';
 import { content } from './content';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
+
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
-  const materialIcons = [<FileSearch size={32} />, <BarChart3 size={32} />, <GraduationCap size={32} />];
+  const materialIcons = {
+    methodology: <FileSearch size={32} />,
+    datasets: <BarChart3 size={32} />,
+    publications: <GraduationCap size={32} />
+  };
 
   const menuItems = [
     { id: 'about', title: content.about.title },
@@ -21,6 +28,76 @@ function App() {
     { id: 'materials', title: content.materials.title },
     { id: 'contacts', title: 'Контакты' }
   ];
+
+  // Prevent scroll when detail view is open
+  useEffect(() => {
+    if (selectedMaterial) {
+      window.scrollTo(0, 0);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [selectedMaterial]);
+
+  if (selectedMaterial) {
+    const material = content.materials.items.find(m => m.id === selectedMaterial);
+    return (
+      <div className="min-h-screen bg-white py-24 px-8 relative overflow-y-auto">
+        <div className="container max-w-4xl">
+          <button 
+            onClick={() => setSelectedMaterial(null)}
+            className="flex items-center gap-2 text-sage font-bold uppercase tracking-widest text-xs mb-12 hover:gap-4 transition-all"
+          >
+            <ArrowLeft size={16} /> Назад к проекту
+          </button>
+
+          <div className="flex items-center gap-6 mb-8">
+             <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
+                {materialIcons[material.id]}
+             </div>
+             <div>
+                <h1 className="text-4xl font-playfair font-bold">{material.title}</h1>
+                <p className="text-text-light mt-2">{material.description}</p>
+             </div>
+          </div>
+
+          <div className="w-full h-px bg-gray-100 mb-12" />
+
+          <div className="space-y-4">
+            {material.files.map((file, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="group flex items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm group-hover:bg-sage group-hover:text-white transition-colors">
+                    <FileDown size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-text mb-1">{file.name}</h4>
+                    <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold">
+                      <span className="flex items-center gap-1"><Info size={10} /> {file.size}</span>
+                      <span className="flex items-center gap-1"><Clock size={10} /> {file.date}</span>
+                    </div>
+                  </div>
+                </div>
+                <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">
+                  СКАЧАТЬ
+                </button>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-20 p-8 bg-sage/5 rounded-[40px] border border-dashed border-sage/20 text-center">
+             <p className="text-sm text-sage/60 italic">Новые файлы будут добавляться автоматически по мере готовности материалов исследования.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -166,7 +243,7 @@ function App() {
         </div>
       </section>
 
-      {/* Materials Grid (New Design) */}
+      {/* Materials Grid */}
       <section id="materials" className="py-24 bg-sage/5">
         <div className="container">
           <div className="mb-16 text-center">
@@ -176,14 +253,19 @@ function App() {
           
           <div className="news-grid-custom max-w-5xl mx-auto" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
             {content.materials.items.map((item, i) => (
-              <div key={item.id} className="news-card-custom" style={{ minHeight: '350px' }}>
+              <div 
+                key={item.id} 
+                className="news-card-custom cursor-pointer" 
+                style={{ minHeight: '350px' }}
+                onClick={() => setSelectedMaterial(item.id)}
+              >
                 <span className="card-number">{i + 1}</span>
                 <div className="card-icon">
-                  {materialIcons[i % materialIcons.length]}
+                  {materialIcons[item.id]}
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
-                <a href="#" className="card-link">СКАЧАТЬ</a>
+                <div className="card-link mt-auto">ПЕРЕЙТИ</div>
               </div>
             ))}
           </div>
