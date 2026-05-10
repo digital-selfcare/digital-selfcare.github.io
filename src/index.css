@@ -361,59 +361,125 @@ section {
   }
 }
 
-/* Detail View Layout (Split Screen) */
+/* --- TEAM DETAIL REFINED (NO OVERFLOW) --- */
 .team-detail-split {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 1.5rem;
-  height: 60vh;
-  margin-top: 3rem;
+  gap: 2rem;
+  min-height: 500px;
+  margin-top: 2rem;
 }
 
 .split-image-main {
   position: relative;
   border-radius: 40px;
   overflow: hidden;
-  background: #f0f0f0;
+  background: #f8f9fa;
+  min-height: 400px;
 }
 
 .split-image-detail {
   position: relative;
   border-radius: 40px;
   overflow: hidden;
-  background: #e0e0e0;
+  background: #f0f2f5;
+  min-height: 400px;
 }
 
 .member-info-content {
-  margin-top: 5rem;
+  margin-top: 4rem;
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 6rem;
+  grid-template-columns: 350px 1fr;
+  gap: 5rem;
+  align-items: start;
 }
 
-.info-sidebar h4 {
-  font-size: 0.75rem;
+.info-sidebar {
+  position: sticky;
+  top: 120px;
+}
+
+.info-block {
+  background: #fcfcfc;
+  padding: 2rem;
+  border-radius: 30px;
+  border: 1px solid #f0f0f0;
+  margin-bottom: 2rem;
+}
+
+.info-block h4 {
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   color: #95a5a6;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.info-block p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #2d3436;
+}
+
+.info-main h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.info-main h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: #a8dadc;
+  border-radius: 2px;
 }
 
 .publication-item {
-  padding: 1.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 1.5rem;
+  background: #fcfcfc;
+  border-radius: 20px;
+  border: 1px solid #f5f5f5;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.publication-item:hover {
+  border-color: #a8dadc;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+
+.publication-item p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #636e72;
+}
+
+@media (max-width: 1024px) {
+  .member-info-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .info-sidebar {
+    position: static;
+  }
 }
 
 @media (max-width: 768px) {
   .team-detail-split {
     grid-template-columns: 1fr;
-    height: auto;
+    gap: 1rem;
   }
   .split-image-main, .split-image-detail {
-    height: 40vh;
+    min-height: 300px;
   }
-  .member-info-content {
-    grid-template-columns: 1fr;
-    gap: 3rem;
+  .info-main h2 {
+    font-size: 2rem;
   }
 }

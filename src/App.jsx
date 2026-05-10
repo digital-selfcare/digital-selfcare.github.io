@@ -7,7 +7,7 @@ import {
   Sparkles, Bell, Lightbulb, Zap, Share2,
   FileSearch, BarChart3, GraduationCap,
   ArrowLeft, ArrowRight, FileDown, Clock, Newspaper,
-  User, Award, Briefcase, Microscope
+  User, Award, Briefcase, Microscope, CheckCircle2
 } from 'lucide-react';
 import { content } from './content';
 
@@ -188,47 +188,75 @@ function App() {
                 <button onClick={() => window.location.hash = '#team'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 mt-12 md:mt-0 hover:translate-x-[-4px] transition-transform">
                   <ArrowLeft size={16} /> Назад к команде
                 </button>
+                
+                {/* IMPROVED SPLIT VIEW (NO FIXED HEIGHT) */}
                 <div className="team-detail-split">
                   <div className="split-image-main">
                     <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-12 text-white">
-                      <h1 className="text-5xl font-playfair font-bold mb-2">{activeMember?.name}</h1>
-                      <p className="text-sage font-bold tracking-widest uppercase text-sm">{activeMember?.role}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 md:p-12 text-white">
+                      <h1 className="text-3xl md:text-5xl font-playfair font-bold mb-4">{activeMember?.name}</h1>
+                      <div className="flex items-center gap-3">
+                        <div className="h-px w-8 bg-sage" />
+                        <p className="text-sage font-bold tracking-widest uppercase text-xs md:text-sm">{activeMember?.role}</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="split-image-detail">
-                    <div className="placeholder-img opacity-50" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 1), transform: 'scale(1.5) rotate(15deg)' }} />
-                    <div className="absolute inset-0 flex items-center justify-center p-12 text-center">
-                      <div className="bg-white/90 backdrop-blur-md p-8 rounded-[40px] shadow-2xl">
-                        <Microscope size={40} className="text-sage mx-auto mb-4" />
-                        <p className="text-sm font-medium text-text-light italic">"{activeMember?.specialization}"</p>
+                  <div className="split-image-detail hidden md:block">
+                    <div className="placeholder-img opacity-30" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 2), transform: 'scale(2) rotate(-10deg)' }} />
+                    <div className="absolute inset-0 flex items-center justify-center p-12">
+                      <div className="text-center">
+                        <Microscope size={48} className="text-sage/40 mx-auto mb-6" />
+                        <h4 className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-4">Специализация</h4>
+                        <p className="text-lg font-playfair italic text-gray-600 leading-relaxed">{activeMember?.specialization}</p>
                       </div>
                     </div>
                   </div>
                 </div>
+
                 <div className="member-info-content">
-                  <div className="info-sidebar">
-                    <div className="mb-12">
-                      <h4>Ученая степень и звание</h4>
-                      <div className="flex gap-4 items-start"><Award className="text-sage shrink-0" /><p className="text-lg font-medium">{activeMember?.title}</p></div>
+                  <aside className="info-sidebar">
+                    <div className="info-block">
+                      <h4>Ученая степень</h4>
+                      <p>{activeMember?.title}</p>
                     </div>
-                    <div className="mb-12">
+                    <div className="info-block">
                       <h4>Научные интересы</h4>
-                      <div className="flex gap-4 items-start"><Briefcase className="text-sage shrink-0" /><p className="text-text-light">{activeMember?.specialization}</p></div>
+                      <p>{activeMember?.specialization}</p>
                     </div>
-                  </div>
-                  <div className="info-main">
-                    <h2 className="text-3xl font-playfair font-bold mb-8">О специалисте</h2>
-                    <p className="text-xl leading-relaxed text-text-light mb-12">{activeMember?.bio}</p>
-                    <h2 className="text-3xl font-playfair font-bold mb-8">Достижения</h2>
-                    <p className="text-lg leading-relaxed text-text-light mb-12">{activeMember?.achievements}</p>
-                    <h2 className="text-3xl font-playfair font-bold mb-8">Избранные публикации</h2>
-                    <div className="space-y-2">
-                      {activeMember?.publications.map((pub, i) => (
-                        <div key={i} className="publication-item"><div className="flex gap-4"><span className="text-sage font-bold">0{i+1}</span><p className="text-sm text-text-light leading-relaxed">{pub}</p></div></div>
-                      ))}
+                    <div className="p-8 bg-sage/5 rounded-[30px] border border-sage/10">
+                       <CheckCircle2 className="text-sage mb-4" />
+                       <h5 className="font-bold text-sm mb-2 uppercase tracking-wider">Статус в проекте</h5>
+                       <p className="text-sm text-text-light">Участник гранта РНФ № 23-18-00480-П</p>
                     </div>
-                  </div>
+                  </aside>
+
+                  <main className="info-main">
+                    <section className="mb-20">
+                      <h2 className="font-playfair font-bold">О специалисте</h2>
+                      <p className="text-xl leading-relaxed text-text-light">{activeMember?.bio}</p>
+                    </section>
+                    
+                    <section className="mb-20">
+                      <h2 className="font-playfair font-bold">Квалификация и достижения</h2>
+                      <div className="p-8 md:p-12 bg-beige/5 rounded-[40px] border border-beige/10">
+                        <p className="text-lg leading-relaxed text-text-light">{activeMember?.achievements}</p>
+                      </div>
+                    </section>
+
+                    <section>
+                      <h2 className="font-playfair font-bold">Некоторые публикации</h2>
+                      <div className="space-y-4">
+                        {activeMember?.publications.map((pub, i) => (
+                          <div key={i} className="publication-item">
+                             <div className="flex gap-6 items-start">
+                                <span className="text-sage/40 font-playfair text-2xl font-bold mt-1">{(i+1).toString().padStart(2, '0')}</span>
+                                <p className="font-medium text-text-light leading-relaxed">{pub}</p>
+                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  </main>
                 </div>
               </div>
             </motion.div>
@@ -285,13 +313,12 @@ function App() {
                 </div>
               </section>
 
-              {/* TEAM CAROUSEL (EXAMPLE 4 DYNAMIC) */}
               <section id="team" className="py-32 bg-white">
                 <div className="container">
                   <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
                     <div className="max-w-2xl">
                       <h2 className="text-5xl font-playfair font-bold mb-6">{content.team.title}</h2>
-                      <p className="text-xl text-text-light font-medium">Ведущие социологи и исследователи, работающие над изучением стратегий самосохранения россиян.</p>
+                      <p className="text-xl text-text-light font-medium">Ведущие социологи и исследователи под руководством профессора Н.А. Лебедевой-Несевря.</p>
                     </div>
                   </div>
 
@@ -303,14 +330,7 @@ function App() {
                         else if (i === (currentMemberIndex + 1) % content.team.members.length) status = 'next';
                         
                         return (
-                          <div 
-                            key={member.id} 
-                            className={`carousel-item-wrapper carousel-item-${status}`}
-                            onClick={() => {
-                              if (status === 'next') nextMember();
-                              else if (status === 'active') window.location.hash = `#team/${member.id}`;
-                            }}
-                          >
+                          <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
                             <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }} />
                             {status === 'active' && (
                               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="carousel-member-info">
