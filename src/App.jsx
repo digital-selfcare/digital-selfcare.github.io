@@ -30,12 +30,9 @@ function App() {
     { id: 'contacts', title: 'Контакты' }
   ];
 
-  // Sync state with URL hash
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      
-      // Close menu if open
       setIsMenuOpen(false);
 
       if (hash.startsWith('#materials/')) {
@@ -52,7 +49,6 @@ function App() {
         setSelectedMaterial(null);
         setSelectedEvent(null);
         
-        // Robust scroll to section
         if (hash && hash !== '#') {
           setTimeout(() => {
             const id = hash.replace('#', '');
@@ -61,89 +57,83 @@ function App() {
               const headerOffset = 80;
               const elementPosition = element.getBoundingClientRect().top;
               const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-              window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth"
-              });
+              window.scrollTo({ top: offsetPosition, behavior: "smooth" });
             }
-          }, 150); // Increased delay for stability
+          }, 150);
         }
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Initial check
-
+    handleHashChange();
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Prevent body scroll
   useEffect(() => {
-    if (isMenuOpen || selectedMaterial || selectedEvent) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = (isMenuOpen || selectedMaterial || selectedEvent) ? 'hidden' : 'unset';
   }, [isMenuOpen, selectedMaterial, selectedEvent]);
-
-  const handleMaterialClick = (id) => {
-    window.location.hash = `#materials/${id}`;
-  };
-
-  const handleEventClick = (id) => {
-    window.location.hash = `#events/${id}`;
-  };
 
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
-    // Explicitly navigate to hash
     window.location.hash = `#${id}`;
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* GLOBAL MENU OVERLAY */}
+      {/* 1. MANDATORY GLOBAL BURGER BUTTON (Top level) */}
+      <button 
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="burger-btn"
+        aria-label="Menu"
+      >
+        {isMenuOpen ? <X size={24} color="#2d3436" /> : (
+          <>
+            <span />
+            <span />
+            <span />
+          </>
+        )}
+      </button>
+
+      {/* 2. GLOBAL MENU OVERLAY */}
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
-        <div className="flex flex-col items-center gap-8">
-           {menuItems.map((item) => (
-            <a 
-              key={item.id} 
-              href={`#${item.id}`} 
-              onClick={(e) => {
-                e.preventDefault();
-                handleMenuClick(item.id);
-              }}
-              className="menu-link"
-            >
-              {item.title}
-            </a>
-          ))}
-          <div className="w-12 h-px bg-gray-100 my-4" />
-          <div className="flex gap-6 text-gray-400">
-             <Share2 size={24} className="hover:text-sage cursor-pointer transition-colors" />
-             <Mail size={24} className="hover:text-sage cursor-pointer transition-colors" />
-          </div>
+         {menuItems.map((item) => (
+          <a 
+            key={item.id} 
+            href={`#${item.id}`} 
+            onClick={(e) => {
+              e.preventDefault();
+              handleMenuClick(item.id);
+            }}
+            className="menu-link"
+          >
+            {item.title}
+          </a>
+        ))}
+        <div className="flex gap-6 text-gray-400 mt-8">
+           <Share2 size={24} className="hover:text-sage cursor-pointer transition-colors" />
+           <Mail size={24} className="hover:text-sage cursor-pointer transition-colors" />
         </div>
       </div>
 
+      {/* 3. CONTENT AREA */}
       <AnimatePresence mode="wait">
         {selectedMaterial ? (
           <motion.div 
             key="material-detail"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: -20 }}
             className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
             style={{ zIndex: 100 }}
           >
             <div className="container max-w-4xl">
-              <div className="flex items-center gap-6 mb-8 mt-8">
+              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
                  <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
                     {materialIcons[selectedMaterial] || <FileSearch size={32} />}
                  </div>
                  <div>
-                    <h1 className="text-3xl md:text-4xl font-playfair font-bold">
+                    <h1 className="text-3xl font-playfair font-bold">
                       {content.materials.items.find(m => m.id === selectedMaterial)?.title}
                     </h1>
                     <p className="text-text-light mt-2">
@@ -151,34 +141,23 @@ function App() {
                     </p>
                  </div>
               </div>
-
               <div className="w-full h-px bg-gray-100 mb-12" />
-
               <div className="space-y-4">
                 {content.materials.items.find(m => m.id === selectedMaterial)?.files.map((file, idx) => (
-                  <motion.div 
-                    key={idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="group flex flex-col md:flex-row md:items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all gap-4"
-                  >
+                  <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all gap-4">
                     <div className="flex items-center gap-5">
-                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm group-hover:bg-sage group-hover:text-white transition-colors">
-                        <FileDown size={20} />
-                      </div>
+                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm"><FileDown size={20} /></div>
                       <div>
                         <h4 className="font-bold text-text mb-1">{file.name}</h4>
                         <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold">
-                          <span className="flex items-center gap-1"><Info size={10} /> {file.size}</span>
-                          <span className="flex items-center gap-1"><Clock size={10} /> {file.date}</span>
+                          <span>{file.size}</span>
+                          <span>•</span>
+                          <span>{file.date}</span>
                         </div>
                       </div>
                     </div>
-                    <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none w-full md:w-auto">
-                      СКАЧАТЬ
-                    </button>
-                  </motion.div>
+                    <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">СКАЧАТЬ</button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -186,40 +165,26 @@ function App() {
         ) : selectedEvent ? (
           <motion.div 
             key="event-detail"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: -20 }}
             className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
             style={{ zIndex: 100 }}
           >
             <div className="container max-w-4xl">
-              <div className="flex items-center gap-6 mb-8 mt-8">
-                 <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery">
-                    <Newspaper size={32} />
-                 </div>
+              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+                 <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
                  <div>
-                    <h1 className="text-3xl md:text-4xl font-playfair font-bold">
+                    <h1 className="text-3xl font-playfair font-bold">
                       {content.events.items.find(e => e.id === selectedEvent)?.title}
                     </h1>
-                    <div className="flex gap-4 text-xs font-bold uppercase tracking-widest text-powdery mt-2">
-                       <span>{content.events.items.find(e => e.id === selectedEvent)?.type}</span>
-                       <span>•</span>
-                       <span>{content.events.items.find(e => e.id === selectedEvent)?.date}</span>
-                    </div>
+                    <p className="text-powdery font-bold text-xs mt-2 uppercase tracking-widest">{content.events.items.find(e => e.id === selectedEvent)?.date}</p>
                  </div>
               </div>
-
               <div className="w-full h-px bg-gray-100 mb-12" />
-
-              <div className="prose prose-lg max-w-none text-text-light leading-relaxed">
-                 <p className="text-xl mb-8">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
+              <div className="prose prose-lg text-text-light">
+                 <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
                  <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
-              </div>
-
-              <div className="mt-20 p-12 bg-beige/10 rounded-[60px] text-center border border-gray-100">
-                 <h4 className="font-playfair text-2xl font-bold mb-4 text-text">Хотите узнать больше?</h4>
-                 <p className="text-text-light mb-8 max-w-md mx-auto">Подписывайтесь на обновления проекта, чтобы получать уведомления о новых публикациях.</p>
-                 <a href="#contacts" onClick={() => handleMenuClick('contacts')} className="btn px-10 py-5 bg-sage text-white inline-block">СВЯЗАТЬСЯ С НАМИ</a>
               </div>
             </div>
           </motion.div>
@@ -230,35 +195,24 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* Simple Header */}
             <header className="fixed w-full z-40 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
               <div className="container flex justify-end items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white">
-                    <Database size={16} />
-                  </div>
-                  <span className="font-playfair text-xl font-bold text-text tracking-tight">Проект РНФ № 23-18-00480-П</span>
+                  <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white"><Database size={16} /></div>
+                  <span className="font-playfair text-xl font-bold text-text">Проект РНФ № 23-18-00480-П</span>
                 </div>
               </div>
             </header>
 
-            {/* Hero Section */}
             <section className="hero-section">
               <div className="hero-content-wrapper">
                 <div className="container relative z-10">
                   <div className="max-w-4xl">
-                    <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">
-                      Исследовательский проект 2026–2027
-                    </span>
-                    <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">
-                      {content.hero.title}
-                    </h1>
-                    
+                    <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">Исследовательский проект 2026–2027</span>
+                    <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">{content.hero.title}</h1>
                     <div className="btn-group-custom">
                       {menuItems.map((item) => (
-                        <a key={item.id} href={`#${item.id}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
-                          {item.title}
-                        </a>
+                        <a key={item.id} href={`#${item.id}`} className="btn">{item.title}</a>
                       ))}
                     </div>
                   </div>
@@ -266,49 +220,31 @@ function App() {
               </div>
             </section>
 
-            {/* About */}
             <section id="about" className="py-24">
               <div className="container">
-                <div className="grid md:grid-cols-[1fr,2fr] gap-16 items-start">
+                <div className="grid md:grid-cols-[1fr,2fr] gap-16">
                   <div className="sticky top-32">
-                    <div className="w-20 h-20 bg-powdery rounded-[30px] flex items-center justify-center text-white mb-6 shadow-xl shadow-powdery/20 rotate-3">
-                      <BookOpen size={32} />
-                    </div>
+                    <div className="w-20 h-20 bg-powdery rounded-[30px] flex items-center justify-center text-white mb-6 shadow-xl shadow-powdery/20 rotate-3"><BookOpen size={32} /></div>
                     <h2 className="text-4xl font-playfair font-bold mb-4">{content.about.title}</h2>
                     <div className="w-16 h-1 bg-sage rounded-full" />
                   </div>
                   <div className="space-y-8">
-                    {content.about.description.map((para, i) => (
-                      <p key={i} className="text-xl leading-relaxed text-text-light font-medium">
-                        {para}
-                      </p>
-                    ))}
+                    {content.about.description.map((p, i) => <p key={i} className="text-xl leading-relaxed text-text-light font-medium">{p}</p>)}
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* Events Grid */}
             <section id="events" className="py-24 bg-beige/5">
               <div className="container">
-                <div className="mb-16">
-                  <h2 className="text-4xl font-playfair font-bold mb-4">{content.events.title}</h2>
-                  <div className="w-16 h-1 bg-powdery rounded-full mb-6" />
-                </div>
-                
+                <h2 className="text-4xl font-playfair font-bold mb-16">{content.events.title}</h2>
                 <div className="news-grid-custom">
                   {content.events.items.map((item, i) => (
-                    <div 
-                      key={item.id} 
-                      className="news-card-custom cursor-pointer"
-                      onClick={() => handleEventClick(item.id)}
-                    >
+                    <div key={item.id} className="news-card-custom cursor-pointer" onClick={() => window.location.hash = `#events/${item.id}`}>
                       <span className="card-number">{i + 1}</span>
-                      <div className="card-icon">
-                        {newsIcons[i % newsIcons.length]}
-                      </div>
-                      <h3>{item.title}</h3>
-                      <p>{item.description}</p>
+                      <div className="card-icon">{newsIcons[i % newsIcons.length]}</div>
+                      <h3 className="mb-4">{item.title}</h3>
+                      <p className="mb-8">{item.description}</p>
                       <div className="card-link">ПОДРОБНОСТИ</div>
                     </div>
                   ))}
@@ -316,123 +252,42 @@ function App() {
               </div>
             </section>
 
-            {/* Team */}
-            <section id="team" className="py-24">
-              <div className="container text-center">
-                <h2 className="text-4xl font-playfair font-bold mb-4">{content.team.title}</h2>
-                <div className="w-16 h-1 bg-sage rounded-full mx-auto mb-20" />
-                <div className="grid md:grid-cols-3 gap-16">
-                  {content.team.members.map((member, i) => (
-                    <div key={i}>
-                      <div className="w-40 h-40 mx-auto mb-8 bg-sage/5 rounded-[40px] flex items-center justify-center text-sage">
-                        <Users size={48} strokeWidth={1} />
-                      </div>
-                      <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                      <p className="text-sage font-bold text-xs mb-4 uppercase">{member.role}</p>
-                      <p className="text-sm text-text-light px-6">{member.bio}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Materials Grid */}
             <section id="materials" className="py-24 bg-sage/5">
               <div className="container">
-                <div className="mb-16 text-center">
-                  <h2 className="text-4xl font-playfair font-bold mb-4">{content.materials.title}</h2>
-                  <div className="w-16 h-1 bg-powdery rounded-full mx-auto mb-6" />
-                </div>
-                
-                <div className="news-grid-custom max-w-5xl mx-auto" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                <h2 className="text-4xl font-playfair font-bold mb-16 text-center">{content.materials.title}</h2>
+                <div className="news-grid-custom max-w-5xl mx-auto">
                   {content.materials.items.map((item, i) => (
-                    <div 
-                      key={item.id} 
-                      className="news-card-custom cursor-pointer" 
-                      style={{ minHeight: '350px' }}
-                      onClick={() => handleMaterialClick(item.id)}
-                    >
+                    <div key={item.id} className="news-card-custom cursor-pointer" onClick={() => window.location.hash = `#materials/${item.id}`}>
                       <span className="card-number">{i + 1}</span>
-                      <div className="card-icon">
-                        {materialIcons[item.id]}
-                      </div>
+                      <div className="card-icon">{materialIcons[item.id]}</div>
                       <h3>{item.title}</h3>
                       <p>{item.description}</p>
-                      <div className="card-link mt-auto">ПЕРЕЙТИ</div>
+                      <div className="card-link">ПЕРЕЙТИ</div>
                     </div>
                   ))}
                 </div>
               </div>
             </section>
 
-            {/* Contacts */}
             <section id="contacts" className="py-32 bg-white">
-              <div className="container">
-                <h2 className="text-4xl font-playfair font-bold mb-16 text-center">Контакты</h2>
-                
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-5xl mx-auto">
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-full border border-gray-100 flex items-center justify-center text-sage shadow-sm shrink-0">
-                      <Mail size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-text mb-1 uppercase tracking-wider">Оставьте заявку</h4>
-                      <a href={`mailto:${content.contacts.email}`} className="text-sage font-bold text-sm">Связаться с нами</a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-full border border-gray-100 flex items-center justify-center text-powdery shadow-sm shrink-0">
-                      <Users size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-text mb-1 uppercase tracking-wider">Сотрудничество</h4>
-                      <a href="#" className="text-sage font-bold text-sm">Ваши предложения</a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-full border border-gray-100 flex items-center justify-center text-blue-400 shadow-sm shrink-0">
-                      <Share2 size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-text mb-2 uppercase tracking-wider">Напишите нам</h4>
-                      <div className="flex gap-2">
-                        <a href="#" className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-xs font-bold">VK</a>
-                        <a href="#" className="w-8 h-8 rounded-lg bg-blue-400 text-white flex items-center justify-center text-xs font-bold">TG</a>
-                        <a href="#" className="w-8 h-8 rounded-lg bg-green-500 text-white flex items-center justify-center text-xs font-bold">WA</a>
-                      </div>
-                    </div>
-                  </div>
+              <div className="container text-center">
+                <h2 className="text-4xl font-playfair font-bold mb-16">Контакты</h2>
+                <div className="flex flex-wrap justify-center gap-12 max-w-4xl mx-auto">
+                   <div className="flex items-center gap-4"><Mail className="text-sage" /><a href={`mailto:${content.contacts.email}`} className="font-bold">{content.contacts.email}</a></div>
+                   <div className="flex gap-4">
+                      <a href="#" className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center">VK</a>
+                      <a href="#" className="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center">TG</a>
+                   </div>
                 </div>
               </div>
             </section>
 
             <footer className="py-12 border-t border-gray-50 text-center">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-gray-300">
-                © 2026 Проект «Стратегии самосохранения россиян»
-              </p>
+              <p className="text-[10px] uppercase tracking-widest text-gray-300">© 2026 Проект «Стратегии самосохранения россиян»</p>
             </footer>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* GLOBAL BURGER BUTTON - MOVED TO END OF DOM FOR ULTIMATE PRIORITY */}
-      <button 
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="burger-btn"
-        aria-label="Menu"
-      >
-        {isMenuOpen ? (
-          <X size={24} color="#2d3436" />
-        ) : (
-          <>
-            <span />
-            <span />
-            <span />
-          </>
-        )}
-      </button>
     </div>
   );
 }
