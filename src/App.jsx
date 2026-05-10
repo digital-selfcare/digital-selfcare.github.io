@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { 
   Menu, X, ChevronRight, Users, 
   FileText, Award, Download, 
-  Database, Info, Calendar, BookOpen
+  Database, Info, Calendar, BookOpen,
+  Mail, MapPin, ArrowRight
 } from 'lucide-react';
 import { content } from './content';
 
@@ -47,11 +48,12 @@ function App() {
               </p>
               
               {/* Menu as Green Buttons */}
-              <div className="flex flex-wrap gap-4 mb-12">
-                <a href="#about" className="btn px-8 py-4 rounded-2xl">{content.about.title}</a>
-                <a href="#events" className="btn px-8 py-4 rounded-2xl bg-sage/80 hover:bg-sage transition-all">{content.events.title}</a>
-                <a href="#team" className="btn px-8 py-4 rounded-2xl bg-sage/80 hover:bg-sage transition-all">{content.team.title}</a>
-                <a href="#materials" className="btn px-8 py-4 rounded-2xl bg-sage/80 hover:bg-sage transition-all">{content.materials.title}</a>
+              <div className="flex flex-wrap gap-3 mb-12">
+                <a href="#about" className="btn px-6 py-3 rounded-xl">{content.about.title}</a>
+                <a href="#events" className="btn px-6 py-3 rounded-xl bg-sage/80 hover:bg-sage transition-all">{content.events.title}</a>
+                <a href="#team" className="btn px-6 py-3 rounded-xl bg-sage/80 hover:bg-sage transition-all">{content.team.title}</a>
+                <a href="#materials" className="btn px-6 py-3 rounded-xl bg-sage/80 hover:bg-sage transition-all">{content.materials.title}</a>
+                <a href="#contacts" className="btn px-6 py-3 rounded-xl bg-powdery/80 hover:bg-powdery transition-all">Контакты</a>
               </div>
 
               <div className="flex items-center gap-2 text-text-light font-bold text-sm">
@@ -85,7 +87,7 @@ function App() {
         </div>
       </section>
 
-      {/* News & Events - FIXED OVERFLOW */}
+      {/* News & Events - 4 IN A ROW + ARCHIVE */}
       <section id="events" className="py-24 bg-beige/5">
         <div className="container">
           <div className="mb-16">
@@ -94,36 +96,44 @@ function App() {
             <p className="text-text-light text-lg">Оперативная информация о ходе исследования</p>
           </div>
           
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {content.events.items.map((item, i) => (
               <motion.div 
                 key={item.id}
                 whileHover={{ y: -5 }}
-                className="glass p-10 relative overflow-hidden border-l-8 border-sage"
+                className="glass p-6 flex flex-col h-full border-t-4 border-sage overflow-hidden"
               >
-                <div className="flex flex-col md:flex-row gap-10">
-                  <div className="md:w-48">
-                    <span className="block text-3xl font-bold text-sage mb-1">{item.date}</span>
-                    <span className="text-xs uppercase font-bold text-text-light tracking-[0.2em]">{item.type}</span>
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="text-2xl mb-4 font-bold leading-tight text-text">{item.title}</h3>
-                    <p className="text-lg text-text-light leading-relaxed mb-8">{item.description}</p>
-                    <div className="flex items-center gap-3 text-sm font-bold text-sage group cursor-pointer">
-                      <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center group-hover:bg-sage group-hover:text-white transition-all">
-                        <Calendar size={16} />
-                      </div>
-                      <span>Читать далее</span>
-                    </div>
-                  </div>
+                <div className="mb-4">
+                  <span className="block text-2xl font-bold text-sage">{item.date}</span>
+                  <span className="text-[10px] uppercase font-bold text-text-light tracking-widest">{item.type}</span>
+                </div>
+                <div className="flex-grow">
+                  <h3 className="text-lg mb-3 font-bold leading-tight text-text break-words">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-text-light leading-relaxed mb-6 line-clamp-3">
+                    {item.description}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-sage group cursor-pointer mt-auto">
+                  <span>Читать далее</span>
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </motion.div>
             ))}
             
-            {/* Empty State - FIXED ALIGNMENT */}
-            <div className="glass p-10 border-dashed border-2 border-gray-200 bg-white/30">
-               <p className="text-gray-400 font-medium italic text-center">Ожидание новых событий и публикаций...</p>
-            </div>
+            {/* Placeholders to fill the 4-in-a-row look if needed */}
+            {[1, 2, 3].slice(0, 4 - content.events.items.length).map(n => (
+              <div key={n} className="glass p-6 border-dashed border-2 border-gray-200 bg-white/20 flex items-center justify-center">
+                <p className="text-gray-300 text-xs text-center italic">Ожидание события...</p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <a href="#" className="inline-flex items-center gap-2 text-text-light hover:text-sage font-bold transition-colors py-2 border-b-2 border-transparent hover:border-sage">
+              Архив событий <ChevronRight size={18} />
+            </a>
           </div>
         </div>
       </section>
@@ -189,8 +199,51 @@ function App() {
         </div>
       </section>
 
+      {/* Contacts Section */}
+      <section id="contacts" className="py-24 bg-white">
+        <div className="container">
+          <div className="grid md:grid-cols-2 gap-20 items-center">
+            <div>
+              <h2 className="text-4xl font-playfair font-bold mb-6">{content.contacts.title}</h2>
+              <p className="text-lg text-text-light mb-10 leading-relaxed">
+                {content.contacts.description}
+              </p>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-sage/10 text-sage flex items-center justify-center">
+                    <Mail size={20} />
+                  </div>
+                  <div>
+                    <span className="block text-xs uppercase font-bold text-text-light">Email</span>
+                    <a href={`mailto:${content.contacts.email}`} className="text-lg font-bold hover:text-sage transition">{content.contacts.email}</a>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-powdery/10 text-powdery flex items-center justify-center">
+                    <MapPin size={20} />
+                  </div>
+                  <div>
+                    <span className="block text-xs uppercase font-bold text-text-light">Локация</span>
+                    <span className="text-lg font-bold">{content.contacts.address}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="glass p-10 bg-sage/5 border-none">
+              <h3 className="text-2xl font-playfair font-bold mb-6">Обратная связь</h3>
+              <form className="space-y-4">
+                <input type="text" placeholder="Ваше имя" className="w-full p-4 rounded-xl border border-gray-100 bg-white focus:outline-sage" />
+                <input type="email" placeholder="Email" className="w-full p-4 rounded-xl border border-gray-100 bg-white focus:outline-sage" />
+                <textarea placeholder="Ваш вопрос" rows="4" className="w-full p-4 rounded-xl border border-gray-100 bg-white focus:outline-sage" />
+                <button type="button" className="btn w-full py-4 rounded-xl">Отправить</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="py-16 border-t border-gray-100 bg-white">
+      <footer className="py-16 border-t border-gray-100 bg-beige/10">
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-3">

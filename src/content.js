@@ -54,5 +54,11 @@ export const content = {
         link: "#"
       }
     ]
+  },
+  contacts: {
+    title: "Контакты",
+    email: "info@digital-selfcare.io",
+    address: "Россия, г. Москва",
+    description: "По вопросам сотрудничества и участия в исследовании обращайтесь по электронной почте."
   }
 };
