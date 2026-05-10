@@ -1,29 +1,71 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Download, 
   Database, Info, Calendar, BookOpen,
-  Mail, MessageCircle, Send,
+  Mail, MessageCircle, Send, X, Menu,
   Sparkles, Bell, Lightbulb, Zap, Share2
 } from 'lucide-react';
 import { content } from './content';
 
 function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
+
+  const menuItems = [
+    { id: 'about', title: content.about.title },
+    { id: 'events', title: content.events.title },
+    { id: 'team', title: content.team.title },
+    { id: 'materials', title: content.materials.title },
+    { id: 'contacts', title: 'Контакты' }
+  ];
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Simple Header */}
-      <header className="fixed w-full z-50 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="container flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-sage rounded-xl flex items-center justify-center text-white">
-              <Database size={20} />
+      {/* Burger Button - FIXED */}
+      <button 
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="burger-btn"
+        aria-label="Menu"
+      >
+        {isMenuOpen ? (
+          <X size={24} color="#2d3436" />
+        ) : (
+          <>
+            <span />
+            <span />
+            <span />
+          </>
+        )}
+      </button>
+
+      {/* Menu Overlay */}
+      <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
+        {menuItems.map((item) => (
+          <a 
+            key={item.id} 
+            href={`#${item.id}`} 
+            onClick={() => setIsMenuOpen(false)}
+            className="menu-link"
+          >
+            {item.title}
+          </a>
+        ))}
+      </div>
+
+      {/* Simple Header - Hide Logo when menu is open for cleaner look */}
+      {!isMenuOpen && (
+        <header className="fixed w-full z-40 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
+          <div className="container flex justify-end items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white">
+                <Database size={16} />
+              </div>
+              <span className="font-playfair text-xl font-bold text-text tracking-tight">Проект РНФ</span>
             </div>
-            <span className="font-playfair text-2xl font-bold text-text tracking-tight">Проект РНФ</span>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Hero Section */}
       <section className="pt-48 pb-24 relative overflow-hidden bg-beige/5">
@@ -37,11 +79,10 @@ function App() {
               {content.hero.title}
             </h1>
             
-            {/* BUTTON GROUP WITH FORCED SPACING */}
             <div className="btn-group-custom">
-              {['about', 'events', 'team', 'materials', 'contacts'].map((key) => (
-                <a key={key} href={`#${key}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
-                  {key === 'contacts' ? 'Контакты' : content[key].title}
+              {menuItems.map((item) => (
+                <a key={item.id} href={`#${item.id}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
+                  {item.title}
                 </a>
               ))}
             </div>
