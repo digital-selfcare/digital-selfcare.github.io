@@ -37,13 +37,6 @@ function App() {
               {content.hero.title}
             </h1>
             
-            {/* Subtitle removed if empty */}
-            {content.hero.subtitle && (
-              <p className="text-xl text-text-light mb-12 leading-relaxed max-w-2xl">
-                {content.hero.subtitle}
-              </p>
-            )}
-            
             <div className="flex flex-wrap gap-3 mb-12 mt-12">
               {['about', 'events', 'team', 'materials', 'contacts'].map((key) => (
                 <a key={key} href={`#${key}`} className="btn px-6 py-3 text-sm">
@@ -83,7 +76,7 @@ function App() {
           <div className="mb-16">
             <h2 className="text-4xl font-playfair font-bold mb-4">{content.events.title}</h2>
             <div className="w-16 h-1 bg-powdery rounded-full mb-6" />
-            <p className="text-text-light text-lg">Оперативная информация о ходе исследования</p>
+            {/* Subtitle removed per user request */}
           </div>
           
           <div className="news-grid-custom">
