@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+.env
+*.local
+scratch
+full_text.txt
+extract_docx.py
+search_team.py

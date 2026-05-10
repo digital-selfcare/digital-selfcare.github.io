@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цифровая забота: Грантовый проект</title>
+    <style>
+        /* Базовые настройки дизайна */
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; color: #333; line-height: 1.6; }
+        
+        /* Навигационное меню (Шапка) */
+        .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; display: flex; justify-content: center; padding: 15px 0; }
+        .navbar a { color: #0056b3; text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 16px; transition: color 0.3s; }
+        .navbar a:hover { color: #ff6600; }
+
+        /* Главный баннер */
+        .hero { background: linear-gradient(135deg, #0056b3 0%, #004494 100%); color: white; padding: 80px 20px; text-align: center; }
+        .hero h1 { font-size: 2.5em; margin-bottom: 10px; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .hero p { font-size: 1.2em; opacity: 0.9; }
+
+        /* Разделы сайта */
+        .section { padding: 60px 20px; max-width: 900px; margin: 0 auto; }
+        .section-title { color: #0056b3; font-size: 2em; border-bottom: 3px solid #0056b3; padding-bottom: 10px; margin-bottom: 30px; display: inline-block; }
+        
+        /* Карточки */
+        .grid { display: flex; gap: 20px; flex-wrap: wrap; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); flex: 1; min-width: 250px; border-top: 4px solid #0056b3; }
+        
+        /* Кнопка */
+        .button { display: inline-block; background-color: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background 0.3s; margin-top: 15px; }
+        .button:hover { background-color: #218838; }
+
+        /* Подвал сайта */
+        .footer { background-color: #333; color: white; text-align: center; padding: 30px 20px; margin-top: 40px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <!-- Меню навигации -->
+    <div class="navbar">
+        <a href="#about">О проекте</a>
+        <a href="#data">База данных</a>
+        <a href="#team">Команда</a>
+        <a href="#contacts">Контакты</a>
+    </div>
+
+    <!-- Главный баннер -->
+    <div class="hero">
+        <h1>Самосохранительные стратегии россиян в условиях цифровизации</h1>
+        <p>Научно-исследовательский социологический проект (2026-2027 гг.)</p>
+    </div>
+
+    <!-- Раздел: О проекте -->
+    <div id="about" class="section">
+        <h2 class="section-title">О проекте</h2>
+        <p>Наш проект посвящен изучению того, как цифровая реальность и технологии искусственного интеллекта меняют практики заботы о физическом и ментальном здоровье.</p>
+        <p>Мы исследуем феномен «цифровой уязвимости», влияние медицинских блогеров и алгоритмов рекомендаций на принятие решений пациентами. Особый фокус направлен на анализ стратегий самосохранения среди различных социальных групп: от «цифровых аборигенов» до людей старшего возраста.</p>
+    </div>
+
+    <!-- Раздел: База данных (Результаты) -->
+    <div id="data" class="section" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <h2 class="section-title">Материалы и данные</h2>
+        <p>В рамках проекта мы собираем и анализируем массивы данных о цифровой активности населения и практиках заботы о здоровье. Здесь будут публиковаться открытые датасеты и результаты эмпирических исследований.</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>Индекс цифровой зрелости</h3>
+                <p>Результаты всероссийского опроса и база данных для построения типологии самосохранительных стратегий россиян.</p>
+                <a href="#" class="button">Скачать датасет (CSV)</a>
+            </div>
+            <div class="card">
+                <h3>Оценка медицинских ИИ</h3>
+                <p>Результаты LLM Red Teaming: база данных оценки рекомендаций генеративных нейросетей профильными врачами-экспертами.</p>
+                <a href="#" class="button" style="background-color: #6c757d;">Скоро появится</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Раздел: Команда -->
+    <div id="team" class="section">
+        <h2 class="section-title">Исследовательская команда</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Имя Фамилия</h3>
+                <p><strong>Руководитель проекта</strong></p>
+                <p>Доктор социологических наук. Специалист в области цифровой социологии.</p>
+            </div>
+            <div class="card">
+                <h3>Имя Фамилия</h3>
+                <p><strong>Научный сотрудник</strong></p>
+                <p>Аналитик данных, эксперт по качественным методам исследования (in-depth интервью).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Раздел: Контакты -->
+    <div id="contacts" class="section">
+        <h2 class="section-title">Контакты</h2>
+        <p>Если у вас есть вопросы по исследованию или вы хотите получить доступ к расширенным базам данных, свяжитесь с нами:</p>
+        <p>📧 Email: <strong>project@example.com</strong></p>
+        <p>📍 Адрес: <strong>Россия, ПГНИУ, кафедра социологии</strong></p>
+    </div>
+
+    <!-- Подвал сайта -->
+    <div class="footer">
+        <p>Проект реализован при финансовой поддержке[Название научного фонда/гранта].</p>
+        <p>© 2026. Все права на материалы принадлежат исследовательскому коллективу.</p>
+    </div>
+
+</body>
+</html>

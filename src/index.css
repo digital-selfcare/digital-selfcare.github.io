@@ -1,0 +1,103 @@
+:root {
+  --color-sage: #7d9d85;
+  --color-sage-light: #9eb8a5;
+  --color-powdery: #d4a5a5;
+  --color-powdery-light: #e5c1c1;
+  --color-beige: #f5f1ed;
+  --color-beige-dark: #e8e2db;
+  --color-text-dark: #2c3e50;
+  --color-text-light: #5d6d7e;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Montserrat', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-beige);
+  color: var(--color-text-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+section {
+  padding: 5rem 0;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background-color: var(--color-sage);
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background-color: var(--color-sage);
+  color: white;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn:hover {
+  background-color: var(--color-sage-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(125, 157, 133, 0.3);
+}
+
+.btn-powdery {
+  background-color: var(--color-powdery);
+}
+
+.btn-powdery:hover {
+  background-color: var(--color-powdery-light);
+  box-shadow: 0 4px 15px rgba(212, 165, 165, 0.3);
+}
