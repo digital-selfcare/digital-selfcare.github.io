@@ -37,9 +37,10 @@ function App() {
               {content.hero.title}
             </h1>
             
-            <div className="flex flex-wrap gap-3 mb-12 mt-12">
+            {/* Increased Gap between buttons */}
+            <div className="flex flex-wrap gap-6 mb-12 mt-12">
               {['about', 'events', 'team', 'materials', 'contacts'].map((key) => (
-                <a key={key} href={`#${key}`} className="btn px-6 py-3 text-sm">
+                <a key={key} href={`#${key}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
                   {key === 'contacts' ? 'Контакты' : content[key].title}
                 </a>
               ))}
@@ -76,7 +77,6 @@ function App() {
           <div className="mb-16">
             <h2 className="text-4xl font-playfair font-bold mb-4">{content.events.title}</h2>
             <div className="w-16 h-1 bg-powdery rounded-full mb-6" />
-            {/* Subtitle removed per user request */}
           </div>
           
           <div className="news-grid-custom">
