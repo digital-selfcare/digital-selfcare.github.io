@@ -61,7 +61,7 @@ function App() {
               <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white">
                 <Database size={16} />
               </div>
-              <span className="font-playfair text-xl font-bold text-text tracking-tight">Проект РНФ</span>
+              <span className="font-playfair text-xl font-bold text-text tracking-tight">Проект РНФ № 23-18-00480-П</span>
             </div>
           </div>
         </header>
