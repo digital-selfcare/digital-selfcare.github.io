@@ -6,13 +6,14 @@ import {
   Mail, MessageCircle, Send, X, Menu,
   Sparkles, Bell, Lightbulb, Zap, Share2,
   FileSearch, BarChart3, GraduationCap,
-  ArrowLeft, FileDown, Clock
+  ArrowLeft, FileDown, Clock, Newspaper
 } from 'lucide-react';
 import { content } from './content';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
   const materialIcons = {
@@ -36,9 +37,26 @@ function App() {
       if (hash.startsWith('#materials/')) {
         const id = hash.replace('#materials/', '');
         setSelectedMaterial(id);
+        setSelectedEvent(null);
+        window.scrollTo(0, 0);
+      } else if (hash.startsWith('#events/')) {
+        const id = hash.replace('#events/', '');
+        setSelectedEvent(id);
+        setSelectedMaterial(null);
         window.scrollTo(0, 0);
       } else {
         setSelectedMaterial(null);
+        setSelectedEvent(null);
+        
+        // Fix for menu scrolling when coming back from sub-page
+        if (hash) {
+          setTimeout(() => {
+            const element = document.querySelector(hash);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 50); // Small delay to let React render the landing page
+        }
       }
     };
 
@@ -48,35 +66,31 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Prevent body scroll when menu or detail is open (only for mobile/desktop logic)
+  // Prevent body scroll when menu or detail is open
   useEffect(() => {
-    if (isMenuOpen || selectedMaterial) {
+    if (isMenuOpen || selectedMaterial || selectedEvent) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [isMenuOpen, selectedMaterial]);
+  }, [isMenuOpen, selectedMaterial, selectedEvent]);
 
   const handleMaterialClick = (id) => {
     window.location.hash = `#materials/${id}`;
   };
 
-  const closeDetail = () => {
-    window.location.hash = '#materials';
+  const handleEventClick = (id) => {
+    window.location.hash = `#events/${id}`;
   };
 
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
-    if (selectedMaterial) {
-      // If we are in detail view, we first need to close it
-      setSelectedMaterial(null);
-      // Let the browser handle the hash change/scroll after state update
-      window.location.hash = `#${id}`;
-    }
+    // Setting hash will trigger useEffect handleHashChange
+    window.location.hash = `#${id}`;
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-montserrat">
       {/* Burger Button - GLOBAL */}
       <button 
         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -101,7 +115,10 @@ function App() {
           <a 
             key={item.id} 
             href={`#${item.id}`} 
-            onClick={() => handleMenuClick(item.id)}
+            onClick={(e) => {
+              e.preventDefault();
+              handleMenuClick(item.id);
+            }}
             className="menu-link"
           >
             {item.title}
@@ -166,6 +183,46 @@ function App() {
 
               <div className="mt-20 p-8 bg-sage/5 rounded-[40px] border border-dashed border-sage/20 text-center">
                  <p className="text-sm text-sage/60 italic">Новые файлы будут добавляться автоматически по мере готовности материалов исследования.</p>
+              </div>
+            </div>
+          </motion.div>
+        ) : selectedEvent ? (
+          <motion.div 
+            key="event-detail"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="min-h-screen bg-white py-24 px-8 relative overflow-y-auto"
+            style={{ zIndex: 100 }}
+          >
+            <div className="container max-w-4xl">
+              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+                 <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery">
+                    <Newspaper size={32} />
+                 </div>
+                 <div>
+                    <h1 className="text-4xl font-playfair font-bold">
+                      {content.events.items.find(e => e.id === selectedEvent)?.title}
+                    </h1>
+                    <div className="flex gap-4 text-xs font-bold uppercase tracking-widest text-powdery mt-2">
+                       <span>{content.events.items.find(e => e.id === selectedEvent)?.type}</span>
+                       <span>•</span>
+                       <span>{content.events.items.find(e => e.id === selectedEvent)?.date}</span>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="w-full h-px bg-gray-100 mb-12" />
+
+              <div className="prose prose-lg max-w-none text-text-light leading-relaxed">
+                 <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
+                 <p className="mt-8">Дополнительная информация о ходе данного этапа будет публиковаться в этом разделе по мере поступления отчетных материалов.</p>
+              </div>
+
+              <div className="mt-20 p-12 bg-beige/10 rounded-[60px] text-center border border-gray-100">
+                 <h4 className="font-playfair text-2xl font-bold mb-4 text-text">Хотите узнать больше?</h4>
+                 <p className="text-text-light mb-8 max-w-md mx-auto">Подписывайтесь на обновления проекта, чтобы получать уведомления о новых публикациях.</p>
+                 <a href="#contacts" onClick={() => handleMenuClick('contacts')} className="btn px-10 py-5 bg-sage text-white inline-block">СВЯЗАТЬСЯ С НАМИ</a>
               </div>
             </div>
           </motion.div>
@@ -236,7 +293,7 @@ function App() {
               </div>
             </section>
 
-            {/* News */}
+            {/* News Grid */}
             <section id="events" className="py-24 bg-beige/5">
               <div className="container">
                 <div className="mb-16">
@@ -246,14 +303,18 @@ function App() {
                 
                 <div className="news-grid-custom">
                   {content.events.items.map((item, i) => (
-                    <div key={item.id} className="news-card-custom">
+                    <div 
+                      key={item.id} 
+                      className="news-card-custom cursor-pointer"
+                      onClick={() => handleEventClick(item.id)}
+                    >
                       <span className="card-number">{i + 1}</span>
                       <div className="card-icon">
                         {newsIcons[i % newsIcons.length]}
                       </div>
                       <h3>{item.title}</h3>
                       <p>{item.description}</p>
-                      <a href="#" className="card-link">БОЛЕЕ</a>
+                      <div className="card-link">ПОДРОБНОСТИ</div>
                     </div>
                   ))}
                   
@@ -287,7 +348,7 @@ function App() {
               </div>
             </section>
 
-            {/* Materials */}
+            {/* Materials Grid */}
             <section id="materials" className="py-24 bg-sage/5">
               <div className="container">
                 <div className="mb-16 text-center">
