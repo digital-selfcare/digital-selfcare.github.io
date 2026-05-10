@@ -6,7 +6,8 @@ import {
   Mail, MessageCircle, Send, X, Menu,
   Sparkles, Bell, Lightbulb, Zap, Share2,
   FileSearch, BarChart3, GraduationCap,
-  ArrowLeft, FileDown, Clock, Newspaper
+  ArrowLeft, FileDown, Clock, Newspaper,
+  User, Award, Briefcase, Microscope
 } from 'lucide-react';
 import { content } from './content';
 
@@ -14,9 +15,9 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [pendingScroll, setPendingScroll] = useState(null);
   
-  // Ref to track if we just returned from a subpage
   const returningFromSubpage = useRef(false);
 
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
@@ -34,7 +35,12 @@ function App() {
     { id: 'contacts', title: 'Контакты' }
   ];
 
-  // Helper for guaranteed scrolling
+  // Helper for placeholder colors
+  const getMemberColor = (index) => {
+    const colors = ['#a8dadc', '#f1faee', '#e9c46a', '#f4a261', '#e76f51', '#2a9d8f', '#264653', '#9b59b6'];
+    return colors[index % colors.length];
+  };
+
   const performScroll = (id) => {
     const el = document.getElementById(id);
     if (el) {
@@ -44,16 +50,12 @@ function App() {
       const elementPosition = elementRect - bodyRect;
       const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
       return true;
     }
     return false;
   };
 
-  // 1. Listen for hash changes (for direct links and browser 'Back')
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
@@ -62,43 +64,47 @@ function App() {
       if (hash.startsWith('#materials/')) {
         setSelectedMaterial(hash.replace('#materials/', ''));
         setSelectedEvent(null);
+        setSelectedMember(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#events/')) {
         setSelectedEvent(hash.replace('#events/', ''));
         setSelectedMaterial(null);
+        setSelectedMember(null);
+        window.scrollTo(0, 0);
+      } else if (hash.startsWith('#team/')) {
+        setSelectedMember(hash.replace('#team/', ''));
+        setSelectedMaterial(null);
+        setSelectedEvent(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#')) {
         const id = hash.replace('#', '');
         if (id && id !== '!' && id !== '') {
-          // If we are currently in a subpage, mark that we are returning
-          if (selectedMaterial || selectedEvent) {
+          if (selectedMaterial || selectedEvent || selectedMember) {
             returningFromSubpage.current = true;
             setPendingScroll(id);
             setSelectedMaterial(null);
             setSelectedEvent(null);
+            setSelectedMember(null);
           } else {
             performScroll(id);
           }
         } else {
-          // Just clear subpages if hash is empty or #
           setSelectedMaterial(null);
           setSelectedEvent(null);
+          setSelectedMember(null);
         }
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Initial check
+    handleHashChange();
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [selectedMaterial, selectedEvent]);
+  }, [selectedMaterial, selectedEvent, selectedMember]);
 
-  // 2. Observer for pending scrolls after landing page mounts
   useEffect(() => {
-    if (!selectedMaterial && !selectedEvent && pendingScroll) {
+    if (!selectedMaterial && !selectedEvent && !selectedMember && pendingScroll) {
       const target = pendingScroll;
       setPendingScroll(null);
-      
-      // We need a sequence of checks because React rendering can be async
       let attempts = 0;
       const tryScroll = () => {
         if (!performScroll(target) && attempts < 10) {
@@ -106,95 +112,179 @@ function App() {
           setTimeout(tryScroll, 50);
         }
       };
-      
       setTimeout(tryScroll, 100);
     }
-  }, [selectedMaterial, selectedEvent, pendingScroll]);
+  }, [selectedMaterial, selectedEvent, selectedMember, pendingScroll]);
 
-  // Body Scroll Lock
   useEffect(() => {
-    document.body.style.overflow = (isMenuOpen || selectedMaterial || selectedEvent) ? 'hidden' : 'unset';
-  }, [isMenuOpen, selectedMaterial, selectedEvent]);
+    document.body.style.overflow = (isMenuOpen || selectedMaterial || selectedEvent || selectedMember) ? 'hidden' : 'unset';
+  }, [isMenuOpen, selectedMaterial, selectedEvent, selectedMember]);
 
-  // Manual Menu Click Handler
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
-    // Setting hash will trigger the hashchange effect which handles the transition
     window.location.hash = `#${id}`;
   };
 
+  const activeMember = content.team.members.find(m => m.id === selectedMember);
+
   return (
     <div className="min-h-screen bg-white">
-      {/* CONTENT AREA */}
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
           {selectedMaterial ? (
-            <motion.div 
-              key="material-detail"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
-              style={{ zIndex: 100 }}
-            >
-              <div className="container max-w-4xl">
-                <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
-                   <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
-                      {materialIcons[selectedMaterial] || <FileSearch size={32} />}
+             <motion.div 
+             key="material-detail"
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
+             style={{ zIndex: 100 }}
+           >
+             <div className="container max-w-4xl">
+               <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+                  <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
+                     {materialIcons[selectedMaterial] || <FileSearch size={32} />}
+                  </div>
+                  <div>
+                     <h1 className="text-3xl font-playfair font-bold">
+                       {content.materials.items.find(m => m.id === selectedMaterial)?.title}
+                     </h1>
+                     <p className="text-text-light mt-2">
+                       {content.materials.items.find(m => m.id === selectedMaterial)?.description}
+                     </p>
+                  </div>
+               </div>
+               <div className="w-full h-px bg-gray-100 mb-12" />
+               <div className="space-y-4">
+                 {content.materials.items.find(m => m.id === selectedMaterial)?.files.map((file, idx) => (
+                   <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all gap-4">
+                     <div className="flex items-center gap-5">
+                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm"><FileDown size={20} /></div>
+                       <div>
+                         <h4 className="font-bold text-text mb-1">{file.name}</h4>
+                         <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold">
+                           <span>{file.size}</span>
+                           <span>•</span>
+                           <span>{file.date}</span>
+                         </div>
+                       </div>
+                     </div>
+                     <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">СКАЧАТЬ</button>
                    </div>
-                   <div>
-                      <h1 className="text-3xl font-playfair font-bold">
-                        {content.materials.items.find(m => m.id === selectedMaterial)?.title}
-                      </h1>
-                      <p className="text-text-light mt-2">
-                        {content.materials.items.find(m => m.id === selectedMaterial)?.description}
-                      </p>
-                   </div>
-                </div>
-                <div className="w-full h-px bg-gray-100 mb-12" />
-                <div className="space-y-4">
-                  {content.materials.items.find(m => m.id === selectedMaterial)?.files.map((file, idx) => (
-                    <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all gap-4">
-                      <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm"><FileDown size={20} /></div>
-                        <div>
-                          <h4 className="font-bold text-text mb-1">{file.name}</h4>
-                          <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold">
-                            <span>{file.size}</span>
-                            <span>•</span>
-                            <span>{file.date}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">СКАЧАТЬ</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+                 ))}
+               </div>
+             </div>
+           </motion.div>
           ) : selectedEvent ? (
             <motion.div 
-              key="event-detail"
+            key="event-detail"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
+            style={{ zIndex: 100 }}
+          >
+            <div className="container max-w-4xl">
+              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+                 <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
+                 <div>
+                    <h1 className="text-3xl font-playfair font-bold">
+                      {content.events.items.find(e => e.id === selectedEvent)?.title}
+                    </h1>
+                    <p className="text-powdery font-bold text-xs mt-2 uppercase tracking-widest">{content.events.items.find(e => e.id === selectedEvent)?.date}</p>
+                 </div>
+              </div>
+              <div className="w-full h-px bg-gray-100 mb-12" />
+              <div className="prose prose-lg text-text-light">
+                 <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
+                 <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
+              </div>
+            </div>
+          </motion.div>
+          ) : selectedMember ? (
+            <motion.div 
+              key="member-detail"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
               style={{ zIndex: 100 }}
             >
-              <div className="container max-w-4xl">
-                <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
-                   <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
-                   <div>
-                      <h1 className="text-3xl font-playfair font-bold">
-                        {content.events.items.find(e => e.id === selectedEvent)?.title}
-                      </h1>
-                      <p className="text-powdery font-bold text-xs mt-2 uppercase tracking-widest">{content.events.items.find(e => e.id === selectedEvent)?.date}</p>
-                   </div>
+              <div className="container max-w-6xl">
+                {/* BACK BUTTON */}
+                <button 
+                  onClick={() => window.location.hash = '#team'}
+                  className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 mt-12 md:mt-0 hover:translate-x-[-4px] transition-transform"
+                >
+                  <ArrowLeft size={16} /> Назад к команде
+                </button>
+
+                {/* THE "EXAMPLE 4" TWO IMAGES LAYOUT */}
+                <div className="team-detail-split">
+                  <div className="split-image-main">
+                    <div 
+                      className="placeholder-img" 
+                      style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-12 text-white">
+                      <h1 className="text-5xl font-playfair font-bold mb-2">{activeMember?.name}</h1>
+                      <p className="text-sage font-bold tracking-widest uppercase text-sm">{activeMember?.role}</p>
+                    </div>
+                  </div>
+                  <div className="split-image-detail">
+                    <div 
+                      className="placeholder-img opacity-50" 
+                      style={{ 
+                        backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 1),
+                        transform: 'scale(1.5) rotate(15deg)'
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center p-12 text-center">
+                      <div className="bg-white/90 backdrop-blur-md p-8 rounded-[40px] shadow-2xl">
+                        <Microscope size={40} className="text-sage mx-auto mb-4" />
+                        <p className="text-sm font-medium text-text-light italic">"{activeMember?.specialization}"</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full h-px bg-gray-100 mb-12" />
-                <div className="prose prose-lg text-text-light">
-                   <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
-                   <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
+
+                {/* INFO CONTENT */}
+                <div className="member-info-content">
+                  <div className="info-sidebar">
+                    <div className="mb-12">
+                      <h4>Ученая степень и звание</h4>
+                      <div className="flex gap-4 items-start">
+                        <Award className="text-sage shrink-0" />
+                        <p className="text-lg font-medium">{activeMember?.title}</p>
+                      </div>
+                    </div>
+                    <div className="mb-12">
+                      <h4>Научные интересы</h4>
+                      <div className="flex gap-4 items-start">
+                        <Briefcase className="text-sage shrink-0" />
+                        <p className="text-text-light">{activeMember?.specialization}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="info-main">
+                    <h2 className="text-3xl font-playfair font-bold mb-8">О специалисте</h2>
+                    <p className="text-xl leading-relaxed text-text-light mb-12">{activeMember?.bio}</p>
+                    
+                    <h2 className="text-3xl font-playfair font-bold mb-8">Достижения</h2>
+                    <p className="text-lg leading-relaxed text-text-light mb-12">{activeMember?.achievements}</p>
+
+                    <h2 className="text-3xl font-playfair font-bold mb-8">Избранные публикации</h2>
+                    <div className="space-y-2">
+                      {activeMember?.publications.map((pub, i) => (
+                        <div key={i} className="publication-item">
+                           <div className="flex gap-4">
+                              <span className="text-sage font-bold">0{i+1}</span>
+                              <p className="text-sm text-text-light leading-relaxed">{pub}</p>
+                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -262,19 +352,35 @@ function App() {
                 </div>
               </section>
 
-              <section id="team" className="py-24">
-                <div className="container text-center">
-                  <h2 className="text-4xl font-playfair font-bold mb-4">{content.team.title}</h2>
-                  <div className="w-16 h-1 bg-sage rounded-full mx-auto mb-20" />
-                  <div className="grid md:grid-cols-3 gap-16">
+              {/* NEW TEAM GALLERY (EXAMPLE 4 STYLE) */}
+              <section id="team" className="py-32 bg-white">
+                <div className="container">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                    <div className="max-w-2xl">
+                      <h2 className="text-5xl font-playfair font-bold mb-6">{content.team.title}</h2>
+                      <p className="text-xl text-text-light font-medium">Ведущие социологи и исследователи, работающие над изучением стратегий самосохранения россиян.</p>
+                    </div>
+                    <div className="flex gap-2">
+                       <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-400"><ArrowLeft size={20} /></div>
+                       <div className="w-12 h-12 rounded-full border border-text text-text flex items-center justify-center cursor-pointer hover:bg-text hover:text-white transition-colors"><Share2 size={20} /></div>
+                    </div>
+                  </div>
+
+                  <div className="team-gallery-grid">
                     {content.team.members.map((member, i) => (
-                      <div key={i}>
-                        <div className="w-40 h-40 mx-auto mb-8 bg-sage/5 rounded-[40px] flex items-center justify-center text-sage">
-                          <Users size={48} strokeWidth={1} />
+                      <div 
+                        key={member.id} 
+                        className="team-member-card"
+                        onClick={() => window.location.hash = `#team/${member.id}`}
+                      >
+                        <div 
+                          className="placeholder-img" 
+                          style={{ backgroundColor: getMemberColor(i) }}
+                        />
+                        <div className="team-card-overlay">
+                          <h3>{member.name}</h3>
+                          <p>{member.role}</p>
                         </div>
-                        <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                        <p className="text-sage font-bold text-xs mb-4 uppercase">{member.role}</p>
-                        <p className="text-sm text-text-light px-6">{member.bio}</p>
                       </div>
                     ))}
                   </div>
