@@ -1,7 +1,7 @@
 export const content = {
   hero: {
     title: "Самосохранительное поведение россиян",
-    subtitle: "", // Removed as requested
+    subtitle: "",
     cta: "О проекте"
   },
   about: {
@@ -20,6 +20,22 @@ export const content = {
         type: "Анонс",
         title: "Запуск исследовательского этапа",
         description: "Подготовка методологии и сбор первичных данных",
+        status: "upcoming"
+      },
+      {
+        id: 2,
+        date: "2026",
+        type: "План",
+        title: "Полевой этап исследования",
+        description: "Проведение глубинных интервью и онлайн-опросов целевых групп",
+        status: "upcoming"
+      },
+      {
+        id: 3,
+        date: "2026",
+        type: "План",
+        title: "Анализ первичных данных",
+        description: "Систематизация полученной информации и формирование первых выводов",
         status: "upcoming"
       }
     ]
