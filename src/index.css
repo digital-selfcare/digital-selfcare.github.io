@@ -121,6 +121,19 @@ section {
   box-shadow: 0 4px 15px rgba(212, 165, 165, 0.3);
 }
 
+.btn-group-custom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px !important;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.btn-group-custom .btn {
+  margin-right: 12px;
+  margin-bottom: 12px;
+}
+
 /* --- NEWS GRID SYSTEM --- */
 .news-grid-custom {
   display: grid;

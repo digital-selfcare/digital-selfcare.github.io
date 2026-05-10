@@ -37,8 +37,8 @@ function App() {
               {content.hero.title}
             </h1>
             
-            {/* Increased Gap between buttons */}
-            <div className="flex flex-wrap gap-6 mb-12 mt-12">
+            {/* BUTTON GROUP WITH FORCED SPACING */}
+            <div className="btn-group-custom">
               {['about', 'events', 'team', 'materials', 'contacts'].map((key) => (
                 <a key={key} href={`#${key}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
                   {key === 'contacts' ? 'Контакты' : content[key].title}
