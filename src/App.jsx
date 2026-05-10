@@ -14,6 +14,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [pendingScroll, setPendingScroll] = useState(null);
 
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
   const materialIcons = {
@@ -30,7 +31,21 @@ function App() {
     { id: 'contacts', title: 'Контакты' }
   ];
 
-  // Global Hash Change Listener
+  // Helper function for reliable scrolling
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  // Sync state with URL hash and handle scrolling
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
@@ -47,46 +62,55 @@ function App() {
         setSelectedMaterial(null);
         window.scrollTo(0, 0);
       } else {
+        // We are going back to the main landing
+        const wasInSubpage = selectedMaterial || selectedEvent;
         setSelectedMaterial(null);
         setSelectedEvent(null);
         
-        if (hash && hash !== '#' && hash !== '#!') {
-          setTimeout(() => {
-            const id = hash.replace('#', '');
-            const element = document.getElementById(id);
-            if (element) {
-              const headerOffset = 100;
-              const elementPosition = element.getBoundingClientRect().top;
-              const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-              window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-            }
-          }, 150);
+        const sectionId = hash.replace('#', '');
+        if (sectionId && sectionId !== '!' && sectionId !== '') {
+          if (wasInSubpage) {
+            // Wait for landing to render before scrolling
+            setPendingScroll(sectionId);
+          } else {
+            scrollToSection(sectionId);
+          }
         }
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange();
+    handleHashChange(); // Initial check
+
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [selectedMaterial, selectedEvent]);
+
+  // Observer for pending scrolls after returning from subpage
+  useEffect(() => {
+    if (!selectedMaterial && !selectedEvent && pendingScroll) {
+      const target = pendingScroll;
+      setPendingScroll(null);
+      // Extra micro-delay for DOM mounting
+      setTimeout(() => {
+        scrollToSection(target);
+      }, 100);
+    }
+  }, [selectedMaterial, selectedEvent, pendingScroll]);
 
   // Body Scroll Lock
   useEffect(() => {
-    if (isMenuOpen || selectedMaterial || selectedEvent) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = (isMenuOpen || selectedMaterial || selectedEvent) ? 'hidden' : 'unset';
   }, [isMenuOpen, selectedMaterial, selectedEvent]);
 
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
+    // If we are currently in a subpage, we need to let the handleHashChange handle the transition
     window.location.hash = `#${id}`;
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. MAIN CONTENT WRAPPER */}
+      {/* 1. CONTENT AREA */}
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
           {selectedMaterial ? (
@@ -280,7 +304,7 @@ function App() {
         </AnimatePresence>
       </div>
 
-      {/* 2. GLOBAL MENU OVERLAY (Always Last Siblings) */}
+      {/* 2. GLOBAL MENU OVERLAY */}
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
          <div className="flex flex-col items-center gap-12">
             {menuItems.map((item) => (
@@ -303,12 +327,12 @@ function App() {
          </div>
       </div>
 
-      {/* 3. ABSOLUTE GLOBAL BURGER BUTTON (The Very Last) */}
+      {/* 3. ABSOLUTE GLOBAL BURGER BUTTON */}
       <button 
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="burger-btn"
         aria-label="Menu"
-        style={{ zIndex: 999999 }} // Ultimate priority
+        style={{ zIndex: 999999 }}
       >
         {isMenuOpen ? <X size={24} color="#2d3436" /> : (
           <>
