@@ -6,7 +6,7 @@ import {
   Mail, MessageCircle, Send, X, Menu,
   Sparkles, Bell, Lightbulb, Zap, Share2,
   FileSearch, BarChart3, GraduationCap,
-  ArrowLeft, FileDown, Clock, Newspaper,
+  ArrowLeft, ArrowRight, FileDown, Clock, Newspaper,
   User, Award, Briefcase, Microscope
 } from 'lucide-react';
 import { content } from './content';
@@ -17,6 +17,7 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
   const [pendingScroll, setPendingScroll] = useState(null);
+  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
   
   const returningFromSubpage = useRef(false);
 
@@ -35,7 +36,6 @@ function App() {
     { id: 'contacts', title: 'Контакты' }
   ];
 
-  // Helper for placeholder colors
   const getMemberColor = (index) => {
     const colors = ['#a8dadc', '#f1faee', '#e9c46a', '#f4a261', '#e76f51', '#2a9d8f', '#264653', '#9b59b6'];
     return colors[index % colors.length];
@@ -49,7 +49,6 @@ function App() {
       const elementRect = el.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
       const offsetPosition = elementPosition - offset;
-
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
       return true;
     }
@@ -125,6 +124,14 @@ function App() {
     window.location.hash = `#${id}`;
   };
 
+  const nextMember = () => {
+    setCurrentMemberIndex((prev) => (prev + 1) % content.team.members.length);
+  };
+
+  const prevMember = () => {
+    setCurrentMemberIndex((prev) => (prev - 1 + content.team.members.length) % content.team.members.length);
+  };
+
   const activeMember = content.team.members.find(m => m.id === selectedMember);
 
   return (
@@ -132,26 +139,13 @@ function App() {
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
           {selectedMaterial ? (
-             <motion.div 
-             key="material-detail"
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             exit={{ opacity: 0 }}
-             className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
-             style={{ zIndex: 100 }}
-           >
+             <motion.div key="material-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
              <div className="container max-w-4xl">
                <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
-                  <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
-                     {materialIcons[selectedMaterial] || <FileSearch size={32} />}
-                  </div>
+                  <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">{materialIcons[selectedMaterial] || <FileSearch size={32} />}</div>
                   <div>
-                     <h1 className="text-3xl font-playfair font-bold">
-                       {content.materials.items.find(m => m.id === selectedMaterial)?.title}
-                     </h1>
-                     <p className="text-text-light mt-2">
-                       {content.materials.items.find(m => m.id === selectedMaterial)?.description}
-                     </p>
+                     <h1 className="text-3xl font-playfair font-bold">{content.materials.items.find(m => m.id === selectedMaterial)?.title}</h1>
+                     <p className="text-text-light mt-2">{content.materials.items.find(m => m.id === selectedMaterial)?.description}</p>
                   </div>
                </div>
                <div className="w-full h-px bg-gray-100 mb-12" />
@@ -162,11 +156,7 @@ function App() {
                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm"><FileDown size={20} /></div>
                        <div>
                          <h4 className="font-bold text-text mb-1">{file.name}</h4>
-                         <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold">
-                           <span>{file.size}</span>
-                           <span>•</span>
-                           <span>{file.date}</span>
-                         </div>
+                         <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold"><span>{file.size}</span><span>•</span><span>{file.date}</span></div>
                        </div>
                      </div>
                      <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">СКАЧАТЬ</button>
@@ -176,21 +166,12 @@ function App() {
              </div>
            </motion.div>
           ) : selectedEvent ? (
-            <motion.div 
-            key="event-detail"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
-            style={{ zIndex: 100 }}
-          >
+            <motion.div key="event-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
             <div className="container max-w-4xl">
               <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
                  <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
                  <div>
-                    <h1 className="text-3xl font-playfair font-bold">
-                      {content.events.items.find(e => e.id === selectedEvent)?.title}
-                    </h1>
+                    <h1 className="text-3xl font-playfair font-bold">{content.events.items.find(e => e.id === selectedEvent)?.title}</h1>
                     <p className="text-powdery font-bold text-xs mt-2 uppercase tracking-widest">{content.events.items.find(e => e.id === selectedEvent)?.date}</p>
                  </div>
               </div>
@@ -202,43 +183,21 @@ function App() {
             </div>
           </motion.div>
           ) : selectedMember ? (
-            <motion.div 
-              key="member-detail"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
-              style={{ zIndex: 100 }}
-            >
+            <motion.div key="member-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
               <div className="container max-w-6xl">
-                {/* BACK BUTTON */}
-                <button 
-                  onClick={() => window.location.hash = '#team'}
-                  className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 mt-12 md:mt-0 hover:translate-x-[-4px] transition-transform"
-                >
+                <button onClick={() => window.location.hash = '#team'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 mt-12 md:mt-0 hover:translate-x-[-4px] transition-transform">
                   <ArrowLeft size={16} /> Назад к команде
                 </button>
-
-                {/* THE "EXAMPLE 4" TWO IMAGES LAYOUT */}
                 <div className="team-detail-split">
                   <div className="split-image-main">
-                    <div 
-                      className="placeholder-img" 
-                      style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}
-                    />
+                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-12 text-white">
                       <h1 className="text-5xl font-playfair font-bold mb-2">{activeMember?.name}</h1>
                       <p className="text-sage font-bold tracking-widest uppercase text-sm">{activeMember?.role}</p>
                     </div>
                   </div>
                   <div className="split-image-detail">
-                    <div 
-                      className="placeholder-img opacity-50" 
-                      style={{ 
-                        backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 1),
-                        transform: 'scale(1.5) rotate(15deg)'
-                      }}
-                    />
+                    <div className="placeholder-img opacity-50" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 1), transform: 'scale(1.5) rotate(15deg)' }} />
                     <div className="absolute inset-0 flex items-center justify-center p-12 text-center">
                       <div className="bg-white/90 backdrop-blur-md p-8 rounded-[40px] shadow-2xl">
                         <Microscope size={40} className="text-sage mx-auto mb-4" />
@@ -247,41 +206,26 @@ function App() {
                     </div>
                   </div>
                 </div>
-
-                {/* INFO CONTENT */}
                 <div className="member-info-content">
                   <div className="info-sidebar">
                     <div className="mb-12">
                       <h4>Ученая степень и звание</h4>
-                      <div className="flex gap-4 items-start">
-                        <Award className="text-sage shrink-0" />
-                        <p className="text-lg font-medium">{activeMember?.title}</p>
-                      </div>
+                      <div className="flex gap-4 items-start"><Award className="text-sage shrink-0" /><p className="text-lg font-medium">{activeMember?.title}</p></div>
                     </div>
                     <div className="mb-12">
                       <h4>Научные интересы</h4>
-                      <div className="flex gap-4 items-start">
-                        <Briefcase className="text-sage shrink-0" />
-                        <p className="text-text-light">{activeMember?.specialization}</p>
-                      </div>
+                      <div className="flex gap-4 items-start"><Briefcase className="text-sage shrink-0" /><p className="text-text-light">{activeMember?.specialization}</p></div>
                     </div>
                   </div>
                   <div className="info-main">
                     <h2 className="text-3xl font-playfair font-bold mb-8">О специалисте</h2>
                     <p className="text-xl leading-relaxed text-text-light mb-12">{activeMember?.bio}</p>
-                    
                     <h2 className="text-3xl font-playfair font-bold mb-8">Достижения</h2>
                     <p className="text-lg leading-relaxed text-text-light mb-12">{activeMember?.achievements}</p>
-
                     <h2 className="text-3xl font-playfair font-bold mb-8">Избранные публикации</h2>
                     <div className="space-y-2">
                       {activeMember?.publications.map((pub, i) => (
-                        <div key={i} className="publication-item">
-                           <div className="flex gap-4">
-                              <span className="text-sage font-bold">0{i+1}</span>
-                              <p className="text-sm text-text-light leading-relaxed">{pub}</p>
-                           </div>
-                        </div>
+                        <div key={i} className="publication-item"><div className="flex gap-4"><span className="text-sage font-bold">0{i+1}</span><p className="text-sm text-text-light leading-relaxed">{pub}</p></div></div>
                       ))}
                     </div>
                   </div>
@@ -289,12 +233,7 @@ function App() {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
-              key="main-landing"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <motion.div key="main-landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <header className="fixed w-full z-40 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
                 <div className="container flex justify-end items-center">
                   <div className="flex items-center gap-3">
@@ -310,11 +249,7 @@ function App() {
                     <div className="max-w-4xl">
                       <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">Исследовательский проект 2026–2027</span>
                       <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">{content.hero.title}</h1>
-                      <div className="btn-group-custom">
-                        {menuItems.map((item) => (
-                          <a key={item.id} href={`#${item.id}`} className="btn">{item.title}</a>
-                        ))}
-                      </div>
+                      <div className="btn-group-custom">{menuItems.map((item) => (<a key={item.id} href={`#${item.id}`} className="btn">{item.title}</a>))}</div>
                     </div>
                   </div>
                 </div>
@@ -328,9 +263,7 @@ function App() {
                       <h2 className="text-4xl font-playfair font-bold mb-4">{content.about.title}</h2>
                       <div className="w-16 h-1 bg-sage rounded-full" />
                     </div>
-                    <div className="space-y-8">
-                      {content.about.description.map((p, i) => <p key={i} className="text-xl leading-relaxed text-text-light font-medium">{p}</p>)}
-                    </div>
+                    <div className="space-y-8">{content.about.description.map((p, i) => <p key={i} className="text-xl leading-relaxed text-text-light font-medium">{p}</p>)}</div>
                   </div>
                 </div>
               </section>
@@ -352,7 +285,7 @@ function App() {
                 </div>
               </section>
 
-              {/* NEW TEAM GALLERY (EXAMPLE 4 STYLE) */}
+              {/* TEAM CAROUSEL (EXAMPLE 4 DYNAMIC) */}
               <section id="team" className="py-32 bg-white">
                 <div className="container">
                   <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
@@ -360,29 +293,39 @@ function App() {
                       <h2 className="text-5xl font-playfair font-bold mb-6">{content.team.title}</h2>
                       <p className="text-xl text-text-light font-medium">Ведущие социологи и исследователи, работающие над изучением стратегий самосохранения россиян.</p>
                     </div>
-                    <div className="flex gap-2">
-                       <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-400"><ArrowLeft size={20} /></div>
-                       <div className="w-12 h-12 rounded-full border border-text text-text flex items-center justify-center cursor-pointer hover:bg-text hover:text-white transition-colors"><Share2 size={20} /></div>
-                    </div>
                   </div>
 
-                  <div className="team-gallery-grid">
-                    {content.team.members.map((member, i) => (
-                      <div 
-                        key={member.id} 
-                        className="team-member-card"
-                        onClick={() => window.location.hash = `#team/${member.id}`}
-                      >
-                        <div 
-                          className="placeholder-img" 
-                          style={{ backgroundColor: getMemberColor(i) }}
-                        />
-                        <div className="team-card-overlay">
-                          <h3>{member.name}</h3>
-                          <p>{member.role}</p>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="team-carousel-container">
+                    <div className="carousel-track">
+                      {content.team.members.map((member, i) => {
+                        let status = 'hidden';
+                        if (i === currentMemberIndex) status = 'active';
+                        else if (i === (currentMemberIndex + 1) % content.team.members.length) status = 'next';
+                        
+                        return (
+                          <div 
+                            key={member.id} 
+                            className={`carousel-item-wrapper carousel-item-${status}`}
+                            onClick={() => {
+                              if (status === 'next') nextMember();
+                              else if (status === 'active') window.location.hash = `#team/${member.id}`;
+                            }}
+                          >
+                            <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }} />
+                            {status === 'active' && (
+                              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="carousel-member-info">
+                                <h3>{member.name}</h3>
+                                <p>{member.role}</p>
+                              </motion.div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="carousel-nav">
+                       <button onClick={prevMember} className="nav-btn"><ArrowLeft size={24} /></button>
+                       <button onClick={nextMember} className="nav-btn"><ArrowRight size={24} /></button>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -425,38 +368,17 @@ function App() {
         </AnimatePresence>
       </div>
 
-      {/* GLOBAL MENU OVERLAY */}
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
          <div className="flex flex-col items-center gap-12">
             {menuItems.map((item) => (
-              <a 
-                key={item.id} 
-                href={`#${item.id}`} 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleMenuClick(item.id);
-                }}
-                className="menu-link"
-              >
-                {item.title}
-              </a>
+              <a key={item.id} href={`#${item.id}`} onClick={(e) => { e.preventDefault(); handleMenuClick(item.id); }} className="menu-link">{item.title}</a>
             ))}
          </div>
       </div>
 
-      {/* GLOBAL BURGER BUTTON */}
-      <button 
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="burger-btn"
-        aria-label="Menu"
-        style={{ zIndex: 999999 }}
-      >
+      <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-btn" aria-label="Menu" style={{ zIndex: 999999 }}>
         {isMenuOpen ? <X size={24} color="#2d3436" /> : (
-          <>
-            <span />
-            <span />
-            <span />
-          </>
+          <><span /><span /><span /></>
         )}
       </button>
     </div>
