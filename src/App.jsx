@@ -67,25 +67,25 @@ function App() {
         </header>
       )}
 
-      {/* Hero Section - RESTORED PADDING */}
-      <section className="pt-48 pb-24 relative overflow-hidden bg-beige/5">
-        <div className="geo-circle bg-sage/5 w-[600px] h-[600px] -top-40 -left-40" />
-        <div className="container relative z-10">
-          <div className="max-w-4xl">
-            <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">
-              Исследовательский проект 2026–2027
-            </span>
-            <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">
-              {content.hero.title}
-            </h1>
-            
-            {/* BUTTON GROUP MOVED DOWN ONLY */}
-            <div className="btn-group-custom">
-              {menuItems.map((item) => (
-                <a key={item.id} href={`#${item.id}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
-                  {item.title}
-                </a>
-              ))}
+      {/* Hero Section with Background Image */}
+      <section className="hero-section">
+        <div className="hero-content-wrapper">
+          <div className="container relative z-10">
+            <div className="max-w-4xl">
+              <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">
+                Исследовательский проект 2026–2027
+              </span>
+              <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">
+                {content.hero.title}
+              </h1>
+              
+              <div className="btn-group-custom">
+                {menuItems.map((item) => (
+                  <a key={item.id} href={`#${item.id}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
+                    {item.title}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
