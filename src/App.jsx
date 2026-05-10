@@ -4,13 +4,15 @@ import {
   Users, FileText, Download, 
   Database, Info, Calendar, BookOpen,
   Mail, MessageCircle, Send, X, Menu,
-  Sparkles, Bell, Lightbulb, Zap, Share2
+  Sparkles, Bell, Lightbulb, Zap, Share2,
+  FileSearch, BarChart3, GraduationCap
 } from 'lucide-react';
 import { content } from './content';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const newsIcons = [<Sparkles size={32} />, <Bell size={32} />, <Lightbulb size={32} />, <Zap size={32} />];
+  const materialIcons = [<FileSearch size={32} />, <BarChart3 size={32} />, <GraduationCap size={32} />];
 
   const menuItems = [
     { id: 'about', title: content.about.title },
@@ -164,13 +166,26 @@ function App() {
         </div>
       </section>
 
-      {/* Materials */}
+      {/* Materials Grid (New Design) */}
       <section id="materials" className="py-24 bg-sage/5">
-        <div className="container max-w-4xl text-center">
-          <h2 className="text-4xl font-playfair font-bold mb-4">{content.materials.title}</h2>
-          <div className="w-16 h-1 bg-powdery rounded-full mx-auto mb-10" />
-          <div className="bg-white/50 p-12 rounded-3xl border-2 border-dashed border-gray-200">
-             <p className="text-gray-400 italic">{content.materials.description}</p>
+        <div className="container">
+          <div className="mb-16 text-center">
+            <h2 className="text-4xl font-playfair font-bold mb-4">{content.materials.title}</h2>
+            <div className="w-16 h-1 bg-powdery rounded-full mx-auto mb-6" />
+          </div>
+          
+          <div className="news-grid-custom max-w-5xl mx-auto" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+            {content.materials.items.map((item, i) => (
+              <div key={item.id} className="news-card-custom" style={{ minHeight: '350px' }}>
+                <span className="card-number">{i + 1}</span>
+                <div className="card-icon">
+                  {materialIcons[i % materialIcons.length]}
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <a href="#" className="card-link">СКАЧАТЬ</a>
+              </div>
+            ))}
           </div>
         </div>
       </section>
