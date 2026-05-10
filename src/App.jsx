@@ -34,6 +34,10 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
+      
+      // Close menu if open
+      setIsMenuOpen(false);
+
       if (hash.startsWith('#materials/')) {
         const id = hash.replace('#materials/', '');
         setSelectedMaterial(id);
@@ -48,14 +52,22 @@ function App() {
         setSelectedMaterial(null);
         setSelectedEvent(null);
         
-        // Fix for menu scrolling when coming back from sub-page
-        if (hash) {
+        // Robust scroll to section
+        if (hash && hash !== '#') {
           setTimeout(() => {
-            const element = document.querySelector(hash);
+            const id = hash.replace('#', '');
+            const element = document.getElementById(id);
             if (element) {
-              element.scrollIntoView({ behavior: 'smooth' });
+              const headerOffset = 80;
+              const elementPosition = element.getBoundingClientRect().top;
+              const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+              });
             }
-          }, 50); // Small delay to let React render the landing page
+          }, 150); // Increased delay for stability
         }
       }
     };
@@ -66,7 +78,7 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Prevent body scroll when menu or detail is open
+  // Prevent body scroll
   useEffect(() => {
     if (isMenuOpen || selectedMaterial || selectedEvent) {
       document.body.style.overflow = 'hidden';
@@ -85,64 +97,53 @@ function App() {
 
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
-    // Setting hash will trigger useEffect handleHashChange
+    // Explicitly navigate to hash
     window.location.hash = `#${id}`;
   };
 
   return (
-    <div className="min-h-screen bg-white font-montserrat">
-      {/* Burger Button - GLOBAL */}
-      <button 
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="burger-btn"
-        aria-label="Menu"
-        style={{ zIndex: 2000 }}
-      >
-        {isMenuOpen ? (
-          <X size={24} color="#2d3436" />
-        ) : (
-          <>
-            <span />
-            <span />
-            <span />
-          </>
-        )}
-      </button>
-
-      {/* Menu Overlay */}
+    <div className="min-h-screen bg-white">
+      {/* GLOBAL MENU OVERLAY */}
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
-        {menuItems.map((item) => (
-          <a 
-            key={item.id} 
-            href={`#${item.id}`} 
-            onClick={(e) => {
-              e.preventDefault();
-              handleMenuClick(item.id);
-            }}
-            className="menu-link"
-          >
-            {item.title}
-          </a>
-        ))}
+        <div className="flex flex-col items-center gap-8">
+           {menuItems.map((item) => (
+            <a 
+              key={item.id} 
+              href={`#${item.id}`} 
+              onClick={(e) => {
+                e.preventDefault();
+                handleMenuClick(item.id);
+              }}
+              className="menu-link"
+            >
+              {item.title}
+            </a>
+          ))}
+          <div className="w-12 h-px bg-gray-100 my-4" />
+          <div className="flex gap-6 text-gray-400">
+             <Share2 size={24} className="hover:text-sage cursor-pointer transition-colors" />
+             <Mail size={24} className="hover:text-sage cursor-pointer transition-colors" />
+          </div>
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
         {selectedMaterial ? (
           <motion.div 
             key="material-detail"
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="min-h-screen bg-white py-24 px-8 relative overflow-y-auto"
+            exit={{ opacity: 0, x: -30 }}
+            className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
             style={{ zIndex: 100 }}
           >
             <div className="container max-w-4xl">
-              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+              <div className="flex items-center gap-6 mb-8 mt-8">
                  <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
-                    {materialIcons[selectedMaterial]}
+                    {materialIcons[selectedMaterial] || <FileSearch size={32} />}
                  </div>
                  <div>
-                    <h1 className="text-4xl font-playfair font-bold">
+                    <h1 className="text-3xl md:text-4xl font-playfair font-bold">
                       {content.materials.items.find(m => m.id === selectedMaterial)?.title}
                     </h1>
                     <p className="text-text-light mt-2">
@@ -180,28 +181,24 @@ function App() {
                   </motion.div>
                 ))}
               </div>
-
-              <div className="mt-20 p-8 bg-sage/5 rounded-[40px] border border-dashed border-sage/20 text-center">
-                 <p className="text-sm text-sage/60 italic">Новые файлы будут добавляться автоматически по мере готовности материалов исследования.</p>
-              </div>
             </div>
           </motion.div>
         ) : selectedEvent ? (
           <motion.div 
             key="event-detail"
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="min-h-screen bg-white py-24 px-8 relative overflow-y-auto"
+            exit={{ opacity: 0, x: -30 }}
+            className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto"
             style={{ zIndex: 100 }}
           >
             <div className="container max-w-4xl">
-              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+              <div className="flex items-center gap-6 mb-8 mt-8">
                  <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery">
                     <Newspaper size={32} />
                  </div>
                  <div>
-                    <h1 className="text-4xl font-playfair font-bold">
+                    <h1 className="text-3xl md:text-4xl font-playfair font-bold">
                       {content.events.items.find(e => e.id === selectedEvent)?.title}
                     </h1>
                     <div className="flex gap-4 text-xs font-bold uppercase tracking-widest text-powdery mt-2">
@@ -215,8 +212,8 @@ function App() {
               <div className="w-full h-px bg-gray-100 mb-12" />
 
               <div className="prose prose-lg max-w-none text-text-light leading-relaxed">
+                 <p className="text-xl mb-8">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
                  <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
-                 <p className="mt-8">Дополнительная информация о ходе данного этапа будет публиковаться в этом разделе по мере поступления отчетных материалов.</p>
               </div>
 
               <div className="mt-20 p-12 bg-beige/10 rounded-[60px] text-center border border-gray-100">
@@ -234,18 +231,16 @@ function App() {
             exit={{ opacity: 0 }}
           >
             {/* Simple Header */}
-            {!isMenuOpen && (
-              <header className="fixed w-full z-40 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
-                <div className="container flex justify-end items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white">
-                      <Database size={16} />
-                    </div>
-                    <span className="font-playfair text-xl font-bold text-text tracking-tight">Проект РНФ № 23-18-00480-П</span>
+            <header className="fixed w-full z-40 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
+              <div className="container flex justify-end items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white">
+                    <Database size={16} />
                   </div>
+                  <span className="font-playfair text-xl font-bold text-text tracking-tight">Проект РНФ № 23-18-00480-П</span>
                 </div>
-              </header>
-            )}
+              </div>
+            </header>
 
             {/* Hero Section */}
             <section className="hero-section">
@@ -293,7 +288,7 @@ function App() {
               </div>
             </section>
 
-            {/* News Grid */}
+            {/* Events Grid */}
             <section id="events" className="py-24 bg-beige/5">
               <div className="container">
                 <div className="mb-16">
@@ -317,13 +312,6 @@ function App() {
                       <div className="card-link">ПОДРОБНОСТИ</div>
                     </div>
                   ))}
-                  
-                  <div className="news-card-custom" style={{ background: 'rgba(255,255,255,0.4)', borderStyle: 'dashed' }}>
-                    <div className="card-icon" style={{ color: '#ccc' }}><Calendar size={32} /></div>
-                    <h3 style={{ color: '#ccc' }}>АРХИВ СОБЫТИЙ</h3>
-                    <p style={{ color: '#ccc' }}>Ранее опубликованные материалы</p>
-                    <a href="#" className="card-link" style={{ color: '#ccc' }}>ПЕРЕЙТИ</a>
-                  </div>
                 </div>
               </div>
             </section>
@@ -428,6 +416,23 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* GLOBAL BURGER BUTTON - MOVED TO END OF DOM FOR ULTIMATE PRIORITY */}
+      <button 
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="burger-btn"
+        aria-label="Menu"
+      >
+        {isMenuOpen ? (
+          <X size={24} color="#2d3436" />
+        ) : (
+          <>
+            <span />
+            <span />
+            <span />
+          </>
+        )}
+      </button>
     </div>
   );
 }
