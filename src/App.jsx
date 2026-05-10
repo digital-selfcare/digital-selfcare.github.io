@@ -1,18 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Menu, X, ChevronRight, Users, 
-  FileText, Award, Download, 
+  Users, FileText, Download, 
   Database, Info, Calendar, BookOpen,
-  Mail, MapPin, ArrowRight, Send
+  Mail, MapPin, Send, ArrowRight,
+  Sparkles, Bell, Lightbulb, Zap
 } from 'lucide-react';
 import { content } from './content';
 
 function App() {
+  // Icons for news cards to match the travel reference style
+  const newsIcons = [<Sparkles />, <Bell />, <Lightbulb />, <Zap />];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Simple Header */}
-      <header className="fixed w-full z-50 py-6 px-8 bg-white/80 backdrop-blur-md border-b border-gray-50">
+      <header className="fixed w-full z-50 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-50">
         <div className="container flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-sage rounded-xl flex items-center justify-center text-white shadow-lg shadow-sage/20">
@@ -53,11 +56,6 @@ function App() {
                   </a>
                 ))}
               </div>
-
-              <div className="flex items-center gap-2 text-text-light font-bold text-xs">
-                <Info size={16} className="text-sage" />
-                <span className="uppercase tracking-widest">Навигация по разделам проекта</span>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -85,49 +83,60 @@ function App() {
         </div>
       </section>
 
-      {/* News & Events - NUMBERED STYLE AS PER SCREENSHOT */}
-      <section id="events" className="py-24 bg-beige/5 border-t border-beige/20">
+      {/* News & Events - RE-DESIGNED AS PER TRAVEL & NUMBERED REFS */}
+      <section id="events" className="py-24 bg-beige/5">
         <div className="container">
-          <div className="mb-20">
+          <div className="mb-16">
             <h2 className="text-4xl font-playfair font-bold mb-4">{content.events.title}</h2>
             <div className="w-16 h-1 bg-powdery rounded-full mb-6" />
             <p className="text-text-light text-lg">Оперативная информация о ходе исследования</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {content.events.items.map((item, i) => (
               <motion.div 
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="relative flex flex-col h-full group"
+                whileHover={{ y: -10 }}
+                className="bg-white rounded-3xl p-8 shadow-xl shadow-sage/5 border border-gray-50 flex flex-col items-center text-center relative overflow-hidden"
               >
-                {/* Large Number as per screenshot */}
-                <span className="text-5xl font-bold text-powdery/30 font-playfair mb-4 block">
+                {/* Stylized Number in the corner */}
+                <span className="absolute top-4 right-6 text-4xl font-playfair font-bold text-powdery/40">
                   {i + 1}
                 </span>
+                
+                {/* Circular Icon like travel ref */}
+                <div className="w-16 h-16 rounded-full bg-sage/5 text-sage flex items-center justify-center mb-6 mt-2">
+                  {newsIcons[i % newsIcons.length]}
+                </div>
+                
                 <div className="flex-grow">
-                  <h3 className="text-xl font-bold mb-4 text-text leading-tight group-hover:text-sage transition-colors">
+                  <h3 className="text-lg font-bold mb-4 text-text uppercase tracking-wider leading-tight">
                     {item.title}
                   </h3>
-                  <p className="text-text-light text-sm leading-relaxed mb-6">
+                  <p className="text-sm text-text-light leading-relaxed mb-8">
                     {item.description}
                   </p>
                 </div>
-                <a href="#" className="inline-block font-bold text-xs uppercase tracking-[0.2em] text-text border-b-2 border-text/10 pb-1 w-fit group-hover:border-sage transition-all">
+                
+                {/* "БОЛЕЕ" Link as per ref */}
+                <a href="#" className="font-bold text-xs uppercase tracking-[0.2em] text-text hover:text-sage transition-colors border-b-2 border-transparent hover:border-sage pb-1">
                   БОЛЕЕ
                 </a>
               </motion.div>
             ))}
             
-            {/* Archive style placeholder */}
-            <div className="pt-12">
-               <span className="text-5xl font-bold text-gray-100 font-playfair mb-4 block">...</span>
-               <h3 className="text-xl font-bold mb-4 text-gray-300">Архив событий</h3>
-               <p className="text-gray-200 text-sm italic mb-6">Все прошедшие новости и результаты доступны в архиве.</p>
-               <a href="#" className="inline-block font-bold text-xs uppercase tracking-[0.2em] text-gray-300">ПЕРЕЙТИ</a>
-            </div>
+            {/* Archive link in the same grid style */}
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-white/50 rounded-3xl p-8 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center"
+            >
+              <div className="w-16 h-16 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center mb-6">
+                 <Calendar size={24} />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-gray-300 uppercase tracking-wider">АРХИВ СОБЫТИЙ</h3>
+              <p className="text-xs text-gray-300 mb-6 italic">Ранее опубликованные материалы</p>
+              <a href="#" className="font-bold text-xs uppercase tracking-[0.2em] text-gray-300">ПЕРЕЙТИ</a>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -143,9 +152,9 @@ function App() {
           <div className="grid md:grid-cols-3 gap-16">
             {content.team.members.map((member, i) => (
               <div key={i} className="text-center group">
-                <div className="w-40 h-40 mx-auto mb-6 relative">
-                  <div className="absolute inset-0 bg-sage/5 rounded-full scale-110 group-hover:scale-125 transition-transform duration-500" />
-                  <div className="w-full h-full rounded-full bg-white shadow-xl relative z-10 flex items-center justify-center text-sage border-4 border-white overflow-hidden">
+                <div className="w-40 h-40 mx-auto mb-8 relative">
+                  <div className="absolute inset-0 bg-sage/5 rounded-[40px] rotate-6 group-hover:rotate-12 transition-transform duration-500" />
+                  <div className="w-full h-full rounded-[40px] bg-white shadow-xl relative z-10 flex items-center justify-center text-sage border-4 border-white overflow-hidden">
                     <Users size={48} strokeWidth={1} />
                   </div>
                 </div>
@@ -172,7 +181,7 @@ function App() {
             
             <div className="grid gap-4">
               {content.materials.items.map((item, i) => (
-                <a key={i} href={item.link} className="glass p-6 flex justify-between items-center group hover:bg-white transition-all duration-300 rounded-3xl">
+                <a key={i} href={item.link} className="bg-white p-6 flex justify-between items-center group hover:scale-[1.02] transition-all duration-300 rounded-3xl shadow-sm border border-gray-50">
                   <div className="flex items-center gap-6">
                     <div className="w-12 h-12 rounded-2xl bg-powdery/10 text-powdery flex items-center justify-center group-hover:bg-powdery group-hover:text-white transition-all">
                       <FileText size={24} />
@@ -190,74 +199,59 @@ function App() {
         </div>
       </section>
 
-      {/* Contacts Section - CLEAN & ALIGNED */}
-      <section id="contacts" className="py-32 bg-white relative overflow-hidden">
-        <div className="geo-circle bg-powdery/5 w-[500px] h-[500px] -bottom-40 -left-40" />
-        <div className="container relative z-10">
-          <div className="grid lg:grid-cols-2 gap-24">
+      {/* Contacts Section - RE-DESIGNED CLEAN VERSION */}
+      <section id="contacts" className="py-32 bg-white relative">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-24 items-start">
             <div>
               <h2 className="text-5xl font-playfair font-bold mb-8">{content.contacts.title}</h2>
               <p className="text-xl text-text-light mb-12 leading-relaxed">
                 {content.contacts.description}
               </p>
               
-              <div className="space-y-10">
-                <div className="flex items-center gap-6 group">
-                  <div className="w-14 h-14 rounded-2xl bg-sage/10 text-sage flex items-center justify-center group-hover:bg-sage group-hover:text-white transition-all shadow-sm">
-                    <Mail size={24} />
+              <div className="space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-full bg-sage text-white flex items-center justify-center shrink-0">
+                    <Mail size={20} />
                   </div>
                   <div>
-                    <span className="block text-[10px] uppercase font-bold text-text-light tracking-[0.3em] mb-1">Электронная почта</span>
+                    <p className="text-xs uppercase font-bold text-text-light tracking-widest mb-1">Email</p>
                     <a href={`mailto:${content.contacts.email}`} className="text-xl font-bold text-text hover:text-sage transition-colors">{content.contacts.email}</a>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-6 group">
-                  <div className="w-14 h-14 rounded-2xl bg-powdery/10 text-powdery flex items-center justify-center group-hover:bg-powdery group-hover:text-white transition-all shadow-sm">
-                    <MapPin size={24} />
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-full bg-powdery text-white flex items-center justify-center shrink-0">
+                    <MapPin size={20} />
                   </div>
                   <div>
-                    <span className="block text-[10px] uppercase font-bold text-text-light tracking-[0.3em] mb-1">Расположение</span>
-                    <span className="text-xl font-bold text-text">{content.contacts.address}</span>
+                    <p className="text-xs uppercase font-bold text-text-light tracking-widest mb-1">Локация</p>
+                    <p className="text-xl font-bold text-text">{content.contacts.address}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="relative">
-              {/* Form inside a clean white card */}
-              <div className="bg-white rounded-[40px] p-10 md:p-12 shadow-2xl shadow-sage/5 border border-gray-100 relative z-10">
-                <h3 className="text-2xl font-playfair font-bold mb-8">Написать нам</h3>
-                <form className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase font-bold text-text-light tracking-widest ml-1">Имя</label>
-                      <input type="text" placeholder="Ваше имя" className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-beige/10 focus:outline-none focus:ring-2 focus:ring-sage/20 transition-all" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase font-bold text-text-light tracking-widest ml-1">Email</label>
-                      <input type="email" placeholder="example@mail.com" className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-beige/10 focus:outline-none focus:ring-2 focus:ring-sage/20 transition-all" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] uppercase font-bold text-text-light tracking-widest ml-1">Сообщение</label>
-                    <textarea placeholder="Опишите ваш вопрос..." rows="4" className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-beige/10 focus:outline-none focus:ring-2 focus:ring-sage/20 transition-all resize-none" />
-                  </div>
-                  <button type="button" className="btn w-full py-5 rounded-2xl flex items-center justify-center gap-3">
-                    <Send size={20} />
-                    <span>ОТПРАВИТЬ СООБЩЕНИЕ</span>
-                  </button>
-                </form>
-              </div>
-              {/* Background decorative element */}
-              <div className="absolute -bottom-6 -right-6 w-full h-full bg-sage/5 rounded-[40px] z-0" />
+            <div className="bg-beige/10 rounded-[40px] p-10 md:p-12 border border-beige/20">
+              <h3 className="text-2xl font-playfair font-bold mb-8 text-text">Написать нам</h3>
+              <form className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <input type="text" placeholder="Ваше имя" className="w-full px-6 py-4 rounded-2xl bg-white border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sage/20 transition-all" />
+                  <input type="email" placeholder="Ваш Email" className="w-full px-6 py-4 rounded-2xl bg-white border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sage/20 transition-all" />
+                </div>
+                <textarea placeholder="Сообщение" rows="4" className="w-full px-6 py-4 rounded-2xl bg-white border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sage/20 transition-all resize-none" />
+                <button type="button" className="btn w-full py-5 rounded-2xl flex items-center justify-center gap-3">
+                  <Send size={20} />
+                  <span>ОТПРАВИТЬ</span>
+                </button>
+              </form>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 border-t border-gray-100 bg-beige/5">
+      <footer className="py-16 border-t border-gray-100 bg-white">
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center gap-10">
             <div className="flex items-center gap-3">
@@ -266,14 +260,9 @@ function App() {
               </div>
               <span className="font-playfair font-bold text-lg">Проект РНФ 2026</span>
             </div>
-            <p className="text-xs text-text-light uppercase tracking-widest">
+            <p className="text-[10px] text-text-light uppercase tracking-[0.3em]">
               © 2026 Стратегии самосохранения россиян.
             </p>
-            <div className="flex gap-6">
-              <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-sage hover:border-sage transition-all">
-                <Info size={18} />
-              </div>
-            </div>
           </div>
         </div>
       </footer>
