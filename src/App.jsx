@@ -36,10 +36,15 @@ function App() {
             <h1 className="text-4xl md:text-6xl mb-8 leading-[1.1] font-playfair font-bold text-text">
               {content.hero.title}
             </h1>
-            <p className="text-xl text-text-light mb-12 leading-relaxed max-w-2xl">
-              {content.hero.subtitle}
-            </p>
-            <div className="flex flex-wrap gap-3 mb-12">
+            
+            {/* Subtitle removed if empty */}
+            {content.hero.subtitle && (
+              <p className="text-xl text-text-light mb-12 leading-relaxed max-w-2xl">
+                {content.hero.subtitle}
+              </p>
+            )}
+            
+            <div className="flex flex-wrap gap-3 mb-12 mt-12">
               {['about', 'events', 'team', 'materials', 'contacts'].map((key) => (
                 <a key={key} href={`#${key}`} className="btn px-6 py-3 text-sm">
                   {key === 'contacts' ? 'Контакты' : content[key].title}
@@ -124,7 +129,7 @@ function App() {
         </div>
       </section>
 
-      {/* Materials (File removed) */}
+      {/* Materials */}
       <section id="materials" className="py-24 bg-sage/5">
         <div className="container max-w-4xl text-center">
           <h2 className="text-4xl font-playfair font-bold mb-4">{content.materials.title}</h2>
@@ -135,13 +140,12 @@ function App() {
         </div>
       </section>
 
-      {/* Contacts - NEW GRID STYLE FROM REFERENCE */}
+      {/* Contacts */}
       <section id="contacts" className="py-32 bg-white">
         <div className="container">
           <h2 className="text-4xl font-playfair font-bold mb-16 text-center">Контакты</h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-5xl mx-auto">
-            {/* Contact Method 1 */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-full border border-gray-100 flex items-center justify-center text-sage shadow-sm shrink-0">
                 <Mail size={24} />
@@ -152,7 +156,6 @@ function App() {
               </div>
             </div>
 
-            {/* Contact Method 2 */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-full border border-gray-100 flex items-center justify-center text-powdery shadow-sm shrink-0">
                 <Users size={24} />
@@ -163,7 +166,6 @@ function App() {
               </div>
             </div>
 
-            {/* Social Media Column */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-full border border-gray-100 flex items-center justify-center text-blue-400 shadow-sm shrink-0">
                 <Share2 size={24} />
