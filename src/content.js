@@ -1,3 +1,4 @@
+export const content = {
   hero: {
     title: "Самосохранительные стратегии россиян в условиях цифровизации",
     subtitle: "",
