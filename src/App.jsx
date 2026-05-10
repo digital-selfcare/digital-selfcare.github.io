@@ -29,24 +29,60 @@ function App() {
     { id: 'contacts', title: 'Контакты' }
   ];
 
-  // Prevent scroll when detail view is open
+  // Sync state with URL hash
   useEffect(() => {
-    if (selectedMaterial) {
-      window.scrollTo(0, 0);
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#materials/')) {
+        const id = hash.replace('#materials/', '');
+        setSelectedMaterial(id);
+        window.scrollTo(0, 0);
+      } else {
+        setSelectedMaterial(null);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Initial check
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Prevent body scroll when menu or detail is open (only for mobile/desktop logic)
+  useEffect(() => {
+    if (isMenuOpen || selectedMaterial) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [selectedMaterial]);
+  }, [isMenuOpen, selectedMaterial]);
+
+  const handleMaterialClick = (id) => {
+    window.location.hash = `#materials/${id}`;
+  };
+
+  const closeDetail = () => {
+    window.location.hash = '#materials';
+  };
+
+  const handleMenuClick = (id) => {
+    setIsMenuOpen(false);
+    if (selectedMaterial) {
+      // If we are in detail view, we first need to close it
+      setSelectedMaterial(null);
+      // Let the browser handle the hash change/scroll after state update
+      window.location.hash = `#${id}`;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Burger Button - GLOBAL (Always visible) */}
+      {/* Burger Button - GLOBAL */}
       <button 
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="burger-btn"
         aria-label="Menu"
-        style={{ zIndex: 2000 }} /* Ensure it's above everything */
+        style={{ zIndex: 2000 }}
       >
         {isMenuOpen ? (
           <X size={24} color="#2d3436" />
@@ -59,16 +95,13 @@ function App() {
         )}
       </button>
 
-      {/* Menu Overlay - GLOBAL */}
+      {/* Menu Overlay */}
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
         {menuItems.map((item) => (
           <a 
             key={item.id} 
-            href={selectedMaterial ? '/' : `#${item.id}`} 
-            onClick={() => {
-              setIsMenuOpen(false);
-              setSelectedMaterial(null);
-            }}
+            href={`#${item.id}`} 
+            onClick={() => handleMenuClick(item.id)}
             className="menu-link"
           >
             {item.title}
@@ -84,35 +117,33 @@ function App() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             className="min-h-screen bg-white py-24 px-8 relative overflow-y-auto"
+            style={{ zIndex: 100 }}
           >
             <div className="container max-w-4xl">
-              <button 
-                onClick={() => setSelectedMaterial(null)}
-                className="flex items-center gap-2 text-sage font-bold uppercase tracking-widest text-xs mb-12 hover:gap-4 transition-all ml-16 md:ml-0"
-              >
-                <ArrowLeft size={16} /> Назад к проекту
-              </button>
-
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
                  <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">
                     {materialIcons[selectedMaterial]}
                  </div>
                  <div>
-                    <h1 className="text-4xl font-playfair font-bold">{content.materials.items.find(m => m.id === selectedMaterial).title}</h1>
-                    <p className="text-text-light mt-2">{content.materials.items.find(m => m.id === selectedMaterial).description}</p>
+                    <h1 className="text-4xl font-playfair font-bold">
+                      {content.materials.items.find(m => m.id === selectedMaterial)?.title}
+                    </h1>
+                    <p className="text-text-light mt-2">
+                      {content.materials.items.find(m => m.id === selectedMaterial)?.description}
+                    </p>
                  </div>
               </div>
 
               <div className="w-full h-px bg-gray-100 mb-12" />
 
               <div className="space-y-4">
-                {content.materials.items.find(m => m.id === selectedMaterial).files.map((file, idx) => (
+                {content.materials.items.find(m => m.id === selectedMaterial)?.files.map((file, idx) => (
                   <motion.div 
                     key={idx}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
-                    className="group flex items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all"
+                    className="group flex flex-col md:flex-row md:items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all gap-4"
                   >
                     <div className="flex items-center gap-5">
                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm group-hover:bg-sage group-hover:text-white transition-colors">
@@ -126,7 +157,7 @@ function App() {
                         </div>
                       </div>
                     </div>
-                    <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">
+                    <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none w-full md:w-auto">
                       СКАЧАТЬ
                     </button>
                   </motion.div>
@@ -159,7 +190,7 @@ function App() {
               </header>
             )}
 
-            {/* Hero Section with Background Image */}
+            {/* Hero Section */}
             <section className="hero-section">
               <div className="hero-content-wrapper">
                 <div className="container relative z-10">
@@ -205,7 +236,7 @@ function App() {
               </div>
             </section>
 
-            {/* News Grid */}
+            {/* News */}
             <section id="events" className="py-24 bg-beige/5">
               <div className="container">
                 <div className="mb-16">
@@ -256,7 +287,7 @@ function App() {
               </div>
             </section>
 
-            {/* Materials Grid */}
+            {/* Materials */}
             <section id="materials" className="py-24 bg-sage/5">
               <div className="container">
                 <div className="mb-16 text-center">
@@ -270,7 +301,7 @@ function App() {
                       key={item.id} 
                       className="news-card-custom cursor-pointer" 
                       style={{ minHeight: '350px' }}
-                      onClick={() => setSelectedMaterial(item.id)}
+                      onClick={() => handleMaterialClick(item.id)}
                     >
                       <span className="card-number">{i + 1}</span>
                       <div className="card-icon">
