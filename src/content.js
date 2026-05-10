@@ -25,7 +25,7 @@ export const content = {
     ]
   },
   team: {
-    title: "Команда проекта",
+    title: "Команда",
     members: [
       {
         name: "Руководитель проекта",
