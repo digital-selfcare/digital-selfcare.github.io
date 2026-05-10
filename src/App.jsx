@@ -116,8 +116,8 @@ function App() {
   }, [selectedMaterial, selectedEvent, selectedMember, pendingScroll]);
 
   useEffect(() => {
-    document.body.style.overflow = (isMenuOpen || selectedMaterial || selectedEvent || selectedMember) ? 'hidden' : 'unset';
-  }, [isMenuOpen, selectedMaterial, selectedEvent, selectedMember]);
+    document.body.style.overflow = (isMenuOpen) ? 'hidden' : 'unset';
+  }, [isMenuOpen]);
 
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
@@ -183,32 +183,27 @@ function App() {
             </div>
           </motion.div>
           ) : selectedMember ? (
-            <motion.div key="member-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
-              <div className="container max-w-6xl">
-                <button onClick={() => window.location.hash = '#team'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 mt-12 md:mt-0 hover:translate-x-[-4px] transition-transform">
+            <motion.div key="member-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="member-detail-overlay">
+              <div className="container max-w-5xl">
+                <button onClick={() => window.location.hash = '#team'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 hover:translate-x-[-4px] transition-transform">
                   <ArrowLeft size={16} /> Назад к команде
                 </button>
                 
-                {/* IMPROVED SPLIT VIEW (NO FIXED HEIGHT) */}
                 <div className="team-detail-split">
                   <div className="split-image-main">
                     <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 md:p-12 text-white">
-                      <h1 className="text-3xl md:text-5xl font-playfair font-bold mb-4">{activeMember?.name}</h1>
-                      <div className="flex items-center gap-3">
-                        <div className="h-px w-8 bg-sage" />
-                        <p className="text-sage font-bold tracking-widest uppercase text-xs md:text-sm">{activeMember?.role}</p>
-                      </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 text-white">
+                      <h1 className="text-3xl font-playfair font-bold mb-2">{activeMember?.name}</h1>
+                      <p className="text-sage font-bold tracking-widest uppercase text-xs">{activeMember?.role}</p>
                     </div>
                   </div>
-                  <div className="split-image-detail hidden md:block">
-                    <div className="placeholder-img opacity-30" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 2), transform: 'scale(2) rotate(-10deg)' }} />
-                    <div className="absolute inset-0 flex items-center justify-center p-12">
-                      <div className="text-center">
-                        <Microscope size={48} className="text-sage/40 mx-auto mb-6" />
-                        <h4 className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-4">Специализация</h4>
-                        <p className="text-lg font-playfair italic text-gray-600 leading-relaxed">{activeMember?.specialization}</p>
-                      </div>
+                  <div className="split-image-detail">
+                    <div className="placeholder-img opacity-20" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 2), transform: 'scale(1.5)' }} />
+                    <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
+                        <div>
+                          <Microscope size={40} className="text-sage/30 mx-auto mb-4" />
+                          <p className="text-sm font-playfair italic text-gray-500">{activeMember?.specialization}</p>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -217,41 +212,33 @@ function App() {
                   <aside className="info-sidebar">
                     <div className="info-block">
                       <h4>Ученая степень</h4>
-                      <p>{activeMember?.title}</p>
+                      <p className="font-bold text-sm">{activeMember?.title}</p>
                     </div>
                     <div className="info-block">
-                      <h4>Научные интересы</h4>
-                      <p>{activeMember?.specialization}</p>
-                    </div>
-                    <div className="p-8 bg-sage/5 rounded-[30px] border border-sage/10">
-                       <CheckCircle2 className="text-sage mb-4" />
-                       <h5 className="font-bold text-sm mb-2 uppercase tracking-wider">Статус в проекте</h5>
-                       <p className="text-sm text-text-light">Участник гранта РНФ № 23-18-00480-П</p>
+                      <h4>Специализация</h4>
+                      <p className="text-sm text-text-light">{activeMember?.specialization}</p>
                     </div>
                   </aside>
 
                   <main className="info-main">
-                    <section className="mb-20">
-                      <h2 className="font-playfair font-bold">О специалисте</h2>
-                      <p className="text-xl leading-relaxed text-text-light">{activeMember?.bio}</p>
+                    <section>
+                      <h2>О специалисте</h2>
+                      <p className="text-lg leading-relaxed text-text-light">{activeMember?.bio}</p>
                     </section>
                     
-                    <section className="mb-20">
-                      <h2 className="font-playfair font-bold">Квалификация и достижения</h2>
-                      <div className="p-8 md:p-12 bg-beige/5 rounded-[40px] border border-beige/10">
-                        <p className="text-lg leading-relaxed text-text-light">{activeMember?.achievements}</p>
+                    <section>
+                      <h2>Достижения</h2>
+                      <div className="p-6 bg-sage/5 rounded-3xl border border-sage/10">
+                        <p className="text-text-light leading-relaxed">{activeMember?.achievements}</p>
                       </div>
                     </section>
 
                     <section>
-                      <h2 className="font-playfair font-bold">Некоторые публикации</h2>
-                      <div className="space-y-4">
+                      <h2>Публикации</h2>
+                      <div className="space-y-3">
                         {activeMember?.publications.map((pub, i) => (
                           <div key={i} className="publication-item">
-                             <div className="flex gap-6 items-start">
-                                <span className="text-sage/40 font-playfair text-2xl font-bold mt-1">{(i+1).toString().padStart(2, '0')}</span>
-                                <p className="font-medium text-text-light leading-relaxed">{pub}</p>
-                             </div>
+                             <p>{pub}</p>
                           </div>
                         ))}
                       </div>
@@ -315,13 +302,7 @@ function App() {
 
               <section id="team" className="py-32 bg-white">
                 <div className="container">
-                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-                    <div className="max-w-2xl">
-                      <h2 className="text-5xl font-playfair font-bold mb-6">{content.team.title}</h2>
-                      <p className="text-xl text-text-light font-medium">Ведущие социологи и исследователи под руководством профессора Н.А. Лебедевой-Несевря.</p>
-                    </div>
-                  </div>
-
+                  <h2 className="text-5xl font-playfair font-bold mb-16">{content.team.title}</h2>
                   <div className="team-carousel-container">
                     <div className="carousel-track">
                       {content.team.members.map((member, i) => {
@@ -332,17 +313,17 @@ function App() {
                         return (
                           <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
                             <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }} />
-                            {status === 'active' && (
-                              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="carousel-member-info">
-                                <h3>{member.name}</h3>
-                                <p>{member.role}</p>
+                            {status !== 'hidden' && (
+                              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">
+                                <h3 className={status === 'next' ? 'text-lg opacity-50' : 'text-2xl'}>{member.name}</h3>
+                                <p className={status === 'next' ? 'text-[8px] opacity-50' : 'text-xs'}>{member.role}</p>
                               </motion.div>
                             )}
                           </div>
                         );
                       })}
                     </div>
-                    <div className="carousel-nav">
+                    <div className="carousel-nav" style={{ position: 'relative', bottom: '-40px' }}>
                        <button onClick={prevMember} className="nav-btn"><ArrowLeft size={24} /></button>
                        <button onClick={nextMember} className="nav-btn"><ArrowRight size={24} /></button>
                     </div>
