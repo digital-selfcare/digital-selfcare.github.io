@@ -47,18 +47,24 @@ export const content = {
   materials: {
     title: "Материалы",
     description: "Раздел будет пополняться по мере публикации результатов исследования.",
-    items: [
-      {
-        title: "Методологический протокол",
-        type: "PDF",
-        link: "#"
-      }
-    ]
+    items: [] // Empty list as requested (remove file)
   },
   contacts: {
     title: "Контакты",
     email: "info@digital-selfcare.io",
-    address: "Россия, г. Москва",
-    description: "По вопросам сотрудничества и участия в исследовании обращайтесь по электронной почте."
+    methods: [
+      {
+        id: 1,
+        title: "Свяжитесь с нами",
+        value: "Написать письмо",
+        link: "mailto:info@digital-selfcare.io"
+      },
+      {
+        id: 2,
+        title: "Сотрудничество",
+        value: "Предложения",
+        link: "#"
+      }
+    ]
   }
 };
