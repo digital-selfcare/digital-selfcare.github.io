@@ -67,8 +67,8 @@ function App() {
         </header>
       )}
 
-      {/* Hero Section - Increased Bottom Padding */}
-      <section className="pt-48 pb-32 relative overflow-hidden bg-beige/5">
+      {/* Hero Section - RESTORED PADDING */}
+      <section className="pt-48 pb-24 relative overflow-hidden bg-beige/5">
         <div className="geo-circle bg-sage/5 w-[600px] h-[600px] -top-40 -left-40" />
         <div className="container relative z-10">
           <div className="max-w-4xl">
@@ -79,7 +79,7 @@ function App() {
               {content.hero.title}
             </h1>
             
-            {/* BUTTON GROUP POSITIONED IN THE MIDDLE */}
+            {/* BUTTON GROUP MOVED DOWN ONLY */}
             <div className="btn-group-custom">
               {menuItems.map((item) => (
                 <a key={item.id} href={`#${item.id}`} className="btn px-8 py-4 text-sm transition-all hover:scale-105 active:scale-95">
