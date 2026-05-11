@@ -227,6 +227,9 @@ export const content = {
   },
   contacts: {
     email: "natnes@list.ru",
-    address: "г. Пермь, ул. Букирева, 15, ПГНИУ, каф. социологии"
+    address: "г. Пермь, ул. Букирева, 15, ПГНИУ, каф. социологии",
+    telegram: "https://t.me/health_wellbeing_2023",
+    vk: "#",
+    dzen: "#"
   }
 };

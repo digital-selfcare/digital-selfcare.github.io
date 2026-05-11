@@ -8,7 +8,7 @@ import {
   FileSearch, BarChart3, GraduationCap,
   ArrowLeft, ArrowRight, FileDown, Clock, Newspaper,
   User, Award, Briefcase, Microscope, CheckCircle2,
-  Archive, History
+  Archive, History, Layout
 } from 'lucide-react';
 import { content } from './content';
 
@@ -20,6 +20,7 @@ function App() {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [pendingScroll, setPendingScroll] = useState(null);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   
   const returningFromSubpage = useRef(false);
 
@@ -507,31 +508,31 @@ function App() {
                   
                   <div className="contacts-grid">
                     <div className="contact-card">
-                      <div className="contact-card-icon"><MessageCircle size={32} /></div>
-                      <h3>Чат</h3>
-                      <p>Начните диалог с нами прямо сейчас через форму обратной связи.</p>
-                      <button className="contact-card-btn">НАПИСАТЬ</button>
+                      <div className="contact-card-icon"><Mail size={32} /></div>
+                      <h3>Почта</h3>
+                      <p>{content.contacts.email}</p>
+                      <button className="contact-card-btn" onClick={() => setIsFeedbackOpen(true)}>НАПИСАТЬ</button>
                     </div>
                     
                     <div className="contact-card">
-                      <div className="contact-card-icon"><Mail size={32} /></div>
-                      <h3>Почта</h3>
-                      <p>Для официальных запросов и академической переписки.</p>
-                      <button className="contact-card-btn" onClick={() => window.location.href = `mailto:${content.contacts.email}`}>ОТПРАВИТЬ</button>
+                      <div className="contact-card-icon"><Database size={32} /></div>
+                      <h3>ВКонтакте</h3>
+                      <p>Официальное сообщество проекта (в процессе создания).</p>
+                      <button className="contact-card-btn opacity-50 cursor-default">СКОРО</button>
+                    </div>
+                    
+                    <div className="contact-card">
+                      <div className="contact-card-icon"><Layout size={32} /></div>
+                      <h3>Дзен</h3>
+                      <p>Наш блог на платформе Дзен (в процессе создания).</p>
+                      <button className="contact-card-btn opacity-50 cursor-default">СКОРО</button>
                     </div>
                     
                     <div className="contact-card">
                       <div className="contact-card-icon"><Send size={32} /></div>
                       <h3>Telegram</h3>
                       <p>Следите за оперативными новостями проекта в нашем канале.</p>
-                      <button className="contact-card-btn">ПОДПИСАТЬСЯ</button>
-                    </div>
-                    
-                    <div className="contact-card">
-                      <div className="contact-card-icon"><Users size={32} /></div>
-                      <h3>ВКонтакте</h3>
-                      <p>Обсуждения, материалы и сообщество исследователей.</p>
-                      <button className="contact-card-btn">ПЕРЕЙТИ</button>
+                      <button className="contact-card-btn" onClick={() => window.open(content.contacts.telegram, '_blank')}>ПОДПИСАТЬСЯ</button>
                     </div>
                   </div>
                 </div>
@@ -544,6 +545,54 @@ function App() {
           )}
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {isFeedbackOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="feedback-modal-overlay"
+            onClick={() => setIsFeedbackOpen(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="feedback-modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="modal-close-btn" onClick={() => setIsFeedbackOpen(false)}>
+                <X size={24} />
+              </button>
+              
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-sage/10 rounded-2xl text-sage mb-4">
+                  <Mail size={32} />
+                </div>
+                <h3 className="text-2xl font-playfair font-bold">Написать нам</h3>
+                <p className="text-sm text-text-light mt-2">Мы ответим вам на {content.contacts.email}</p>
+              </div>
+
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Сообщение отправлено!'); setIsFeedbackOpen(false); }}>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Ваше имя</label>
+                  <input type="text" className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all" placeholder="Иван Иванов" required />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Ваш Email</label>
+                  <input type="email" className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all" placeholder="example@mail.ru" required />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Сообщение</label>
+                  <textarea className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all h-32 resize-none" placeholder="Ваш вопрос или предложение..." required></textarea>
+                </div>
+                <button type="submit" className="btn w-full py-4 mt-4 shadow-xl">ОТПРАВИТЬ ПИСЬМО</button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
