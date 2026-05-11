@@ -408,19 +408,22 @@ function App() {
               <section className="hero-section">
                 <div className="hero-content-wrapper">
                   <div className="container relative z-10">
-                    <div className="hero-header-logos">
-                      <div className="hero-logo-group">
-                        <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
-                        <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
+                    <div className="max-w-4xl mx-auto">
+                      <div className="hero-header-logos">
+                        <div className="hero-logo-group">
+                          <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
+                          <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
+                        </div>
+                        <div className="hero-logo-group">
+                          <img src="/logos/psu-logo.png" alt="ПГНИУ" className="hero-logo-img psu" />
+                        </div>
                       </div>
-                      <div className="hero-logo-group">
-                        <img src="/logos/psu-logo.png" alt="ПГНИУ" className="hero-logo-img psu" />
+                      
+                      <div className="hero-text-content">
+                        <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">Исследовательский проект 2026–2027</span>
+                        <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">{content.hero.title}</h1>
+                        <div className="btn-group-custom mt-10">{menuItems.map((item) => (<a key={item.id} href={`#${item.id}`} className="btn">{item.title}</a>))}</div>
                       </div>
-                    </div>
-                    <div className="max-w-4xl">
-                      <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">Исследовательский проект 2026–2027</span>
-                      <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">{content.hero.title}</h1>
-                      <div className="btn-group-custom">{menuItems.map((item) => (<a key={item.id} href={`#${item.id}`} className="btn">{item.title}</a>))}</div>
                     </div>
                   </div>
                 </div>

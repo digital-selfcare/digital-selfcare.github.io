@@ -981,7 +981,7 @@ section {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 5rem;
+  margin-bottom: 4rem;
   width: 100%;
 }
 
@@ -998,15 +998,15 @@ section {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.8;
+  white-space: nowrap;
 }
 
 .hero-logo-img {
   display: block;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
 }
 
 .hero-logo-img.rnf {
-  height: 70px;
+  height: 45px;
   width: auto;
 }
 
