@@ -223,7 +223,7 @@ function App() {
       <div className="desktop-nav-controls">
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-btn" aria-label="Menu">
           {isMenuOpen ? <X size={24} color="#2d3436" /> : (
-            <><span /><span /><span /></>
+            <div className="burger-lines"><span /><span /><span /></div>
           )}
         </button>
 
