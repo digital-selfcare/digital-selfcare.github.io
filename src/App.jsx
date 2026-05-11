@@ -230,8 +230,8 @@ function App() {
                     </div>
                   </div>
                   <div className="split-image-detail">
-                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)), opacity: 0.8 }}>
-                      {activeMember?.image && <img src={activeMember.image} alt={activeMember.name} style={{ opacity: 0.6 }} />}
+                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)), opacity: 0.1 }}>
+                      <Microscope size={120} className="text-sage" />
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
                         <div>
@@ -452,6 +452,12 @@ function App() {
           <><span /><span /><span /></>
         )}
       </button>
+
+      {(selectedMember || isArchiveOpen || selectedEvent) && (
+        <button className="back-btn" onClick={() => window.location.hash = ''} aria-label="Назад">
+          <ArrowLeft size={28} strokeWidth={3} />
+        </button>
+      )}
     </div>
   );
 }
