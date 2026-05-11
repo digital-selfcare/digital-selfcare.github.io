@@ -130,6 +130,10 @@ section {
   display: block;
   width: 20px;
   height: 2px;
+  background: var(--color-sage);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
 
 .burger-btn:hover span {
   background: white;
