@@ -193,25 +193,19 @@ section {
 
 @media (max-width: 768px) {
   .burger-btn, .back-btn, .home-btn {
-    left: 4px;
+    left: 8px;
     width: 44px;
     height: 44px;
   }
   
-  .burger-btn { top: 4px; }
-  .back-btn { top: 52px; }
-  .home-btn { top: 52px; }
-  .home-btn.shifted { top: 100px; }
+  .burger-btn { top: 8px; }
+  .back-btn { top: 60px; }
+  .home-btn { top: 60px; }
+  .home-btn.shifted { top: 112px; }
   
-  /* Increased padding to avoid icons */
-  .content-wrapper {
-    padding-left: 72px !important; 
-  }
-
-  .member-detail-overlay {
-    padding-left: 72px !important;
-    padding-right: 12px !important;
-    padding-top: 4rem !important;
+  .content-wrapper, .member-detail-overlay, section {
+    padding-left: 80px !important;
+    padding-right: 20px !important;
   }
   
   .container {
@@ -432,16 +426,16 @@ section {
 
 @media (max-width: 600px) {
   .team-carousel-container {
-    height: 550px;
-    overflow: hidden !important;
+    height: 580px; /* Increased to fit buttons */
+    overflow: visible !important; /* Never hide navigation buttons */
     width: 100%;
     position: relative;
+    margin-bottom: 2rem;
   }
   
   .carousel-item-wrapper {
-    width: 250px !important; /* Smaller cards to prevent hitbox overlap */
+    width: 240px !important; 
     height: 380px;
-    border-radius: 30px;
   }
   
   .carousel-item-active {
@@ -450,19 +444,21 @@ section {
   }
   
   .carousel-item-next {
-    left: auto;
-    right: -160px; /* Hide more of the next card */
-    transform: scale(0.85);
+    left: 40px;
+    transform: scale(0.8) translateX(180px);
     opacity: 0.3;
     z-index: 5;
-    pointer-events: none; /* Only active card and nav buttons should be clickable */
+    pointer-events: none;
+  }
+
+  .carousel-nav {
+    margin-top: 20px;
+    padding-bottom: 20px;
   }
 
   .nav-btn {
-    width: 50px !important;
-    height: 50px !important;
-    z-index: 1000 !important;
-    pointer-events: auto !important;
+    width: 44px !important;
+    height: 44px !important;
   }
 }
 
