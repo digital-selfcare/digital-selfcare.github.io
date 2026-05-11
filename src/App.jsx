@@ -578,12 +578,12 @@ function App() {
                 <X size={24} />
               </button>
               
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-sage/10 rounded-2xl text-sage mb-4">
-                  <Mail size={32} />
+              <div className="modal-header">
+                <div className="modal-icon-container">
+                  <Mail size={40} />
                 </div>
-                <h3 className="text-2xl font-playfair font-bold">Написать нам</h3>
-                <p className="text-sm text-text-light mt-2">Мы ответим вам на {content.contacts.email}</p>
+                <h2 className="modal-title">Напишите нам</h2>
+                <p className="modal-email">{content.contacts.email}</p>
               </div>
 
               <form className="feedback-form" onSubmit={(e) => { e.preventDefault(); alert('Сообщение отправлено!'); setIsFeedbackOpen(false); }}>

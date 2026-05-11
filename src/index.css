@@ -947,3 +947,31 @@ section {
   box-shadow: 0 15px 30px rgba(0,0,0,0.15);
   filter: brightness(1.05);
 }
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.modal-icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: rgba(125, 157, 133, 0.1);
+  border-radius: 24px;
+  color: var(--color-sage);
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.modal-email {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-sage);
+}
