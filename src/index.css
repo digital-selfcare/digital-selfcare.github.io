@@ -980,17 +980,21 @@ section {
 .hero-header-logos {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end; /* Align bottoms of the 110px boxes guarantees center alignment */
   margin-bottom: 4rem;
   width: 100%;
   max-width: 896px;
   padding-left: 80px; /* Offset from burger menu */
 }
 
+.hero-logo-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .hero-grant-number {
-  position: absolute;
-  top: -32px;
-  left: 0;
+  display: block;
   font-size: 14px;
   font-weight: 800;
   color: #5b7161;
@@ -1015,10 +1019,6 @@ section {
   object-fit: contain;
 }
 
-.hero-logo-img.rnf {
-  margin-top: -8px; /* Surgical lift to align centers */
-}
-
 @media (max-width: 768px) {
   .hero-header-logos {
     flex-direction: column;
@@ -1028,11 +1028,5 @@ section {
     margin-bottom: 3rem;
     max-width: none;
     padding-left: 0;
-  }
-  
-  .hero-grant-number {
-    position: relative;
-    top: 0;
-    margin-bottom: 1rem;
   }
 }

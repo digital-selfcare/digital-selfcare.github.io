@@ -410,10 +410,10 @@ function App() {
                   <div className="container relative z-10">
                     <div className="max-w-4xl mx-auto">
                       <div className="hero-header-logos">
-                        <div className="relative">
+                        <div className="hero-logo-group">
                           <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
                           <div className="hero-logo-box">
-                            <img src="/logos/rnf-logo-surgical.png" alt="РНФ" className="hero-logo-img rnf" />
+                            <img src="/logos/rnf-logo-perfect.png" alt="РНФ" className="hero-logo-img rnf" />
                           </div>
                         </div>
                         <div className="hero-logo-box">
