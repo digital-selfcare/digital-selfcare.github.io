@@ -192,6 +192,35 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Fixed Navigation Elements - Outside any scrolling containers */}
+      <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
+         <div className="flex flex-col items-center gap-12">
+            {menuItems.map((item) => (
+              <a key={item.id} href={`#${item.id}`} onClick={(e) => { e.preventDefault(); handleMenuClick(item.id); }} className="menu-link">{item.title}</a>
+            ))}
+         </div>
+      </div>
+
+      <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-btn" aria-label="Menu">
+        {isMenuOpen ? <X size={24} color="#2d3436" /> : (
+          <><span /><span /><span /></>
+        )}
+      </button>
+
+      {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
+        <button className="back-btn" onClick={handleBack} aria-label="Назад">
+          <ArrowLeft size={28} strokeWidth={3} />
+        </button>
+      )}
+
+      <button 
+        className={`home-btn ${(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) ? 'shifted' : ''}`} 
+        onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+        aria-label="На главную"
+      >
+        <Home size={28} strokeWidth={2.5} />
+      </button>
+
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
           {selectedMaterial ? (
@@ -401,7 +430,7 @@ function App() {
                         return (
                           <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
                             <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }}>
-                              {member.image && <img src={member.image} alt={member.name} loading="lazy" decoding="async" />}
+                              {member.image && <img src={member.image} alt={member.name} />}
                             </div>
                             {status !== 'hidden' && (
                               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">
@@ -486,33 +515,6 @@ function App() {
         </AnimatePresence>
       </div>
 
-      <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
-         <div className="flex flex-col items-center gap-12">
-            {menuItems.map((item) => (
-              <a key={item.id} href={`#${item.id}`} onClick={(e) => { e.preventDefault(); handleMenuClick(item.id); }} className="menu-link">{item.title}</a>
-            ))}
-         </div>
-      </div>
-
-      <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-btn" aria-label="Menu" style={{ zIndex: 999999 }}>
-        {isMenuOpen ? <X size={24} color="#2d3436" /> : (
-          <><span /><span /><span /></>
-        )}
-      </button>
-
-      {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
-        <button className="back-btn" onClick={handleBack} aria-label="Назад">
-          <ArrowLeft size={28} strokeWidth={3} />
-        </button>
-      )}
-
-      <button 
-        className={`home-btn ${(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) ? 'shifted' : ''}`} 
-        onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-        aria-label="На главную"
-      >
-        <Home size={28} strokeWidth={2.5} />
-      </button>
     </div>
   );
 }

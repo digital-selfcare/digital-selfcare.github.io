@@ -193,26 +193,44 @@ section {
 
 @media (max-width: 768px) {
   .burger-btn, .back-btn, .home-btn {
-    left: 8px;
-    width: 44px;
-    height: 44px;
+    position: fixed !important;
+    left: 12px !important;
+    width: 46px !important;
+    height: 46px !important;
+    z-index: 1000000 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
   }
   
-  .burger-btn { top: 8px; }
-  .back-btn { top: 60px; }
-  .home-btn { top: 60px; }
-  .home-btn.shifted { top: 112px; }
+  .burger-btn { top: 12px !important; }
+  .back-btn { top: 70px !important; }
+  .home-btn { top: 70px !important; }
+  .home-btn.shifted { top: 128px !important; }
   
   .content-wrapper, .member-detail-overlay, section {
-    padding-left: 80px !important;
-    padding-right: 20px !important;
+    padding-left: 1.5rem !important; /* Back to normal */
+    padding-right: 1.5rem !important;
   }
   
   .container {
     padding-left: 0 !important;
-    margin-left: 0 !important;
+    margin: 0 auto !important;
     width: 100% !important;
-    max-width: none !important;
+  }
+  
+  section h2, .member-detail-overlay h1 {
+    margin-top: 1rem !important;
+  }
+  
+  /* Create space for top icons if needed */
+  .hero-section {
+    padding-top: 60px;
   }
 }
 
@@ -426,40 +444,64 @@ section {
 
 @media (max-width: 600px) {
   .team-carousel-container {
-    height: 580px; /* Increased to fit buttons */
-    overflow: visible !important; /* Never hide navigation buttons */
+    height: 600px;
+    overflow: visible !important;
     width: 100%;
-    position: relative;
-    margin-bottom: 2rem;
+    margin-top: 2rem;
   }
   
   .carousel-item-wrapper {
-    width: 240px !important; 
-    height: 380px;
+    width: 280px !important;
+    height: 420px;
+    left: 50% !important;
+    margin-left: -140px !important;
   }
   
   .carousel-item-active {
-    left: 0;
     z-index: 10;
+    opacity: 1;
+    transform: scale(1);
   }
   
   .carousel-item-next {
-    left: 40px;
-    transform: scale(0.8) translateX(180px);
-    opacity: 0.3;
-    z-index: 5;
+    transform: scale(0.8) translateX(100%);
+    opacity: 0; /* Hide next card on mobile to avoid overlap */
     pointer-events: none;
   }
 
   .carousel-nav {
-    margin-top: 20px;
-    padding-bottom: 20px;
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0;
+    display: flex;
+    gap: 30px;
   }
 
   .nav-btn {
-    width: 44px !important;
-    height: 44px !important;
+    width: 54px !important;
+    height: 54px !important;
+    background: var(--color-sage) !important;
+    color: white !important;
   }
+}
+
+.placeholder-img {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .carousel-member-info {
