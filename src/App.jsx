@@ -597,7 +597,7 @@ function App() {
                 </div>
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Сообщение</label>
-                  <textarea className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all min-h-[300px] resize-none" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required></textarea>
+                  <textarea className="w-full p-6 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all min-h-[450px] resize-none text-base" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required></textarea>
                 </div>
                 <button type="submit" className="btn w-full py-4 mt-4 shadow-xl">ОТПРАВИТЬ ПИСЬМО</button>
               </form>
