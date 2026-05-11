@@ -586,20 +586,20 @@ function App() {
                 <p className="text-sm text-text-light mt-2">Мы ответим вам на {content.contacts.email}</p>
               </div>
 
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Сообщение отправлено!'); setIsFeedbackOpen(false); }}>
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Ваше имя</label>
-                  <input type="text" className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all" placeholder="Иван Иванов" required />
+              <form className="feedback-form" onSubmit={(e) => { e.preventDefault(); alert('Сообщение отправлено!'); setIsFeedbackOpen(false); }}>
+                <div className="feedback-form-group">
+                  <label className="feedback-form-label">Ваше имя</label>
+                  <input type="text" className="feedback-form-input" placeholder="Иван Иванов" required />
                 </div>
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Ваш Email</label>
-                  <input type="email" className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all" placeholder="example@mail.ru" required />
+                <div className="feedback-form-group">
+                  <label className="feedback-form-label">Ваш Email</label>
+                  <input type="email" className="feedback-form-input" placeholder="example@mail.ru" required />
                 </div>
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Сообщение</label>
-                  <textarea className="w-full p-6 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all min-h-[450px] resize-none text-base" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required></textarea>
+                <div className="feedback-form-group">
+                  <label className="feedback-form-label">Сообщение</label>
+                  <textarea className="feedback-form-textarea" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required></textarea>
                 </div>
-                <button type="submit" className="btn w-full py-4 mt-4 shadow-xl">ОТПРАВИТЬ ПИСЬМО</button>
+                <button type="submit" className="feedback-form-submit">ОТПРАВИТЬ ПИСЬМО</button>
               </form>
             </motion.div>
           </motion.div>
