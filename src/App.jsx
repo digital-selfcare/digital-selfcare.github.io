@@ -412,9 +412,11 @@ function App() {
                       <div className="hero-header-logos">
                         <div className="hero-logo-group">
                           <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
-                          <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
+                          <div className="hero-logo-box">
+                            <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
+                          </div>
                         </div>
-                        <div className="hero-logo-group">
+                        <div className="hero-logo-box">
                           <img src="/logos/psu-logo.png" alt="ПГНИУ" className="hero-logo-img psu" />
                         </div>
                       </div>
