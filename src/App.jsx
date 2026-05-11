@@ -140,6 +140,13 @@ function App() {
     document.body.style.overflow = (isMenuOpen) ? 'hidden' : 'unset';
   }, [isMenuOpen]);
 
+  const handleBack = () => {
+    if (selectedMember) window.location.hash = '#team';
+    else if (isArchiveOpen || selectedEvent) window.location.hash = '#events';
+    else if (selectedMaterial) window.location.hash = '#materials';
+    else window.location.hash = '#';
+  };
+
   const handleMenuClick = (id) => {
     setIsMenuOpen(false);
     window.location.hash = `#${id}`;
@@ -461,8 +468,8 @@ function App() {
         )}
       </button>
 
-      {(selectedMember || isArchiveOpen || selectedEvent) && (
-        <button className="back-btn" onClick={() => window.location.hash = '#'} aria-label="Назад">
+      {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
+        <button className="back-btn" onClick={handleBack} aria-label="Назад">
           <ArrowLeft size={28} strokeWidth={3} />
         </button>
       )}
