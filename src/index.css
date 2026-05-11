@@ -828,11 +828,11 @@ section {
 .feedback-modal-content {
   background: white;
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
   border-radius: 40px;
-  padding: 48px;
+  padding: 64px;
   position: relative;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.15);
 }
 
 .modal-close-btn {

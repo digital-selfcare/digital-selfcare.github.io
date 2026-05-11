@@ -12,6 +12,18 @@ import {
 } from 'lucide-react';
 import { content } from './content';
 
+const VKIcon = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path d="M25.54 34.5801C14.6 34.5801 8.3601 27.0801 8.1001 14.6001H13.5801C13.7601 23.7601 17.8 27.6401 21 28.4401V14.6001H26.1602V22.5001C29.3202 22.1601 32.6398 18.5601 33.7598 14.6001H38.9199C38.0599 19.4801 34.4599 23.0801 31.8999 24.5601C34.4599 25.7601 38.5601 28.9001 40.1201 34.5801H34.4399C33.2199 30.7801 30.1802 27.8401 26.1602 27.4401V34.5801H25.54Z" fill="currentColor"/>
+  </svg>
+);
+
+const DzenIcon = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path d="M48,24c0,.24,0,.48-.01.72-9.72.12-15.19.79-18.83,4.44-3.65,3.65-4.31,9.11-4.44,18.83-.24,0-.48.01-.72.01s-.48,0-.72-.01c-.12-9.72-.79-15.19-4.44-18.83C15.2,25.51,9.73,24.84.01,24.72c0-.24-.01-.48-.01-.72s0-.48.01-.72c9.72-.12,15.19-.79,18.83-4.44C22.49,15.2,23.16,9.73,23.28.01c.24,0,.48-.01.72-.01s.48,0,.72.01c.12,9.72.79,15.19,4.44,18.83,3.65,3.65,9.11,4.31,18.83,4.44,0,.24.01.48.01.72Z" fill="currentColor"/>
+  </svg>
+);
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
@@ -515,14 +527,14 @@ function App() {
                     </div>
                     
                     <div className="contact-card">
-                      <div className="contact-card-icon"><Database size={32} /></div>
+                      <div className="contact-card-icon"><VKIcon size={32} /></div>
                       <h3>ВКонтакте</h3>
                       <p>Официальное сообщество проекта (в процессе создания).</p>
                       <button className="contact-card-btn opacity-50 cursor-default">СКОРО</button>
                     </div>
                     
                     <div className="contact-card">
-                      <div className="contact-card-icon"><Layout size={32} /></div>
+                      <div className="contact-card-icon"><DzenIcon size={32} /></div>
                       <h3>Дзен</h3>
                       <p>Наш блог на платформе Дзен (в процессе создания).</p>
                       <button className="contact-card-btn opacity-50 cursor-default">СКОРО</button>
@@ -585,7 +597,7 @@ function App() {
                 </div>
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Сообщение</label>
-                  <textarea className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all h-32 resize-none" placeholder="Ваш вопрос или предложение..." required></textarea>
+                  <textarea className="w-full p-4 bg-beige/10 border border-gray-100 rounded-2xl focus:border-sage outline-none transition-all min-h-[300px] resize-none" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required></textarea>
                 </div>
                 <button type="submit" className="btn w-full py-4 mt-4 shadow-xl">ОТПРАВИТЬ ПИСЬМО</button>
               </form>
