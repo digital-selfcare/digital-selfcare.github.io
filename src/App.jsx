@@ -83,10 +83,23 @@ function App() {
         setSelectedMember(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#events/')) {
-        setSelectedEvent(hash.replace('#events/', ''));
-        setIsArchiveOpen(false);
-        setSelectedMaterial(null);
-        setSelectedMember(null);
+        const path = hash.replace('#events/', '');
+        if (path === 'archive') {
+          setIsArchiveOpen(true);
+          setSelectedEvent(null);
+          setSelectedMaterial(null);
+          setSelectedMember(null);
+        } else if (path.startsWith('archive/')) {
+          setSelectedEvent(path.replace('archive/', ''));
+          setIsArchiveOpen(true); // Keep archive state so we return to it
+          setSelectedMaterial(null);
+          setSelectedMember(null);
+        } else {
+          setSelectedEvent(path);
+          setIsArchiveOpen(false);
+          setSelectedMaterial(null);
+          setSelectedMember(null);
+        }
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#team/')) {
         setSelectedMember(hash.replace('#team/', ''));
@@ -141,10 +154,23 @@ function App() {
   }, [isMenuOpen]);
 
   const handleBack = () => {
-    if (selectedMember) window.location.hash = '#team';
-    else if (isArchiveOpen || selectedEvent) window.location.hash = '#events';
-    else if (selectedMaterial) window.location.hash = '#materials';
-    else window.location.hash = '#';
+    const hash = window.location.hash;
+    if (!hash || hash === '#' || hash === '#!') {
+      window.location.hash = '#';
+      return;
+    }
+
+    const parts = hash.split('/');
+    if (parts.length > 1) {
+      // Remove last segment to go up one level
+      parts.pop();
+      window.location.hash = parts.join('/');
+    } else {
+      // Top level subpage (e.g. #team), go to home section
+      const sectionId = hash.replace('#', '');
+      window.location.hash = `#${sectionId}`;
+      // Logic in handleHashChange handles the "returningFromSubpage" scroll
+    }
   };
 
   const handleMenuClick = (id) => {
@@ -218,7 +244,7 @@ function App() {
                 <h1 className="text-4xl font-playfair font-bold mb-12 mt-12 md:mt-0">Архив новостей</h1>
                 <div className="space-y-6">
                   {archiveEvents.map((event) => (
-                    <div key={event.id} onClick={() => window.location.hash = `#events/${event.id}`} className="flex items-center justify-between p-6 bg-beige/5 rounded-3xl cursor-pointer hover:bg-white hover:shadow-lg transition-all group">
+                    <div key={event.id} onClick={() => window.location.hash = `#events/archive/${event.id}`} className="flex items-center justify-between p-6 bg-beige/5 rounded-3xl cursor-pointer hover:bg-white hover:shadow-lg transition-all group">
                       <div className="flex items-center gap-6">
                         <span className="text-sm font-bold text-sage opacity-60 w-24">{event.date}</span>
                         <h3 className="text-lg font-bold group-hover:text-sage transition-colors">{event.title}</h3>
