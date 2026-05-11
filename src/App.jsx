@@ -194,25 +194,28 @@ function App() {
     <div className="min-h-screen bg-white">
       {/* Mobile Top Navigation Bar */}
       <div className="mobile-top-nav">
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="nav-icon-btn burger-icon">
-          {isMenuOpen ? <X size={24} color="#2d3436" /> : (
-            <div className="burger-lines"><span /><span /><span /></div>
-          )}
-        </button>
-        
-        <div className="mobile-nav-right">
-          {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
-            <button className="nav-icon-btn back-icon" onClick={handleBack}>
-              <ArrowLeft size={24} />
-            </button>
-          )}
-          
-          <button 
-            className="nav-icon-btn home-icon" 
-            onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          >
-            <Home size={24} />
+        <div className="mobile-nav-container">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="nav-icon-btn burger-icon" aria-label="Меню">
+            {isMenuOpen ? <X size={24} color="#2d3436" /> : (
+              <div className="burger-lines"><span /><span /><span /></div>
+            )}
           </button>
+          
+          <div className="mobile-nav-right">
+            {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
+              <button className="nav-icon-btn back-icon" onClick={handleBack} aria-label="Назад">
+                <ArrowLeft size={24} />
+              </button>
+            )}
+            
+            <button 
+              className="nav-icon-btn home-icon" 
+              onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              aria-label="На главную"
+            >
+              <Home size={24} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -320,8 +323,9 @@ function App() {
                     <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}>
                       {activeMember?.image && (
                         <img 
-                          src={activeMember.image.startsWith('/') ? activeMember.image.substring(1) : activeMember.image} 
+                          src={activeMember.image} 
                           alt={activeMember.name} 
+                          loading="eager"
                         />
                       )}
                     </div>
@@ -455,8 +459,8 @@ function App() {
                         return (
                           <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
                             <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }}>
-                              {member.image && <img src={member.image.startsWith('/') ? member.image.substring(1) : member.image} alt={member.name} />}
-                            </div>
+                            {member.image && <img src={member.image} alt={member.name} loading="eager" />}
+                          </div>
                             {status !== 'hidden' && (
                               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">
                                 <h3 className={status === 'next' ? 'text-lg opacity-50' : 'text-2xl'}>{member.name}</h3>
