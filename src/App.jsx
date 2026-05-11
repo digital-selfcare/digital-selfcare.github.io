@@ -413,7 +413,7 @@ function App() {
                         <div className="relative">
                           <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
                           <div className="hero-logo-box">
-                            <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
+                            <img src="/logos/rnf-logo-surgical.png" alt="РНФ" className="hero-logo-img rnf" />
                           </div>
                         </div>
                         <div className="hero-logo-box">

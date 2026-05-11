@@ -984,14 +984,14 @@ section {
   margin-bottom: 4rem;
   width: 100%;
   max-width: 896px;
-  padding-left: 60px; /* Offset from burger menu */
+  padding-left: 80px; /* Offset from burger menu */
 }
 
 .hero-grant-number {
   position: absolute;
-  top: -28px;
+  top: -32px;
   left: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: #5b7161;
   text-transform: uppercase;
@@ -1016,7 +1016,7 @@ section {
 }
 
 .hero-logo-img.rnf {
-  margin-top: -6px; /* Lift up to align centers */
+  margin-top: -8px; /* Surgical lift to align centers */
 }
 
 @media (max-width: 768px) {
