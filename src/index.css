@@ -868,11 +868,6 @@ section {
 .feedback-modal-content textarea::placeholder {
   color: #bdc3c7;
 }
-  .contacts-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 @media (max-width: 550px) {
   .contacts-grid {
     grid-template-columns: 1fr;
