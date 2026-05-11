@@ -62,6 +62,14 @@ function App() {
       const hash = window.location.hash;
       setIsMenuOpen(false);
 
+      if (!hash || hash === '#' || hash === '#!') {
+        setSelectedMaterial(null);
+        setSelectedEvent(null);
+        setSelectedMember(null);
+        setIsArchiveOpen(false);
+        return;
+      }
+
       if (hash === '#events/archive') {
         setIsArchiveOpen(true);
         setSelectedEvent(null);
@@ -454,7 +462,7 @@ function App() {
       </button>
 
       {(selectedMember || isArchiveOpen || selectedEvent) && (
-        <button className="back-btn" onClick={() => window.location.hash = ''} aria-label="Назад">
+        <button className="back-btn" onClick={() => window.location.hash = '#'} aria-label="Назад">
           <ArrowLeft size={28} strokeWidth={3} />
         </button>
       )}
