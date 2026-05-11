@@ -193,7 +193,7 @@ section {
 
 @media (max-width: 768px) {
   .burger-btn, .back-btn, .home-btn {
-    left: 4px; /* Minimize left space */
+    left: 4px;
     width: 44px;
     height: 44px;
   }
@@ -203,12 +203,13 @@ section {
   .home-btn { top: 52px; }
   .home-btn.shifted { top: 100px; }
   
+  /* Increased padding to avoid icons */
   .content-wrapper {
-    padding-left: 56px !important; /* Fixed gutter for icons */
+    padding-left: 72px !important; 
   }
 
   .member-detail-overlay {
-    padding-left: 56px !important;
+    padding-left: 72px !important;
     padding-right: 12px !important;
     padding-top: 4rem !important;
   }
@@ -401,27 +402,67 @@ section {
   pointer-events: none;
 }
 
+.carousel-nav {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+  z-index: 1000;
+}
+
+.nav-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-sage);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.nav-btn:hover {
+  background: var(--color-sage);
+  color: white;
+}
+
 @media (max-width: 600px) {
   .team-carousel-container {
     height: 550px;
-    overflow: hidden; /* Prevent horizontal scroll */
+    overflow: hidden !important;
+    width: 100%;
+    position: relative;
   }
   
   .carousel-item-wrapper {
-    width: 260px; /* Smaller cards */
-    height: 400px;
+    width: 250px !important; /* Smaller cards to prevent hitbox overlap */
+    height: 380px;
     border-radius: 30px;
   }
   
   .carousel-item-active {
-    left: 10px; /* Pull active card slightly right */
+    left: 0;
+    z-index: 10;
   }
   
   .carousel-item-next {
     left: auto;
-    right: -180px; /* Show only a sliver of the next card */
-    transform: scale(0.8);
-    opacity: 0.4;
+    right: -160px; /* Hide more of the next card */
+    transform: scale(0.85);
+    opacity: 0.3;
+    z-index: 5;
+    pointer-events: none; /* Only active card and nav buttons should be clickable */
+  }
+
+  .nav-btn {
+    width: 50px !important;
+    height: 50px !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
   }
 }
 

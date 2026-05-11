@@ -413,9 +413,9 @@ function App() {
                         );
                       })}
                     </div>
-                    <div className="carousel-nav" style={{ position: 'relative', bottom: '-40px' }}>
-                       <button onClick={prevMember} className="nav-btn"><ArrowLeft size={24} /></button>
-                       <button onClick={nextMember} className="nav-btn"><ArrowRight size={24} /></button>
+                    <div className="carousel-nav">
+                       <button onClick={prevMember} className="nav-btn" aria-label="Предыдущий"><ArrowLeft size={24} /></button>
+                       <button onClick={nextMember} className="nav-btn" aria-label="Следующий"><ArrowRight size={24} /></button>
                     </div>
                   </div>
                 </div>
