@@ -983,7 +983,8 @@ section {
   align-items: center;
   margin-bottom: 4rem;
   width: 100%;
-  max-width: 896px; /* Exact match with max-w-4xl */
+  max-width: 896px;
+  padding-left: 60px; /* Offset from burger menu */
 }
 
 .hero-grant-number {
@@ -1014,6 +1015,10 @@ section {
   object-fit: contain;
 }
 
+.hero-logo-img.rnf {
+  margin-top: -6px; /* Lift up to align centers */
+}
+
 @media (max-width: 768px) {
   .hero-header-logos {
     flex-direction: column;
@@ -1022,6 +1027,7 @@ section {
     text-align: center;
     margin-bottom: 3rem;
     max-width: none;
+    padding-left: 0;
   }
   
   .hero-grant-number {
