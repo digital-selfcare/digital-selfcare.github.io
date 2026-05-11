@@ -983,12 +983,13 @@ section {
   align-items: center;
   margin-bottom: 3rem;
   width: 100%;
+  max-width: 800px; /* Bring PSU logo left */
 }
 
 .hero-logo-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .hero-grant-number {
@@ -1023,5 +1024,6 @@ section {
     gap: 3rem;
     text-align: center;
     margin-bottom: 3rem;
+    max-width: none;
   }
 }
