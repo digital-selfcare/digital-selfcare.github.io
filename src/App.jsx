@@ -239,10 +239,6 @@ function App() {
                     <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}>
                       {activeMember?.image && <img src={activeMember.image} alt={activeMember.name} />}
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 text-white">
-                      <h1 className="text-3xl font-playfair font-bold mb-2">{activeMember?.name}</h1>
-                      <p className="text-sage font-bold tracking-widest uppercase text-xs">{activeMember?.role}</p>
-                    </div>
                   </div>
                   <div className="split-image-detail">
                     <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)), opacity: 0.1 }}>
