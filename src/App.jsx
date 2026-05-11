@@ -270,6 +270,10 @@ function App() {
                   </aside>
 
                   <main className="info-main">
+                    <div className="mb-12 pb-8 border-b border-gray-100">
+                      <h1 className="text-4xl font-playfair font-bold text-text mb-3">{activeMember?.name}</h1>
+                      <p className="text-sage font-bold tracking-widest uppercase text-sm">{activeMember?.role}</p>
+                    </div>
                     <section>
                       <h2>О специалисте</h2>
                       <p className="text-lg leading-relaxed text-text-light">{activeMember?.bio}</p>
