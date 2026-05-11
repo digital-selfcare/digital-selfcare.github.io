@@ -7,7 +7,8 @@ import {
   Sparkles, Bell, Lightbulb, Zap, Share2,
   FileSearch, BarChart3, GraduationCap,
   ArrowLeft, ArrowRight, FileDown, Clock, Newspaper,
-  User, Award, Briefcase, Microscope, CheckCircle2
+  User, Award, Briefcase, Microscope, CheckCircle2,
+  Archive, History
 } from 'lucide-react';
 import { content } from './content';
 
@@ -16,6 +17,7 @@ function App() {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [pendingScroll, setPendingScroll] = useState(null);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
   
@@ -60,30 +62,40 @@ function App() {
       const hash = window.location.hash;
       setIsMenuOpen(false);
 
-      if (hash.startsWith('#materials/')) {
+      if (hash === '#events/archive') {
+        setIsArchiveOpen(true);
+        setSelectedEvent(null);
+        setSelectedMaterial(null);
+        setSelectedMember(null);
+        window.scrollTo(0, 0);
+      } else if (hash.startsWith('#materials/')) {
         setSelectedMaterial(hash.replace('#materials/', ''));
+        setIsArchiveOpen(false);
         setSelectedEvent(null);
         setSelectedMember(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#events/')) {
         setSelectedEvent(hash.replace('#events/', ''));
+        setIsArchiveOpen(false);
         setSelectedMaterial(null);
         setSelectedMember(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#team/')) {
         setSelectedMember(hash.replace('#team/', ''));
+        setIsArchiveOpen(false);
         setSelectedMaterial(null);
         setSelectedEvent(null);
         window.scrollTo(0, 0);
       } else if (hash.startsWith('#')) {
         const id = hash.replace('#', '');
         if (id && id !== '!' && id !== '') {
-          if (selectedMaterial || selectedEvent || selectedMember) {
+          if (selectedMaterial || selectedEvent || selectedMember || isArchiveOpen) {
             returningFromSubpage.current = true;
             setPendingScroll(id);
             setSelectedMaterial(null);
             setSelectedEvent(null);
             setSelectedMember(null);
+            setIsArchiveOpen(false);
           } else {
             performScroll(id);
           }
@@ -91,6 +103,7 @@ function App() {
           setSelectedMaterial(null);
           setSelectedEvent(null);
           setSelectedMember(null);
+          setIsArchiveOpen(false);
         }
       }
     };
@@ -98,10 +111,10 @@ function App() {
     window.addEventListener('hashchange', handleHashChange);
     handleHashChange();
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [selectedMaterial, selectedEvent, selectedMember]);
+  }, [selectedMaterial, selectedEvent, selectedMember, isArchiveOpen]);
 
   useEffect(() => {
-    if (!selectedMaterial && !selectedEvent && !selectedMember && pendingScroll) {
+    if (!selectedMaterial && !selectedEvent && !selectedMember && !isArchiveOpen && pendingScroll) {
       const target = pendingScroll;
       setPendingScroll(null);
       let attempts = 0;
@@ -113,7 +126,7 @@ function App() {
       };
       setTimeout(tryScroll, 100);
     }
-  }, [selectedMaterial, selectedEvent, selectedMember, pendingScroll]);
+  }, [selectedMaterial, selectedEvent, selectedMember, isArchiveOpen, pendingScroll]);
 
   useEffect(() => {
     document.body.style.overflow = (isMenuOpen) ? 'hidden' : 'unset';
@@ -133,6 +146,8 @@ function App() {
   };
 
   const activeMember = content.team.members.find(m => m.id === selectedMember);
+  const latestEvents = content.events.items.slice(0, 3);
+  const archiveEvents = content.events.items.slice(3);
 
   return (
     <div className="min-h-screen bg-white">
@@ -182,10 +197,31 @@ function App() {
               </div>
             </div>
           </motion.div>
+          ) : isArchiveOpen ? (
+            <motion.div key="archive-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
+              <div className="container max-w-4xl">
+                <button onClick={() => window.location.hash = '#events'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 mt-12 md:mt-0 hover:translate-x-[-4px] transition-transform">
+                  <ArrowLeft size={16} /> Назад
+                </button>
+                <h1 className="text-4xl font-playfair font-bold mb-12">Архив новостей</h1>
+                <div className="space-y-6">
+                  {archiveEvents.map((event) => (
+                    <div key={event.id} onClick={() => window.location.hash = `#events/${event.id}`} className="flex items-center justify-between p-6 bg-beige/5 rounded-3xl cursor-pointer hover:bg-white hover:shadow-lg transition-all group">
+                      <div className="flex items-center gap-6">
+                        <span className="text-sm font-bold text-sage opacity-60 w-24">{event.date}</span>
+                        <h3 className="text-lg font-bold group-hover:text-sage transition-colors">{event.title}</h3>
+                      </div>
+                      <ArrowRight size={20} className="text-gray-300 group-hover:text-sage" />
+                    </div>
+                  ))}
+                  {archiveEvents.length === 0 && <p className="text-gray-400 italic">В архиве пока нет записей.</p>}
+                </div>
+              </div>
+            </motion.div>
           ) : selectedMember ? (
             <motion.div key="member-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="member-detail-overlay">
               <div className="container max-w-5xl">
-                <button onClick={() => window.location.hash = '#team'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-12 hover:translate-x-[-4px] transition-transform">
+                <button onClick={() => window.location.hash = '#team'} className="flex items-center gap-2 text-sage font-bold text-xs uppercase tracking-widest mb-8 hover:translate-x-[-4px] transition-transform">
                   <ArrowLeft size={16} /> Назад к команде
                 </button>
                 
@@ -287,7 +323,7 @@ function App() {
                 <div className="container">
                   <h2 className="text-4xl font-playfair font-bold mb-16">{content.events.title}</h2>
                   <div className="news-grid-custom">
-                    {content.events.items.map((item, i) => (
+                    {latestEvents.map((item, i) => (
                       <div key={item.id} className="news-card-custom cursor-pointer" onClick={() => window.location.hash = `#events/${item.id}`}>
                         <span className="card-number">{i + 1}</span>
                         <div className="card-icon">{newsIcons[i % newsIcons.length]}</div>
@@ -296,6 +332,13 @@ function App() {
                         <div className="card-link">ПОДРОБНОСТИ</div>
                       </div>
                     ))}
+                    <div className="news-card-custom cursor-pointer bg-white border-2 border-dashed border-beige" onClick={() => window.location.hash = '#events/archive'}>
+                        <span className="card-number">...</span>
+                        <div className="card-icon text-beige"><History size={32} /></div>
+                        <h3 className="mb-4">Архив новостей</h3>
+                        <p className="mb-8">Просмотреть все прошедшие события и публикации проекта.</p>
+                        <div className="card-link">ОТКРЫТЬ АРХИВ</div>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -348,14 +391,39 @@ function App() {
                 </div>
               </section>
 
-              <section id="contacts" className="py-32 bg-white">
-                <div className="container text-center">
-                  <h2 className="text-4xl font-playfair font-bold mb-16">Контакты</h2>
-                  <div className="flex flex-wrap justify-center gap-12 max-w-4xl mx-auto">
-                    <div className="flex items-center gap-4"><Mail className="text-sage" /><a href={`mailto:${content.contacts.email}`} className="font-bold">{content.contacts.email}</a></div>
-                    <div className="flex gap-6">
-                      <a href="#" className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">VK</a>
-                      <a href="#" className="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center font-bold">TG</a>
+              <section id="contacts" className="py-24 border-t border-gray-100">
+                <div className="container">
+                  <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div>
+                      <h2 className="text-4xl font-playfair font-bold mb-8">Свяжитесь с нами</h2>
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-sage/10 rounded-full flex items-center justify-center text-sage"><Mail size={20} /></div>
+                          <div>
+                            <p className="text-xs uppercase tracking-widest text-gray-400 font-bold">Электронная почта</p>
+                            <p className="text-lg font-bold">{content.contacts.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-sage/10 rounded-full flex items-center justify-center text-sage"><MessageCircle size={20} /></div>
+                          <div>
+                            <p className="text-xs uppercase tracking-widest text-gray-400 font-bold">Социальные сети</p>
+                            <div className="flex gap-4 mt-1">
+                              <a href="#" className="text-text hover:text-sage font-bold">Telegram</a>
+                              <a href="#" className="text-text hover:text-sage font-bold">ВКонтакте</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-beige/10 p-10 rounded-[40px] border border-beige/20">
+                       <h3 className="text-2xl font-playfair font-bold mb-6">Оставить сообщение</h3>
+                       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                          <input type="text" placeholder="Ваше имя" className="w-full px-6 py-4 rounded-2xl bg-white border-none focus:ring-2 focus:ring-sage/50" />
+                          <input type="email" placeholder="Email" className="w-full px-6 py-4 rounded-2xl bg-white border-none focus:ring-2 focus:ring-sage/50" />
+                          <textarea placeholder="Сообщение" rows="4" className="w-full px-6 py-4 rounded-2xl bg-white border-none focus:ring-2 focus:ring-sage/50"></textarea>
+                          <button className="btn w-full justify-center bg-sage text-white">ОТПРАВИТЬ <Send size={18} /></button>
+                       </form>
                     </div>
                   </div>
                 </div>
