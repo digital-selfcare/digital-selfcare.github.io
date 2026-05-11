@@ -980,7 +980,7 @@ section {
 .hero-header-logos {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   margin-bottom: 4rem;
   width: 100%;
 }
@@ -988,16 +988,16 @@ section {
 .hero-logo-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .hero-grant-number {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--color-text-light);
+  font-size: 10px;
+  font-weight: 800;
+  color: #5b7161; /* Deeper sage */
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.8;
+  letter-spacing: 0.15em;
+  opacity: 0.9;
   white-space: nowrap;
 }
 
@@ -1006,12 +1006,12 @@ section {
 }
 
 .hero-logo-img.rnf {
-  height: 45px;
+  height: 80px;
   width: auto;
 }
 
 .hero-logo-img.psu {
-  height: 100px;
+  height: 80px;
   width: auto;
 }
 
