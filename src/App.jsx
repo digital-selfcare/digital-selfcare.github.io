@@ -410,7 +410,7 @@ function App() {
                   <div className="container relative z-10">
                     <div className="max-w-4xl mx-auto">
                       <div className="hero-header-logos">
-                        <div className="hero-logo-group">
+                        <div className="relative">
                           <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
                           <div className="hero-logo-box">
                             <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
