@@ -193,25 +193,31 @@ section {
 
 @media (max-width: 768px) {
   .burger-btn, .back-btn, .home-btn {
-    left: 8px; /* Slightly closer to edge to save space */
+    left: 4px; /* Minimize left space */
     width: 44px;
     height: 44px;
   }
   
-  .burger-btn { top: 8px; }
-  .back-btn { top: 60px; }
-  .home-btn { top: 60px; }
-  .home-btn.shifted { top: 112px; }
+  .burger-btn { top: 4px; }
+  .back-btn { top: 52px; }
+  .home-btn { top: 52px; }
+  .home-btn.shifted { top: 100px; }
   
-  /* Critical: Increase padding to avoid icons */
+  .content-wrapper {
+    padding-left: 56px !important; /* Fixed gutter for icons */
+  }
+
   .member-detail-overlay {
-    padding-left: 64px !important;
-    padding-right: 16px !important;
-    padding-top: 5rem !important;
+    padding-left: 56px !important;
+    padding-right: 12px !important;
+    padding-top: 4rem !important;
   }
   
   .container {
-    padding-left: 0 !important; /* Reset since parent has padding */
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
   }
 }
 
