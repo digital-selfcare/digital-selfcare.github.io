@@ -193,18 +193,25 @@ section {
 
 @media (max-width: 768px) {
   .burger-btn, .back-btn, .home-btn {
-    left: 12px;
-    width: 40px;
-    height: 40px;
+    left: 8px; /* Slightly closer to edge to save space */
+    width: 44px;
+    height: 44px;
   }
   
-  .burger-btn { top: 12px; }
-  .back-btn { top: 62px; }
-  .home-btn { top: 62px; }
+  .burger-btn { top: 8px; }
+  .back-btn { top: 60px; }
+  .home-btn { top: 60px; }
   .home-btn.shifted { top: 112px; }
   
+  /* Critical: Increase padding to avoid icons */
+  .member-detail-overlay {
+    padding-left: 64px !important;
+    padding-right: 16px !important;
+    padding-top: 5rem !important;
+  }
+  
   .container {
-    padding-left: 60px !important;
+    padding-left: 0 !important; /* Reset since parent has padding */
   }
 }
 
@@ -390,22 +397,25 @@ section {
 
 @media (max-width: 600px) {
   .team-carousel-container {
-    height: 500px;
+    height: 550px;
+    overflow: hidden; /* Prevent horizontal scroll */
   }
   
   .carousel-item-wrapper {
-    width: 280px;
-    height: 380px;
-    border-radius: 24px;
+    width: 260px; /* Smaller cards */
+    height: 400px;
+    border-radius: 30px;
+  }
+  
+  .carousel-item-active {
+    left: 10px; /* Pull active card slightly right */
   }
   
   .carousel-item-next {
-    left: 40px;
-    transform: scale(0.85) translateX(180px);
-  }
-  
-  .carousel-member-info h3 {
-    font-size: 1.1rem;
+    left: auto;
+    right: -180px; /* Show only a sliver of the next card */
+    transform: scale(0.8);
+    opacity: 0.4;
   }
 }
 
@@ -512,17 +522,20 @@ section {
 
 @media (max-width: 900px) {
   .member-info-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    display: block !important;
     gap: 2rem;
   }
   
   .info-sidebar {
-    position: static;
-    order: 2;
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    margin-top: 2rem;
   }
   
   .info-main {
-    order: 1;
+    width: 100% !important;
   }
 }
 
