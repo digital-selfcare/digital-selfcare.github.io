@@ -975,3 +975,52 @@ section {
   font-weight: 700;
   color: var(--color-sage);
 }
+
+/* --- HERO LOGOS --- */
+.hero-header-logos {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 5rem;
+  width: 100%;
+}
+
+.hero-logo-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-grant-number {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.hero-logo-img {
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
+}
+
+.hero-logo-img.rnf {
+  height: 70px;
+  width: auto;
+}
+
+.hero-logo-img.psu {
+  height: 100px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .hero-header-logos {
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+}

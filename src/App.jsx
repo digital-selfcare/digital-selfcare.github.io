@@ -402,18 +402,21 @@ function App() {
             </motion.div>
           ) : (
             <motion.div key="main-landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <header className="fixed w-full z-40 py-6 px-8 bg-white/90 backdrop-blur-md border-b border-gray-100">
-                <div className="container flex justify-end items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-sage rounded-lg flex items-center justify-center text-white"><Database size={16} /></div>
-                    <span className="font-playfair text-xl font-bold text-text">Проект РНФ № 23-18-00480-П</span>
-                  </div>
-                </div>
-              </header>
+              {/* Header removed as grant number moved to Hero section */}
+
 
               <section className="hero-section">
                 <div className="hero-content-wrapper">
                   <div className="container relative z-10">
+                    <div className="hero-header-logos">
+                      <div className="hero-logo-group">
+                        <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
+                        <img src="/logos/rnf-logo.png" alt="РНФ" className="hero-logo-img rnf" />
+                      </div>
+                      <div className="hero-logo-group">
+                        <img src="/logos/psu-logo.png" alt="ПГНИУ" className="hero-logo-img psu" />
+                      </div>
+                    </div>
                     <div className="max-w-4xl">
                       <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">Исследовательский проект 2026–2027</span>
                       <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">{content.hero.title}</h1>
