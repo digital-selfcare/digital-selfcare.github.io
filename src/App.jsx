@@ -326,6 +326,7 @@ function App() {
                           src={activeMember.image} 
                           alt={activeMember.name} 
                           loading="eager"
+                          decoding="async"
                         />
                       )}
                     </div>
@@ -459,7 +460,7 @@ function App() {
                         return (
                           <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
                             <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }}>
-                            {member.image && <img src={member.image} alt={member.name} loading="eager" />}
+                            {member.image && <img src={member.image} alt={member.name} loading="eager" decoding="async" />}
                           </div>
                             {status !== 'hidden' && (
                               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">
