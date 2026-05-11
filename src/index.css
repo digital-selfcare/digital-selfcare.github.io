@@ -162,6 +162,30 @@ section {
   transform: translateX(-4px);
 }
 
+.home-btn {
+  position: fixed;
+  left: 24px;
+  z-index: 10000;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  border: none;
+  color: var(--color-sage);
+}
+
+.home-btn:hover {
+  background: var(--color-sage);
+  color: white;
+  transform: scale(1.05);
+}
+
 .menu-overlay {
   position: fixed;
   inset: 0;
