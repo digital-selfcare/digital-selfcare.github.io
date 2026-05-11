@@ -221,14 +221,18 @@ function App() {
                 
                 <div className="team-detail-split">
                   <div className="split-image-main">
-                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }} />
+                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}>
+                      {activeMember?.image && <img src={activeMember.image} alt={activeMember.name} />}
+                    </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 text-white">
                       <h1 className="text-3xl font-playfair font-bold mb-2">{activeMember?.name}</h1>
                       <p className="text-sage font-bold tracking-widest uppercase text-xs">{activeMember?.role}</p>
                     </div>
                   </div>
                   <div className="split-image-detail">
-                    <div className="placeholder-img opacity-20" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember) + 2), transform: 'scale(1.5)' }} />
+                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)), opacity: 0.8 }}>
+                      {activeMember?.image && <img src={activeMember.image} alt={activeMember.name} style={{ opacity: 0.6 }} />}
+                    </div>
                     <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
                         <div>
                           <Microscope size={40} className="text-sage/30 mx-auto mb-4" />
@@ -349,7 +353,9 @@ function App() {
                         
                         return (
                           <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
-                            <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }} />
+                            <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }}>
+                              {member.image && <img src={member.image} alt={member.name} />}
+                            </div>
                             {status !== 'hidden' && (
                               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">
                                 <h3 className={status === 'next' ? 'text-lg opacity-50' : 'text-2xl'}>{member.name}</h3>
