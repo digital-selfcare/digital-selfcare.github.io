@@ -192,7 +192,53 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Fixed Navigation Elements - Outside any scrolling containers */}
+      {/* Mobile Top Navigation Bar */}
+      <div className="mobile-top-nav">
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="nav-icon-btn burger-icon">
+          {isMenuOpen ? <X size={24} color="#2d3436" /> : (
+            <div className="burger-lines"><span /><span /><span /></div>
+          )}
+        </button>
+        
+        <div className="mobile-nav-right">
+          {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
+            <button className="nav-icon-btn back-icon" onClick={handleBack}>
+              <ArrowLeft size={24} />
+            </button>
+          )}
+          
+          <button 
+            className="nav-icon-btn home-icon" 
+            onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          >
+            <Home size={24} />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Navigation Elements (Hidden on mobile) */}
+      <div className="desktop-nav-controls">
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-btn" aria-label="Menu">
+          {isMenuOpen ? <X size={24} color="#2d3436" /> : (
+            <><span /><span /><span /></>
+          )}
+        </button>
+
+        {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
+          <button className="back-btn" onClick={handleBack} aria-label="Назад">
+            <ArrowLeft size={28} strokeWidth={3} />
+          </button>
+        )}
+
+        <button 
+          className={`home-btn ${(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) ? 'shifted' : ''}`} 
+          onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+          aria-label="На главную"
+        >
+          <Home size={28} strokeWidth={2.5} />
+        </button>
+      </div>
+
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
          <div className="flex flex-col items-center gap-12">
             {menuItems.map((item) => (
@@ -200,26 +246,6 @@ function App() {
             ))}
          </div>
       </div>
-
-      <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-btn" aria-label="Menu">
-        {isMenuOpen ? <X size={24} color="#2d3436" /> : (
-          <><span /><span /><span /></>
-        )}
-      </button>
-
-      {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
-        <button className="back-btn" onClick={handleBack} aria-label="Назад">
-          <ArrowLeft size={28} strokeWidth={3} />
-        </button>
-      )}
-
-      <button 
-        className={`home-btn ${(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) ? 'shifted' : ''}`} 
-        onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-        aria-label="На главную"
-      >
-        <Home size={28} strokeWidth={2.5} />
-      </button>
 
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
@@ -294,9 +320,8 @@ function App() {
                     <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}>
                       {activeMember?.image && (
                         <img 
-                          src={activeMember.image} 
+                          src={activeMember.image.startsWith('/') ? activeMember.image.substring(1) : activeMember.image} 
                           alt={activeMember.name} 
-                          loading="eager" 
                         />
                       )}
                     </div>
@@ -430,7 +455,7 @@ function App() {
                         return (
                           <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
                             <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }}>
-                              {member.image && <img src={member.image} alt={member.name} />}
+                              {member.image && <img src={member.image.startsWith('/') ? member.image.substring(1) : member.image} alt={member.name} />}
                             </div>
                             {status !== 'hidden' && (
                               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">

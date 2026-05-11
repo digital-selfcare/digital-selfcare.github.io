@@ -103,7 +103,7 @@ section {
 .burger-btn {
   position: fixed;
   top: 24px;
-  left: 24px;
+  left: 32px;
   z-index: 10000;
   width: 50px;
   height: 50px;
@@ -113,25 +113,23 @@ section {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
   border: none;
-  pointer-events: auto;
 }
 
-.burger-btn:hover {
-  background: var(--color-sage);
+.burger-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.burger-btn span {
+.burger-lines span {
   display: block;
-  width: 24px;
+  width: 20px;
   height: 2px;
-  background: #2d3436;
-  transition: all 0.3s ease;
-}
 
 .burger-btn:hover span {
   background: white;
@@ -191,31 +189,55 @@ section {
   transform: scale(1.05);
 }
 
+/* Navigation Controls Visibility */
+.mobile-top-nav {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .burger-btn, .back-btn, .home-btn {
-    position: fixed !important;
-    left: 12px !important;
-    width: 46px !important;
-    height: 46px !important;
-    z-index: 1000000 !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+  .desktop-nav-controls {
+    display: none;
+  }
+  
+  .mobile-top-nav {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000000;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  
+  .nav-icon-btn {
+    width: 40px;
+    height: 40px;
     background: white;
-    border-radius: 12px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
-    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.05);
+    color: var(--color-sage);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   }
   
-  .burger-btn { top: 12px !important; }
-  .back-btn { top: 70px !important; }
-  .home-btn { top: 70px !important; }
-  .home-btn.shifted { top: 128px !important; }
-  
+  .mobile-nav-right {
+    display: flex;
+    gap: 8px;
+  }
+
   .content-wrapper, .member-detail-overlay, section {
-    padding-left: 1.5rem !important; /* Back to normal */
+    padding-left: 1.5rem !important;
     padding-right: 1.5rem !important;
+    padding-top: 70px !important; /* Space for the top bar */
   }
   
   .container {
@@ -226,11 +248,6 @@ section {
   
   section h2, .member-detail-overlay h1 {
     margin-top: 1rem !important;
-  }
-  
-  /* Create space for top icons if needed */
-  .hero-section {
-    padding-top: 60px;
   }
 }
 
@@ -444,17 +461,17 @@ section {
 
 @media (max-width: 600px) {
   .team-carousel-container {
-    height: 600px;
+    height: 520px;
     overflow: visible !important;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1rem;
   }
   
   .carousel-item-wrapper {
-    width: 280px !important;
-    height: 420px;
+    width: 260px !important;
+    height: 400px;
     left: 50% !important;
-    margin-left: -140px !important;
+    margin-left: -130px !important;
   }
   
   .carousel-item-active {
@@ -465,23 +482,23 @@ section {
   
   .carousel-item-next {
     transform: scale(0.8) translateX(100%);
-    opacity: 0; /* Hide next card on mobile to avoid overlap */
+    opacity: 0; 
     pointer-events: none;
   }
 
   .carousel-nav {
     position: absolute;
-    bottom: -60px;
+    bottom: -30px; /* Brought closer */
     left: 50%;
     transform: translateX(-50%);
     margin-top: 0;
     display: flex;
-    gap: 30px;
+    gap: 24px;
   }
 
   .nav-btn {
-    width: 54px !important;
-    height: 54px !important;
+    width: 48px !important;
+    height: 48px !important;
     background: var(--color-sage) !important;
     color: white !important;
   }
