@@ -495,16 +495,15 @@ function App() {
       </button>
 
       {(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) && (
-        <button className="back-btn" onClick={handleBack} aria-label="Назад" style={{ top: '84px' }}>
+        <button className="back-btn" onClick={handleBack} aria-label="Назад">
           <ArrowLeft size={28} strokeWidth={3} />
         </button>
       )}
 
       <button 
-        className="home-btn" 
+        className={`home-btn ${(selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) ? 'shifted' : ''}`} 
         onClick={() => { window.location.hash = '#'; window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
         aria-label="На главную"
-        style={{ top: (selectedMember || isArchiveOpen || selectedEvent || selectedMaterial) ? '144px' : '84px' }}
       >
         <Home size={28} strokeWidth={2.5} />
       </button>
