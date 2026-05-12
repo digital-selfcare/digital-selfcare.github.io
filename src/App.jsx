@@ -33,6 +33,9 @@ function App() {
   const [pendingScroll, setPendingScroll] = useState(null);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+
   
   const returningFromSubpage = useRef(false);
 
@@ -594,20 +597,85 @@ function App() {
                 <p className="modal-email">{content.contacts.email}</p>
               </div>
 
-              <form className="feedback-form" onSubmit={(e) => { e.preventDefault(); alert('Сообщение отправлено!'); setIsFeedbackOpen(false); }}>
+              <form 
+                className="feedback-form" 
+                onSubmit={async (e) => { 
+                  e.preventDefault();
+                  setIsSubmitting(true);
+                  setSubmitStatus(null);
+                  
+                  const formData = new FormData(e.target);
+                  const data = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    message: formData.get('message'),
+                    _subject: "Новое сообщение с сайта гранта",
+                  };
+
+                  try {
+                    const response = await fetch(`https://formsubmit.co/ajax/${content.contacts.email}`, {
+                      method: "POST",
+                      headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        ...data,
+                        _captcha: "false",
+                        _template: "table"
+                      })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && (result.success === "true" || result.success === true)) {
+                      setSubmitStatus('success');
+                      setTimeout(() => {
+                        setIsFeedbackOpen(false);
+                        setSubmitStatus(null);
+                      }, 5000);
+                    } else {
+                      setSubmitStatus('error');
+                    }
+                  } catch (error) {
+                    setSubmitStatus('error');
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+              >
                 <div className="feedback-form-group">
                   <label className="feedback-form-label">Ваше имя</label>
-                  <input type="text" className="feedback-form-input" placeholder="Иван Иванов" required />
+                  <input name="name" type="text" className="feedback-form-input" placeholder="Иван Иванов" required disabled={isSubmitting} />
                 </div>
                 <div className="feedback-form-group">
                   <label className="feedback-form-label">Ваш Email</label>
-                  <input type="email" className="feedback-form-input" placeholder="example@mail.ru" required />
+                  <input name="email" type="email" className="feedback-form-input" placeholder="example@mail.ru" required disabled={isSubmitting} />
                 </div>
                 <div className="feedback-form-group">
                   <label className="feedback-form-label">Сообщение</label>
-                  <textarea className="feedback-form-textarea" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required></textarea>
+                  <textarea name="message" className="feedback-form-textarea" placeholder="Напишите здесь ваше сообщение, вопрос или предложение по сотрудничеству..." required disabled={isSubmitting}></textarea>
                 </div>
-                <button type="submit" className="feedback-form-submit">ОТПРАВИТЬ ПИСЬМО</button>
+                
+                <button 
+                  type="submit" 
+                  className={`feedback-form-submit ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'ОТПРАВКА...' : 'ОТПРАВИТЬ ПИСЬМО'}
+                </button>
+
+                 {submitStatus === 'success' && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-sage text-center mt-4">
+                    <p className="font-bold">Спасибо! Ваше сообщение успешно отправлено.</p>
+                    <p className="text-sm mt-1">Если вы не получили подтверждение, пожалуйста, проверьте папку <b>Спам</b>.</p>
+                  </motion.div>
+                )}
+                {submitStatus === 'error' && (
+                  <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 font-bold text-center mt-4">
+                    Ошибка при отправке. Пожалуйста, попробуйте позже или напишите нам напрямую.
+                  </motion.p>
+                )}
               </form>
             </motion.div>
           </motion.div>
