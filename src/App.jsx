@@ -31,6 +31,20 @@ function App() {
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Touch Pinch and Wheel Zoom Refs
+  const [touchStartDist, setTouchStartDist] = useState(0);
+  const [touchStartScale, setTouchStartScale] = useState(1);
+  const lightboxRef = useRef(null);
+
+  // Progressive preview logic for fast mobile loading
+  const getNewsImagePreview = (imgSrc) => {
+    if (!imgSrc) return '';
+    if (imgSrc.includes('Shlyapina_Stipend1.png')) {
+      return imgSrc.replace('.png', '_preview.jpg');
+    }
+    return imgSrc;
+  };
 
   const handleMouseDown = (e) => {
     if (zoomScale <= 1) return;
@@ -53,23 +67,51 @@ function App() {
   };
 
   const handleTouchStart = (e) => {
-    if (zoomScale <= 1) return;
-    const touch = e.touches[0];
-    setIsDragging(true);
-    setDragStart({ x: touch.clientX - panPosition.x, y: touch.clientY - panPosition.y });
+    if (e.touches.length === 2) {
+      // Pinch to zoom started
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      setTouchStartDist(dist);
+      setTouchStartScale(zoomScale);
+      setIsDragging(false);
+    } else if (e.touches.length === 1 && zoomScale > 1) {
+      // Normal panning started
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({ x: touch.clientX - panPosition.x, y: touch.clientY - panPosition.y });
+    }
   };
 
   const handleTouchMove = (e) => {
-    if (!isDragging || zoomScale <= 1) return;
-    const touch = e.touches[0];
-    setPanPosition({
-      x: touch.clientX - dragStart.x,
-      y: touch.clientY - dragStart.y
-    });
+    if (e.touches.length === 2 && touchStartDist > 0) {
+      // Pinching
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      const factor = dist / touchStartDist;
+      const nextScale = Math.min(Math.max(touchStartScale * factor, 1), 4);
+      setZoomScale(nextScale);
+      if (nextScale === 1) {
+        setPanPosition({ x: 0, y: 0 });
+      }
+    } else if (e.touches.length === 1 && isDragging && zoomScale > 1) {
+      // Panning
+      e.preventDefault();
+      const touch = e.touches[0];
+      setPanPosition({
+        x: touch.clientX - dragStart.x,
+        y: touch.clientY - dragStart.y
+      });
+    }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e) => {
     setIsDragging(false);
+    if (e.touches.length < 2) {
+      setTouchStartDist(0);
+    }
   };
 
   const handleDoubleClick = (e) => {
@@ -87,7 +129,32 @@ function App() {
     setZoomedImageSrc(null);
     setZoomScale(1);
     setPanPosition({ x: 0, y: 0 });
+    setTouchStartDist(0);
   };
+
+  // Wheel Zoom Listener (Non-passive to allow preventing browser native page zoom)
+  useEffect(() => {
+    const current = lightboxRef.current;
+    if (!current) return;
+    
+    const onWheel = (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const zoomFactor = 0.15;
+        const direction = e.deltaY < 0 ? 1 : -1;
+        setZoomScale(prev => {
+          const next = Math.min(Math.max(prev + direction * zoomFactor, 1), 4);
+          if (next === 1) setPanPosition({ x: 0, y: 0 });
+          return next;
+        });
+      }
+    };
+    
+    current.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      current.removeEventListener('wheel', onWheel);
+    };
+  }, [zoomedImageSrc]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -397,7 +464,7 @@ function App() {
                    <img 
                      src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
                        ? content.events.items.find(e => e.id === selectedEvent).image 
-                       : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
+                       : `/${getNewsImagePreview(content.events.items.find(e => e.id === selectedEvent).image)}`} 
                      alt={content.events.items.find(e => e.id === selectedEvent).title} 
                      title="Нажмите для увеличения"
                      style={{
@@ -407,11 +474,19 @@ function App() {
                        objectFit: 'contain',
                        borderRadius: '16px',
                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                       cursor: 'zoom-in'
+                       cursor: 'zoom-in',
+                       touchAction: 'none'
                      }}
                      onClick={() => {
                        const src = content.events.items.find(e => e.id === selectedEvent).image;
                        setZoomedImageSrc(src.startsWith('http') ? src : `/${src}`);
+                     }}
+                     onWheel={(e) => {
+                       if (e.ctrlKey) {
+                         e.preventDefault();
+                         const scaleDelta = e.deltaY > 0 ? 0.9 : 1.1;
+                         // Add logic for scale transformation here
+                       }
                      }}
                    />
                  </div>
@@ -739,6 +814,7 @@ function App() {
         )}
         {zoomedImageSrc && (
           <motion.div 
+            ref={lightboxRef}
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
