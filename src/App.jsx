@@ -289,7 +289,15 @@ function App() {
                          <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold"><span>{file.size}</span><span>•</span><span>{file.date}</span></div>
                        </div>
                      </div>
-                     <button className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none">СКАЧАТЬ</button>
+                     <a 
+                        href={file.url || `/${file.name}`} 
+                        download={file.name}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none text-center inline-block"
+                      >
+                        СКАЧАТЬ
+                      </a>
                    </div>
                  ))}
                </div>
