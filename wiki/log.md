@@ -69,5 +69,9 @@
 - Импортирована соответствующая иконка из библиотеки lucide-react.
 - Удален неиспользуемый компонент VKIcon.
 
-## [2026-05-21 15:25] | public/team/shlyapina-alexandra.jpg, public/team/leukhina-anna.jpg | [TYPE: UPDATE]
-- Заменены фотографии Александры Шляпиной и Анны Леухиной на новые версии (Shlyapina.jpg и Leuhina.jpg из raw-sources).
+## [2026-05-21 15:25] | public/team/shlyapina-anastasia.jpg, public/team/leukhina-anna.jpg | [TYPE: UPDATE]
+- Заменены фотографии Анастасии Шляпиной и Анны Леухиной на новые версии (Shlyapina.jpg и Leuhina.jpg из raw-sources).
+
+## [2026-05-21 15:35] | src/content.js, public/team/shlyapina-anastasia.jpg | [TYPE: FIX]
+- Исправлено имя Анастасии Шляпиной (ранее ошибочно использовалось имя «Александра»).
+- Переименован файл фотографии с shlyapina-alexandra.jpg на shlyapina-anastasia.jpg и соответствующим образом обновлены ID и пути в src/content.js.
