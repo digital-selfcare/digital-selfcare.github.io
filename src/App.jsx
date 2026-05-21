@@ -318,16 +318,36 @@ function App() {
                   <p className="mb-8">{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
                 </div>
                 {content.events.items.find(e => e.id === selectedEvent)?.image && (
-                  <div className="mt-8 mb-12 overflow-hidden rounded-3xl shadow-md w-full flex items-center justify-center bg-beige/5 border border-gray-100 p-2 md:p-4">
-                    <img 
-                      src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
-                        ? content.events.items.find(e => e.id === selectedEvent).image 
-                        : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
-                      alt={content.events.items.find(e => e.id === selectedEvent).title} 
-                      className="max-w-full h-auto rounded-2xl max-h-[70vh] object-contain shadow-sm"
-                    />
-                  </div>
-                )}
+                 <div style={{
+                   marginTop: '2rem',
+                   marginBottom: '3rem',
+                   overflow: 'hidden',
+                   borderRadius: '24px',
+                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                   width: '100%',
+                   display: 'flex',
+                   alignItems: 'center',
+                   justifyContent: 'center',
+                   backgroundColor: '#fdfbf7',
+                   border: '1px solid #e8e2db',
+                   padding: '12px'
+                 }}>
+                   <img 
+                     src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
+                       ? content.events.items.find(e => e.id === selectedEvent).image 
+                       : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
+                     alt={content.events.items.find(e => e.id === selectedEvent).title} 
+                     style={{
+                       maxWidth: '100%',
+                       height: 'auto',
+                       maxHeight: '65vh',
+                       objectFit: 'contain',
+                       borderRadius: '16px',
+                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+                     }}
+                   />
+                 </div>
+               )}
               </div>
             </motion.div>
           ) : isArchiveOpen ? (
