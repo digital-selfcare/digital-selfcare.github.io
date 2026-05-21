@@ -302,35 +302,34 @@ function App() {
                  ))}
                </div>
              </div>
-           </motion.div>
-          ) : selectedEvent ? (
+           </motion.div>           ) : selectedEvent ? (
             <motion.div key="event-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
-            <div className="container max-w-4xl">
-              <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
-                 <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
-                 <div>
+              <div className="container max-w-4xl">
+                <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
+                  <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
+                  <div>
                     <h1 className="text-3xl font-playfair font-bold">{content.events.items.find(e => e.id === selectedEvent)?.title}</h1>
                     <p className="text-powdery font-bold text-xs mt-2 uppercase tracking-widest">{content.events.items.find(e => e.id === selectedEvent)?.date}</p>
-                 </div>
-              </div>
-              <div className="w-full h-px bg-gray-100 mb-12" />
-              {content.events.items.find(e => e.id === selectedEvent)?.image && (
-                <div className="mb-10 overflow-hidden rounded-3xl shadow-lg max-h-[500px] w-full flex items-center justify-center bg-gray-50 border border-gray-100">
-                  <img 
-                    src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
-                      ? content.events.items.find(e => e.id === selectedEvent).image 
-                      : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
-                    alt={content.events.items.find(e => e.id === selectedEvent).title} 
-                    className="w-full h-full object-cover max-h-[500px]"
-                  />
+                  </div>
                 </div>
-              )}
-              <div className="prose prose-lg text-text-light">
-                 <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
-                 <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
+                <div className="w-full h-px bg-gray-100 mb-12" />
+                <div className="prose prose-lg text-text-light">
+                  <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
+                  <p className="mb-8">{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
+                </div>
+                {content.events.items.find(e => e.id === selectedEvent)?.image && (
+                  <div className="mt-8 mb-12 overflow-hidden rounded-3xl shadow-md w-full flex items-center justify-center bg-beige/5 border border-gray-100 p-2 md:p-4">
+                    <img 
+                      src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
+                        ? content.events.items.find(e => e.id === selectedEvent).image 
+                        : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
+                      alt={content.events.items.find(e => e.id === selectedEvent).title} 
+                      className="max-w-full h-auto rounded-2xl max-h-[70vh] object-contain shadow-sm"
+                    />
+                  </div>
+                )}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
           ) : isArchiveOpen ? (
             <motion.div key="archive-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
               <div className="container max-w-4xl">
