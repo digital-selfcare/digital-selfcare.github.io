@@ -314,6 +314,17 @@ function App() {
                  </div>
               </div>
               <div className="w-full h-px bg-gray-100 mb-12" />
+              {content.events.items.find(e => e.id === selectedEvent)?.image && (
+                <div className="mb-10 overflow-hidden rounded-3xl shadow-lg max-h-[500px] w-full flex items-center justify-center bg-gray-50 border border-gray-100">
+                  <img 
+                    src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
+                      ? content.events.items.find(e => e.id === selectedEvent).image 
+                      : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
+                    alt={content.events.items.find(e => e.id === selectedEvent).title} 
+                    className="w-full h-full object-cover max-h-[500px]"
+                  />
+                </div>
+              )}
               <div className="prose prose-lg text-text-light">
                  <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
                  <p>{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
