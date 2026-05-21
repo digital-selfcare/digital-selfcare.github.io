@@ -27,6 +27,67 @@ const DzenIcon = ({ size = 24, className = "" }) => (
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [zoomedImageSrc, setZoomedImageSrc] = useState(null);
+  const [zoomScale, setZoomScale] = useState(1);
+  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseDown = (e) => {
+    if (zoomScale <= 1) return;
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - panPosition.x, y: e.clientY - panPosition.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || zoomScale <= 1) return;
+    e.preventDefault();
+    setPanPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e) => {
+    if (zoomScale <= 1) return;
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setDragStart({ x: touch.clientX - panPosition.x, y: touch.clientY - panPosition.y });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || zoomScale <= 1) return;
+    const touch = e.touches[0];
+    setPanPosition({
+      x: touch.clientX - dragStart.x,
+      y: touch.clientY - dragStart.y
+    });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleDoubleClick = (e) => {
+    e.stopPropagation();
+    if (zoomScale > 1) {
+      setZoomScale(1);
+      setPanPosition({ x: 0, y: 0 });
+    } else {
+      setZoomScale(2.5);
+      setPanPosition({ x: 0, y: 0 });
+    }
+  };
+
+  const closeLightbox = () => {
+    setZoomedImageSrc(null);
+    setZoomScale(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -690,10 +751,115 @@ function App() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'zoom-out'
+              cursor: zoomScale > 1 ? 'grab' : 'zoom-out',
+              overflow: 'hidden',
+              touchAction: 'none'
             }}
-            onClick={() => setZoomedImageSrc(null)}
+            onClick={closeLightbox}
           >
+            {/* Панель управления увеличением */}
+            <div style={{
+              position: 'absolute',
+              top: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              padding: '8px 16px',
+              borderRadius: '50px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              zIndex: 2000010
+            }} onClick={(e) => e.stopPropagation()}>
+              <button 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                }}
+                onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))}
+              >
+                ➕ Приблизить
+              </button>
+              <button 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                }}
+                onClick={() => setZoomScale(prev => {
+                  const next = Math.max(prev - 0.5, 1);
+                  if (next === 1) setPanPosition({ x: 0, y: 0 });
+                  return next;
+                })}
+              >
+                ➖ Отдалить
+              </button>
+              {zoomScale > 1 && (
+                <button 
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)'
+                  }}
+                  onClick={() => {
+                    setZoomScale(1);
+                    setPanPosition({ x: 0, y: 0 });
+                  }}
+                >
+                  🔄 Сброс
+                </button>
+              )}
+              <div style={{ width: '1px', height: '20px', backgroundColor: 'rgba(255, 255, 255, 0.2)', margin: '0 4px' }} />
+              <button 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ff8a8a',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600
+                }}
+                onClick={closeLightbox}
+              >
+                <X size={18} /> ЗАКРЫТЬ
+              </button>
+            </div>
+
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
@@ -704,29 +870,11 @@ function App() {
                 maxHeight: '90vh',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                overflow: 'visible'
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                style={{
-                  position: 'absolute',
-                  top: '-40px',
-                  right: '0px',
-                  background: 'none',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.9rem',
-                  fontWeight: 600
-                }}
-                onClick={() => setZoomedImageSrc(null)}
-              >
-                <X size={20} /> ЗАКРЫТЬ
-              </button>
               <img 
                 src={zoomedImageSrc} 
                 alt="Zoomed News" 
@@ -735,10 +883,22 @@ function App() {
                   maxHeight: '85vh',
                   objectFit: 'contain',
                   borderRadius: '16px',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-                  cursor: 'zoom-out'
+                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                  transform: `translate(${panPosition.x}px, ${panPosition.y}px) scale(${zoomScale})`,
+                  transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+                  cursor: zoomScale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
+                  userSelect: 'none',
+                  touchAction: 'none'
                 }}
-                onClick={() => setZoomedImageSrc(null)}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onDoubleClick={handleDoubleClick}
+                onClick={(e) => e.stopPropagation()}
               />
             </motion.div>
           </motion.div>
