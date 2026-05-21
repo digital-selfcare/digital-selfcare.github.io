@@ -26,6 +26,7 @@ const DzenIcon = ({ size = 24, className = "" }) => (
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [zoomedImageSrc, setZoomedImageSrc] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -337,13 +338,19 @@ function App() {
                        ? content.events.items.find(e => e.id === selectedEvent).image 
                        : `/${content.events.items.find(e => e.id === selectedEvent).image}`} 
                      alt={content.events.items.find(e => e.id === selectedEvent).title} 
+                     title="Нажмите для увеличения"
                      style={{
                        maxWidth: '100%',
                        height: 'auto',
                        maxHeight: '65vh',
                        objectFit: 'contain',
                        borderRadius: '16px',
-                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                       cursor: 'zoom-in'
+                     }}
+                     onClick={() => {
+                       const src = content.events.items.find(e => e.id === selectedEvent).image;
+                       setZoomedImageSrc(src.startsWith('http') ? src : `/${src}`);
                      }}
                    />
                  </div>
@@ -666,6 +673,73 @@ function App() {
                   ОТПРАВИТЬ ПИСЬМО
                 </button>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+        {zoomedImageSrc && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              backdropFilter: 'blur(10px)',
+              zIndex: 2000000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'zoom-out'
+            }}
+            onClick={() => setZoomedImageSrc(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              style={{
+                position: 'relative',
+                maxWidth: '90vw',
+                maxHeight: '90vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                style={{
+                  position: 'absolute',
+                  top: '-40px',
+                  right: '0px',
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600
+                }}
+                onClick={() => setZoomedImageSrc(null)}
+              >
+                <X size={20} /> ЗАКРЫТЬ
+              </button>
+              <img 
+                src={zoomedImageSrc} 
+                alt="Zoomed News" 
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '85vh',
+                  objectFit: 'contain',
+                  borderRadius: '16px',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                  cursor: 'zoom-out'
+                }}
+                onClick={() => setZoomedImageSrc(null)}
+              />
             </motion.div>
           </motion.div>
         )}
