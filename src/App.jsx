@@ -314,7 +314,7 @@ function App() {
                 </div>
                 <div className="w-full h-px bg-gray-100 mb-12" />
                 <div className="prose prose-lg text-text-light">
-                  <p className="text-xl mb-6">{content.events.items.find(e => e.id === selectedEvent)?.description}</p>
+                  
                   <p className="mb-8">{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
                 </div>
                 {content.events.items.find(e => e.id === selectedEvent)?.image && (
