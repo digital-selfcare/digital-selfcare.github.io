@@ -398,7 +398,7 @@ function App() {
       <div className="content-wrapper">
         <AnimatePresence mode="wait">
           {selectedMaterial ? (
-             <motion.div key="material-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
+             <motion.div key="material-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="detail-view-overlay fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
              <div className="container max-w-4xl">
                <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
                   <div className="w-16 h-16 bg-sage/5 rounded-2xl flex items-center justify-center text-sage">{materialIcons[selectedMaterial] || <FileSearch size={32} />}</div>
@@ -432,7 +432,7 @@ function App() {
                </div>
              </div>
            </motion.div>           ) : selectedEvent ? (
-            <motion.div key="event-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
+            <motion.div key="event-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="detail-view-overlay fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
               <div className="container max-w-4xl">
                 <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
                   <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
@@ -494,7 +494,7 @@ function App() {
               </div>
             </motion.div>
           ) : isArchiveOpen ? (
-            <motion.div key="archive-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
+            <motion.div key="archive-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="detail-view-overlay fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
               <div className="container max-w-4xl">
                 <h1 className="text-4xl font-playfair font-bold mb-12 mt-12 md:mt-0">Архив новостей</h1>
                 <div className="space-y-6">

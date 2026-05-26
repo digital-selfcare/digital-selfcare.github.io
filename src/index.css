@@ -9,6 +9,7 @@
   --color-text-light: #5d6d7e;
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Montserrat', sans-serif;
+  --nav-width-desktop: 100px;
 }
 
 * {
@@ -49,6 +50,12 @@ ul {
 section {
   padding: 4rem 0;
   position: relative;
+}
+
+@media (min-width: 769px) {
+  section, .member-detail-overlay, .detail-view-overlay, footer {
+    padding-left: var(--nav-width-desktop) !important;
+  }
 }
 
 .hero-section {
