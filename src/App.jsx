@@ -450,47 +450,47 @@ function App() {
                  <div style={{
                    marginTop: '2rem',
                    marginBottom: '3rem',
-                   overflow: 'hidden',
-                   borderRadius: '24px',
-                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-                   width: '100%',
                    display: 'flex',
-                   alignItems: 'center',
-                   justifyContent: 'center',
-                   backgroundColor: '#fdfbf7',
-                   border: '1px solid #e8e2db',
-                   padding: '12px'
+                   flexDirection: 'column',
+                   gap: '24px',
+                   width: '100%'
                  }}>
-                   <img 
-                     src={content.events.items.find(e => e.id === selectedEvent).image.startsWith('http') 
-                       ? content.events.items.find(e => e.id === selectedEvent).image 
-                       : `/${getNewsImagePreview(content.events.items.find(e => e.id === selectedEvent).image)}`} 
-                     alt={content.events.items.find(e => e.id === selectedEvent).title} 
-                     title="Нажмите для увеличения"
-                     style={{
-                       maxWidth: '100%',
-                       height: 'auto',
-                       maxHeight: '65vh',
-                       objectFit: 'contain',
-                       borderRadius: '16px',
-                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                       cursor: 'zoom-in',
-                       touchAction: 'none'
-                     }}
-                     onClick={() => {
-                       const src = content.events.items.find(e => e.id === selectedEvent).image;
-                       setZoomedImageSrc(src.startsWith('http') ? src : `/${src}`);
-                     }}
-                     onWheel={(e) => {
-                       if (e.ctrlKey) {
-                         e.preventDefault();
-                         const scaleDelta = e.deltaY > 0 ? 0.9 : 1.1;
-                         // Add logic for scale transformation here
-                       }
-                     }}
-                   />
+                   {(Array.isArray(content.events.items.find(e => e.id === selectedEvent).image) 
+                     ? content.events.items.find(e => e.id === selectedEvent).image 
+                     : [content.events.items.find(e => e.id === selectedEvent).image]
+                   ).map((imgSrc, idx) => (
+                     <div key={idx} style={{
+                       overflow: 'hidden',
+                       borderRadius: '24px',
+                       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                       width: '100%',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       backgroundColor: '#fdfbf7',
+                       border: '1px solid #e8e2db',
+                       padding: '12px'
+                     }}>
+                       <img 
+                         src={imgSrc.startsWith('http') ? imgSrc : '/' + getNewsImagePreview(imgSrc)} 
+                         alt={content.events.items.find(e => e.id === selectedEvent).title} 
+                         title="Нажмите для увеличения"
+                         style={{
+                           maxWidth: '100%',
+                           height: 'auto',
+                           maxHeight: '65vh',
+                           objectFit: 'contain',
+                           borderRadius: '16px',
+                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                           cursor: 'zoom-in',
+                           touchAction: 'none'
+                         }}
+                         onClick={() => setZoomedImageSrc(imgSrc.startsWith('http') ? imgSrc : '/' + imgSrc)}
+                       />
+                     </div>
+                   ))}
                  </div>
-               )}
+                )}
               </div>
             </motion.div>
           ) : isArchiveOpen ? (
