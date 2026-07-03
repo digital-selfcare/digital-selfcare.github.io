@@ -443,8 +443,7 @@ function App() {
                 </div>
                 <div className="w-full h-px bg-gray-100 mb-12" />
                 <div className="prose prose-lg text-text-light">
-                  
-                  <p className="mb-8">{content.events.items.find(e => e.id === selectedEvent)?.content}</p>
+                  <div className="mb-8 content-html" dangerouslySetInnerHTML={{ __html: content.events.items.find(e => e.id === selectedEvent)?.content }} />
                 </div>
                 {content.events.items.find(e => e.id === selectedEvent)?.image && (
                  <div style={{
