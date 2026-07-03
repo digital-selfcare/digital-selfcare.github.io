@@ -450,10 +450,11 @@ function App() {
                  <div style={{
                    marginTop: '2rem',
                    marginBottom: '3rem',
-                   display: 'flex',
-                   flexDirection: 'column',
-                   gap: '24px',
-                   width: '100%'
+                   display: 'grid',
+                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                   gap: '16px',
+                   width: '100%',
+                   alignItems: 'stretch'
                  }}>
                    {(Array.isArray(content.events.items.find(e => e.id === selectedEvent).image) 
                      ? content.events.items.find(e => e.id === selectedEvent).image 
@@ -461,7 +462,7 @@ function App() {
                    ).map((imgSrc, idx) => (
                      <div key={idx} style={{
                        overflow: 'hidden',
-                       borderRadius: '24px',
+                       borderRadius: '16px',
                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
                        width: '100%',
                        display: 'flex',
@@ -469,18 +470,18 @@ function App() {
                        justifyContent: 'center',
                        backgroundColor: '#fdfbf7',
                        border: '1px solid #e8e2db',
-                       padding: '12px'
+                       padding: '8px'
                      }}>
                        <img 
                          src={imgSrc.startsWith('http') ? imgSrc : '/' + getNewsImagePreview(imgSrc)} 
                          alt={content.events.items.find(e => e.id === selectedEvent).title} 
                          title="Нажмите для увеличения"
                          style={{
-                           maxWidth: '100%',
-                           height: 'auto',
-                           maxHeight: '65vh',
-                           objectFit: 'contain',
-                           borderRadius: '16px',
+                           width: '100%',
+                           height: '100%',
+                           maxHeight: '35vh',
+                           objectFit: 'cover',
+                           borderRadius: '8px',
                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
                            cursor: 'zoom-in',
                            touchAction: 'none'
