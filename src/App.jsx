@@ -435,7 +435,22 @@ function App() {
             <motion.div key="event-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="detail-view-overlay fixed inset-0 bg-white py-24 px-8 overflow-y-auto" style={{ zIndex: 100 }}>
               <div className="container max-w-4xl">
                 <div className="flex items-center gap-6 mb-8 mt-12 md:mt-0">
-                  <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery"><Newspaper size={32} /></div>
+                  {content.events.items.find(e => e.id === selectedEvent)?.pdfUrl ? (
+                    <a 
+                      href={content.events.items.find(e => e.id === selectedEvent)?.pdfUrl} 
+                      download={content.events.items.find(e => e.id === selectedEvent)?.pdfName || "article.pdf"}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      title="Скачать PDF статьи"
+                      className="w-16 h-16 bg-powdery/10 hover:bg-powdery hover:text-white rounded-2xl flex items-center justify-center text-powdery transition-all shadow-sm hover:shadow-md cursor-pointer group flex-shrink-0"
+                    >
+                      <Newspaper size={32} className="group-hover:scale-110 transition-transform" />
+                    </a>
+                  ) : (
+                    <div className="w-16 h-16 bg-powdery/10 rounded-2xl flex items-center justify-center text-powdery flex-shrink-0">
+                      <Newspaper size={32} />
+                    </div>
+                  )}
                   <div>
                     <h1 className="text-3xl font-playfair font-bold">{content.events.items.find(e => e.id === selectedEvent)?.title}</h1>
                     <p className="text-powdery font-bold text-xs mt-2 uppercase tracking-widest">{content.events.items.find(e => e.id === selectedEvent)?.date}</p>
