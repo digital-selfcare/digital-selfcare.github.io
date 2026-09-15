@@ -38,7 +38,14 @@ export const content = {
   <p class="font-semibold text-sm text-text-light mb-1">Для цитирования:</p>
   <p class="text-sm italic mb-3">Судьин С.А., Носкова Т.В., Барг А.О. Поведенческие модели заботы о психическом здоровье жителей крупных городов России. Здоровье населения и среда обитания – ЗНиСО. 2026;34(9):18-28. <a href="https://doi.org/10.35627/2219-5238/2026-34-9-18-28" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline">https://doi.org/10.35627/2219-5238/2026-34-9-18-28</a></p>
   <p class="font-semibold text-sm text-text-light mb-1">For citation:</p>
-  <p class="text-sm italic">Sudin S.A., Noskova T.V., Barg A.O. Mental health help-seeking behaviors among residents of major Russian cities. Public Health and Life Environment – PH&LE. 2026;34(9):18-28. (In Russ.) <a href="https://doi.org/10.35627/2219-5238/2026-34-9-18-28" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline">https://doi.org/10.35627/2219-5238/2026-34-9-18-28</a></p>
+  <p class="text-sm italic mb-4">Sudin S.A., Noskova T.V., Barg A.O. Mental health help-seeking behaviors among residents of major Russian cities. Public Health and Life Environment – PH&LE. 2026;34(9):18-28. (In Russ.) <a href="https://doi.org/10.35627/2219-5238/2026-34-9-18-28" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline">https://doi.org/10.35627/2219-5238/2026-34-9-18-28</a></p>
+  <div class="pt-3 border-t border-beige/40 flex items-center justify-between flex-wrap gap-3">
+    <span class="text-sm font-medium text-text">Полный текст статьи (PDF):</span>
+    <a href="/ЗНиСО_Поведенческие модели заботы о психическом здоровье.pdf" download="ЗНиСО_Поведенческие модели заботы о психическом здоровье.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-powdery text-white font-semibold text-xs tracking-wider uppercase hover:opacity-90 transition-all shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Скачать PDF статьи
+    </a>
+  </div>
 </div>`
       },
       {
@@ -304,6 +311,7 @@ export const content = {
         title: "Публикации",
         description: "Научные статьи, препринты и отчеты по результатам гранта.",
         files: [
+          { name: "ЗНиСО_Поведенческие модели заботы о психическом здоровье.pdf", size: "403 KB", date: "15.09.2026" },
           { name: "Отчет_Этап_1.pdf", size: "4.5 MB", date: "10.04.2026" },
           { name: "Статья_Цифровое_Здоровье.pdf", size: "3.2 MB", date: "12.04.2026" }
         ]
