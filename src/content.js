@@ -36,7 +36,9 @@ export const content = {
 
 <div class="mt-8 p-4 rounded-xl bg-beige/20 border border-beige/40">
   <p class="font-semibold text-sm text-text-light mb-1">Для цитирования:</p>
-  <p class="text-sm italic">Судьин С.А., Носкова Т.В., Барг А.О. Поведенческие модели заботы о психическом здоровье жителей крупных городов России. Здоровье населения и среда обитания – ЗНиСО. 2026;34(9):18-28. <a href="https://doi.org/10.35627/2219-5238/2026-34-9-18-28" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline">https://doi.org/10.35627/2219-5238/2026-34-9-18-28</a></p>
+  <p class="text-sm italic mb-3">Судьин С.А., Носкова Т.В., Барг А.О. Поведенческие модели заботы о психическом здоровье жителей крупных городов России. Здоровье населения и среда обитания – ЗНиСО. 2026;34(9):18-28. <a href="https://doi.org/10.35627/2219-5238/2026-34-9-18-28" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline">https://doi.org/10.35627/2219-5238/2026-34-9-18-28</a></p>
+  <p class="font-semibold text-sm text-text-light mb-1">For citation:</p>
+  <p class="text-sm italic">Sudin S.A., Noskova T.V., Barg A.O. Mental health help-seeking behaviors among residents of major Russian cities. Public Health and Life Environment – PH&LE. 2026;34(9):18-28. (In Russ.) <a href="https://doi.org/10.35627/2219-5238/2026-34-9-18-28" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline">https://doi.org/10.35627/2219-5238/2026-34-9-18-28</a></p>
 </div>`
       },
       {
