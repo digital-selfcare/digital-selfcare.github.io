@@ -8,7 +8,7 @@ import {
   FileSearch, BarChart3, GraduationCap,
   ArrowLeft, ArrowRight, FileDown, Clock, Newspaper,
   User, Award, Briefcase, Microscope, CheckCircle2,
-  Archive, History, Layout
+  Archive, History, Layout, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { content } from './content';
 
@@ -27,6 +27,8 @@ const DzenIcon = ({ size = 24, className = "" }) => (
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [zoomedImageSrc, setZoomedImageSrc] = useState(null);
+  const [zoomedImageList, setZoomedImageList] = useState([]);
+  const [zoomedImageIndex, setZoomedImageIndex] = useState(0);
   const [zoomScale, setZoomScale] = useState(1);
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -44,6 +46,34 @@ function App() {
       return imgSrc.replace('.png', '_preview.jpg');
     }
     return imgSrc;
+  };
+
+  const openLightbox = (imageList, index) => {
+    const list = Array.isArray(imageList) ? imageList : [imageList];
+    const fullList = list.map(img => img.startsWith('http') ? img : '/' + img);
+    setZoomedImageList(fullList);
+    setZoomedImageIndex(index);
+    setZoomedImageSrc(fullList[index]);
+    setZoomScale(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
+
+  const showPrevImage = () => {
+    if (zoomedImageList.length <= 1) return;
+    const newIdx = (zoomedImageIndex - 1 + zoomedImageList.length) % zoomedImageList.length;
+    setZoomedImageIndex(newIdx);
+    setZoomedImageSrc(zoomedImageList[newIdx]);
+    setZoomScale(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
+
+  const showNextImage = () => {
+    if (zoomedImageList.length <= 1) return;
+    const newIdx = (zoomedImageIndex + 1) % zoomedImageList.length;
+    setZoomedImageIndex(newIdx);
+    setZoomedImageSrc(zoomedImageList[newIdx]);
+    setZoomScale(1);
+    setPanPosition({ x: 0, y: 0 });
   };
 
   const handleMouseDown = (e) => {
@@ -127,10 +157,28 @@ function App() {
 
   const closeLightbox = () => {
     setZoomedImageSrc(null);
+    setZoomedImageList([]);
+    setZoomedImageIndex(0);
     setZoomScale(1);
     setPanPosition({ x: 0, y: 0 });
     setTouchStartDist(0);
   };
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!zoomedImageSrc) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        showPrevImage();
+      } else if (e.key === 'ArrowRight') {
+        showNextImage();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [zoomedImageSrc, zoomedImageList, zoomedImageIndex]);
 
   // Wheel Zoom Listener (Non-passive to allow preventing browser native page zoom)
   useEffect(() => {
@@ -500,7 +548,12 @@ function App() {
                            cursor: 'zoom-in',
                            touchAction: 'none'
                          }}
-                         onClick={() => setZoomedImageSrc(imgSrc.startsWith('http') ? imgSrc : '/' + imgSrc)}
+                         onClick={() => {
+                            const allImages = Array.isArray(content.events.items.find(e => e.id === selectedEvent).image)
+                              ? content.events.items.find(e => e.id === selectedEvent).image
+                              : [content.events.items.find(e => e.id === selectedEvent).image];
+                            openLightbox(allImages, idx);
+                          }}
                        />
                      </div>
                    ))}
@@ -848,7 +901,7 @@ function App() {
             }}
             onClick={closeLightbox}
           >
-            {/* Панель управления увеличением */}
+            {/* Панель управления увеличением и навигацией */}
             <div style={{
               position: 'absolute',
               top: '20px',
@@ -856,14 +909,31 @@ function App() {
               transform: 'translateX(-50%)',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              padding: '8px 16px',
+              gap: '10px',
+              backgroundColor: 'rgba(20, 20, 20, 0.75)',
+              backdropFilter: 'blur(12px)',
+              padding: '8px 18px',
               borderRadius: '50px',
               border: '1px solid rgba(255, 255, 255, 0.2)',
-              zIndex: 2000010
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
+              zIndex: 2000010,
+              maxWidth: '95vw',
+              overflowX: 'auto'
             }} onClick={(e) => e.stopPropagation()}>
+              {zoomedImageList.length > 1 && (
+                <>
+                  <span style={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    padding: '0 6px',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {zoomedImageIndex + 1} / {zoomedImageList.length}
+                  </span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: 'rgba(255, 255, 255, 0.2)', margin: '0 2px' }} />
+                </>
+              )}
               <button 
                 style={{
                   background: 'none',
@@ -950,6 +1020,70 @@ function App() {
                 <X size={18} /> ЗАКРЫТЬ
               </button>
             </div>
+
+            {/* Боковые кнопки перелистывания фото */}
+            {zoomedImageList.length > 1 && (
+              <>
+                <button
+                  style={{
+                    position: 'absolute',
+                    left: '20px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '54px',
+                    height: '54px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 2000010,
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+                  onClick={(e) => { e.stopPropagation(); showPrevImage(); }}
+                  aria-label="Предыдущее фото"
+                  title="Предыдущее фото"
+                >
+                  <ChevronLeft size={32} strokeWidth={2.5} />
+                </button>
+                <button
+                  style={{
+                    position: 'absolute',
+                    right: '20px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '54px',
+                    height: '54px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 2000010,
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+                  onClick={(e) => { e.stopPropagation(); showNextImage(); }}
+                  aria-label="Следующее фото"
+                  title="Следующее фото"
+                >
+                  <ChevronRight size={32} strokeWidth={2.5} />
+                </button>
+              </>
+            )}
 
             <motion.div
               initial={{ scale: 0.9 }}
