@@ -15,6 +15,39 @@ export const content = {
     title: "События и новости",
     items: [
       {
+        id: "isa-rc04-education-and-ai-2026",
+        title: "Промежуточные итоги проекта представлены на международной конференции ISA RC04 «Education and AI» в Белграде",
+        date: "26 сентября 2026",
+        type: "Новости",
+        image: [
+          "news/Foto_Education and AI/photo_2026-09-26_16-03-34.jpg",
+          "news/Foto_Education and AI/photo_2026-09-26_19-32-31.jpg",
+          "news/Foto_Education and AI/photo_2026-09-26_19-42-36.jpg",
+          "news/Foto_Education and AI/photo_2026-09-26_21-44-04.jpg",
+          "news/Foto_Education and AI/photo_2026-09-26_21-47-02.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-47-27.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-47-46.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-47-52.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-49-17.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-49-28.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-50-08.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-50-18.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-51-26.jpg",
+          "news/Foto_Education and AI/photo_2026-09-30_01-53-38.jpg"
+        ],
+        description: "24–26 сентября 2026 года в Белграде состоялась международная конференция «Education and AI», на которой были представлены доклады исследовательской группы проекта.",
+        content: `<p>Промежуточные итоги проекта представлены на международной конференции Исследовательского комитета по социологии образования Международной социологической ассоциации (ISA RC04) «Education and AI», состоявшейся 24-26 сентября 2026 года в Белграде (Сербия).</p>
+
+<p>Руководитель проекта <b>Н.А. Лебедева-Несевря</b> выступила с пленарным докладом <i>«Artificial intelligence in socially significant spheres: factors of trust among Russians»</i>, посвященном проблемам доверия ИИ в России в сравнении со странами мира.</p>
+
+<p>Основной исполнитель проекта <b>А.О. Барг</b> представила секционный доклад <i>«Artificial intelligence as a resource for psychological support: development prospects in Russia»</i>, сфокусированный на цифровых ресурсах поддержки ментального здоровья россиян.</p>
+
+<div class="mt-8 p-4 rounded-xl bg-beige/20 border border-beige/40">
+  <p class="font-semibold text-sm text-text-light mb-1">Программа мероприятия и сборник тезисов:</p>
+  <p class="text-sm"><a href="https://ssd.org.rs/final-programme-and-book-of-abstracts-for-isa-rc04-midterm-conference-education-and-ai/" target="_blank" rel="noopener noreferrer" class="text-powdery hover:underline font-medium">Final Programme and Book of Abstracts for ISA RC04 Midterm Conference: Education and AI</a></p>
+</div>`
+      },
+      {
         id: "first-scopus-article-2026",
         title: "Вышла первая статья по проекту 2026-2027 гг. в журнале, индексируемом в Scopus",
         date: "15 сентября 2026",
