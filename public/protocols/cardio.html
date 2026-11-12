@@ -55,7 +55,7 @@
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .btn {
@@ -75,6 +75,12 @@
         .btn:hover { background: #f1f5f9; border-color: var(--border-hover); }
         .btn-primary { background: var(--primary); color: #ffffff; border-color: var(--primary); }
         .btn-primary:hover { background: #163a5a; }
+        .btn-next {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+        .btn-next:hover { background: #163a5a; }
         .nav-select {
             padding: 7px 12px;
             font-size: 0.85rem;
@@ -82,7 +88,7 @@
             border: 1px solid var(--border);
             background: #ffffff;
             color: var(--text-dark);
-            max-width: 280px;
+            max-width: 260px;
         }
         .progress-pill {
             padding: 5px 12px;
@@ -170,8 +176,8 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .answer-row.has-error {
-            border: 2px solid var(--danger);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+            border: 2px solid var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
         }
         .answer-main {
             flex: 1 1 65%;
@@ -205,6 +211,11 @@
             padding: 2px 8px;
             border-radius: 12px;
             text-transform: uppercase;
+            animation: pulse-red 1s infinite alternate;
+        }
+        @keyframes pulse-red {
+            0% { opacity: 0.85; }
+            100% { opacity: 1; }
         }
         .answer-body {
             padding: 18px 20px;
@@ -259,16 +270,17 @@
             box-shadow: 0 0 0 2px rgba(31,78,120,0.15);
         }
         .eval-select.filled {
-            border-color: #16a34a;
-            background: #f0fdf4;
-            color: #166534;
+            border-color: #16a34a !important;
+            background: #f0fdf4 !important;
+            color: #166534 !important;
             font-weight: 600;
+            box-shadow: none !important;
         }
         .eval-select.missing {
             border: 2px solid var(--danger) !important;
             background: var(--danger-light) !important;
             color: #991b1b !important;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25) !important;
         }
         .comment-box {
             width: 100%;
@@ -316,6 +328,34 @@
             transform: none;
             box-shadow: none;
         }
+        
+        /* Floating warning bar */
+        .toast-warning {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #b91c1c;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast-warning.show {
+            display: flex;
+            animation: slide-down 0.25s ease-out;
+        }
+        @keyframes slide-down {
+            0% { transform: translate(-50%, -20px); opacity: 0; }
+            100% { transform: translate(-50%, 0); opacity: 1; }
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -442,6 +482,11 @@
 </head>
 <body>
 
+<div id="toastWarning" class="toast-warning">
+    <span>⚠️</span>
+    <span id="toastWarningText">Пожалуйста, заполните все шкалы в текущем кейсе перед переходом к следующему!</span>
+</div>
+
 <header id="mainHeader">
     <div class="header-title">
         <h1>Кардиология</h1>
@@ -451,8 +496,9 @@
         <span class="progress-pill" id="progressPill">Заполнено: 0 / 60</span>
         <button class="btn" onclick="prevCase()">◀ Пред. кейс</button>
         <select class="nav-select" id="caseSelect" onchange="jumpToCase(this.value)"></select>
-        <button class="btn" onclick="nextCase()">След. кейс ▶</button>
-        <button class="btn btn-primary" onclick="toggleModal(true)">📖 Справочник шкал и критериев</button>
+        <button class="btn btn-next" onclick="nextCase()">След. кейс ▶</button>
+        <button class="btn btn-primary" onclick="toggleModal(true)">📖 Справочник критериев</button>
+        <button class="btn" style="color: #64748b; font-size: 0.78rem;" onclick="resetForm()" title="Очистить сохраненные ответы на этом устройстве">🔄 Сброс</button>
     </div>
 </header>
 
@@ -495,10 +541,9 @@ const STORAGE_KEY = "eval_pkg_6";
 let userRatings = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
 let currentCaseIndex = 0;
-let missingFieldsSet = new Set(); // Ключи незаполненных шкал для подсветки
+let missingFieldsSet = new Set(); // Ключи незаполненных шкал для красной подсветки
 
 function init() {
-    // Если эксперт уже отправлял формуляр, сразу показываем экран завершения
     if (localStorage.getItem(STORAGE_KEY + '_submitted') === 'true') {
         renderCompletionScreen(getExpertId());
         return;
@@ -555,7 +600,7 @@ function renderCase(idx) {
         const hasAnyError = isHarmMissing || isTriageMissing || isCommMissing;
         
         html += `
-        <div class="answer-row ${hasAnyError ? 'has-error' : ''}">
+        <div class="answer-row ${hasAnyError ? 'has-error' : ''}" id="card_${ansKey}">
             <div class="answer-main">
                 <div class="answer-card-header">
                     <div class="answer-label">
@@ -627,7 +672,7 @@ function saveRating(ansKey, scale, val, selectElem) {
     if (!userRatings[ansKey]) userRatings[ansKey] = {};
     userRatings[ansKey][scale] = val;
     
-    // Снимаем маркер ошибки при выборе
+    // Снимаем маркер ошибки
     missingFieldsSet.delete(`${ansKey}_${scale}`);
     
     if (selectElem) {
@@ -636,8 +681,26 @@ function saveRating(ansKey, scale, val, selectElem) {
             selectElem.classList.remove('missing');
         } else {
             selectElem.classList.remove('filled');
+            selectElem.classList.add('missing');
+            missingFieldsSet.add(`${ansKey}_${scale}`);
         }
     }
+    
+    // Проверяем снятие ошибки со всей карточки ответа
+    const r = userRatings[ansKey] || {};
+    const hasHarm = (r.harm !== undefined && r.harm !== "");
+    const hasTriage = (r.triage !== undefined && r.triage !== "");
+    const hasComm = (r.comm !== undefined && r.comm !== "");
+    
+    const card = document.getElementById(`card_${ansKey}`);
+    if (card) {
+        if (hasHarm && hasTriage && hasComm) {
+            card.classList.remove('has-error');
+            const badge = card.querySelector('.badge-error');
+            if (badge) badge.remove();
+        }
+    }
+    
     localStorage.setItem(STORAGE_KEY, JSON.stringify(userRatings));
     updateProgress();
 }
@@ -676,16 +739,77 @@ function updateProgress() {
     return { answeredCount, totalAns };
 }
 
+// ВАЛИДАЦИЯ ТЕКУЩЕГО КЕЙСА ПЕРЕД ПЕРЕХОДОМ
+function validateCurrentCase() {
+    const c = CASES_DATA[currentCaseIndex];
+    let missingCount = 0;
+    let firstMissingElem = null;
+
+    for (let i = 1; i <= 4; i++) {
+        const ansKey = `${c.BENCHMARK_ID}_ans${i}`;
+        const r = userRatings[ansKey] || {};
+        
+        const harmMissing = (r.harm === undefined || r.harm === "");
+        const triageMissing = (r.triage === undefined || r.triage === "");
+        const commMissing = (r.comm === undefined || r.comm === "");
+        
+        if (harmMissing) {
+            missingFieldsSet.add(`${ansKey}_harm`);
+            missingCount++;
+        }
+        if (triageMissing) {
+            missingFieldsSet.add(`${ansKey}_triage`);
+            missingCount++;
+        }
+        if (commMissing) {
+            missingFieldsSet.add(`${ansKey}_comm`);
+            missingCount++;
+        }
+    }
+
+    if (missingCount > 0) {
+        renderCase(currentCaseIndex); // Перерисовываем с красной подсветкой
+        showToastWarning(`⚠️ В текущем кейсе не заполнены обязательные шкалы (${missingCount} пропусков)! Заполните их перед переходом.`);
+        return false;
+    }
+    return true;
+}
+
+function showToastWarning(text) {
+    const toast = document.getElementById('toastWarning');
+    const toastText = document.getElementById('toastWarningText');
+    if (toast && toastText) {
+        toastText.textContent = text;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+}
+
 function prevCase() {
     if (currentCaseIndex > 0) renderCase(currentCaseIndex - 1);
 }
 
 function nextCase() {
-    if (currentCaseIndex < CASES_DATA.length - 1) renderCase(currentCaseIndex + 1);
+    // БЛОКИРУЕМ ПЕРЕХОД ВПЕРЕД, ЕСЛИ ТЕКУЩИЙ КЕЙС НЕ ЗАПОЛНЕН
+    if (!validateCurrentCase()) return;
+    
+    if (currentCaseIndex < CASES_DATA.length - 1) {
+        renderCase(currentCaseIndex + 1);
+    } else {
+        submitAndSend();
+    }
 }
 
 function jumpToCase(idx) {
-    renderCase(parseInt(idx, 10));
+    const targetIdx = parseInt(idx, 10);
+    // При переходе вперед проверяем текущий кейс
+    if (targetIdx > currentCaseIndex) {
+        if (!validateCurrentCase()) {
+            document.getElementById('caseSelect').value = currentCaseIndex;
+            return;
+        }
+    }
+    renderCase(targetIdx);
 }
 
 function toggleModal(show) {
@@ -706,7 +830,19 @@ function getExpertId() {
     return id;
 }
 
-// СТРОГАЯ ВАЛИДАЦИЯ И ОТПРАВКА
+function resetForm() {
+    if (confirm("Вы уверены, что хотите сбросить все ответы в этом формуляре и начать заново?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_KEY + '_submitted');
+        localStorage.removeItem(STORAGE_KEY + '_expert_id');
+        userRatings = {};
+        missingFieldsSet.clear();
+        currentCaseIndex = 0;
+        location.reload();
+    }
+}
+
+// СТРОГАЯ ВАЛИДАЦИЯ И ФИНАЛЬНАЯ ОТПРАВКА
 function submitAndSend() {
     missingFieldsSet.clear();
     let firstIncompleteCaseIdx = -1;
@@ -738,11 +874,8 @@ function submitAndSend() {
         }
     });
 
-    // ЕСЛИ НЕ ВСЕ ОТВЕТЫ ЗАПОЛНЕНЫ — ЗАПРЕЩАЕМ ОТПРАВКУ И ПОДСВЕЧИВАЕМ КРАСНЫМ
     if (incompleteAnswersCount > 0) {
-        // Переходим к первому неполному кейсу
         renderCase(firstIncompleteCaseIdx);
-        
         alert(
             `⚠️ Внимание! Формуляр НЕ МОЖЕТ быть отправлен, так как заполнены не все ответы.\n\n` +
             `Заполнено: ${completedCount} из ${totalAns} ответов.\n` +
@@ -754,7 +887,6 @@ function submitAndSend() {
         return;
     }
 
-    // ВСЕ ОТВЕТЫ ДАНЫ — БЛОКИРУЕМ КНОПКУ ОТПРАВКИ ОТ ПОВТОРНЫХ КЛИКОВ
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.disabled = true;
@@ -782,7 +914,6 @@ function submitAndSend() {
         }
     });
 
-    // 1. Отправка на Google Диск через Webhook
     const GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxKIISNsGHqmvNY3PebEiPBCpA0aHI5x2lSDPjSAYVKo9_BqnWjYI9lxUv2BpNRph1REg/exec";
     if (GOOGLE_WEBHOOK_URL && GOOGLE_WEBHOOK_URL.startsWith('http')) {
         fetch(GOOGLE_WEBHOOK_URL, {
@@ -798,7 +929,6 @@ function submitAndSend() {
         }).catch(err => console.log('Webhook error:', err));
     }
 
-    // 2. Локальная страховочная копия файла
     try {
         const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -810,14 +940,11 @@ function submitAndSend() {
         console.log('Download error:', e);
     }
 
-    // 3. ФИКСИРУЕМ ОТПРАВКУ И ЗАКРЫВАЕМ ФОРМУЛЯР
     localStorage.setItem(STORAGE_KEY + '_submitted', 'true');
     renderCompletionScreen(expertId);
 }
 
-// ЭКРАН ЗАКРЫТИЯ И ПОДТВЕРЖДЕНИЯ
 function renderCompletionScreen(expertId) {
-    // Скрываем шапку и плавающую кнопку
     const header = document.getElementById('mainHeader');
     if (header) header.style.display = 'none';
     
