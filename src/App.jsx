@@ -38,6 +38,19 @@ function App() {
   const [touchStartDist, setTouchStartDist] = useState(0);
   const [touchStartScale, setTouchStartScale] = useState(1);
   const lightboxRef = useRef(null);
+  const teamScrollRef = useRef(null);
+
+  const scrollTeamLeft = () => {
+    if (teamScrollRef.current) {
+      teamScrollRef.current.scrollBy({ left: -340, behavior: 'smooth' });
+    }
+  };
+
+  const scrollTeamRight = () => {
+    if (teamScrollRef.current) {
+      teamScrollRef.current.scrollBy({ left: 340, behavior: 'smooth' });
+    }
+  };
 
   // Progressive preview logic for fast mobile loading
   const getNewsImagePreview = (imgSrc) => {
@@ -294,12 +307,6 @@ function App() {
           setSelectedMember(null);
         }
         window.scrollTo(0, 0);
-      } else if (hash.startsWith('#team/')) {
-        setSelectedMember(hash.replace('#team/', ''));
-        setIsArchiveOpen(false);
-        setSelectedMaterial(null);
-        setSelectedEvent(null);
-        window.scrollTo(0, 0);
       } else if (hash.startsWith('#')) {
         const id = hash.replace('#', '');
         if (id && id !== '!' && id !== '') {
@@ -436,7 +443,7 @@ function App() {
       </div>
 
       <div className={`menu-overlay ${isMenuOpen ? 'open' : ''}`}>
-         <div className="flex flex-col items-center gap-12">
+         <div className="menu-list">
             {menuItems.map((item) => (
               <a key={item.id} href={`#${item.id}`} onClick={(e) => { e.preventDefault(); handleMenuClick(item.id); }} className="menu-link">{item.title}</a>
             ))}
@@ -460,7 +467,9 @@ function App() {
                  {content.materials.items.find(m => m.id === selectedMaterial)?.files.map((file, idx) => (
                    <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-beige/5 rounded-3xl border border-transparent hover:border-sage/20 hover:bg-white hover:shadow-xl transition-all gap-4">
                      <div className="flex items-center gap-5">
-                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm"><FileDown size={20} /></div>
+                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-sage shadow-sm">
+                         {file.isLink ? <FileText size={20} /> : <FileDown size={20} />}
+                       </div>
                        <div>
                          <h4 className="font-bold text-text mb-1">{file.name}</h4>
                          <div className="flex gap-4 text-[10px] uppercase tracking-wider text-gray-400 font-bold"><span>{file.size}</span><span>•</span><span>{file.date}</span></div>
@@ -468,12 +477,12 @@ function App() {
                      </div>
                      <a 
                         href={file.url || `/${file.name}`} 
-                        download={file.name}
-                        target="_blank"
+                        download={file.isLink ? undefined : file.name}
+                        target={file.isLink ? "_blank" : undefined}
                         rel="noopener noreferrer"
                         className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none text-center inline-block"
                       >
-                        СКАЧАТЬ
+                        {file.btnText || "СКАЧАТЬ"}
                       </a>
                    </div>
                  ))}
@@ -579,239 +588,361 @@ function App() {
                 </div>
               </div>
             </motion.div>
-          ) : selectedMember ? (
-            <motion.div key="member-detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="member-detail-overlay">
-              <div className="container max-w-5xl">
-                
-                <div className="team-detail-split">
-                  <div className="split-image-main">
-                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)) }}>
-                      {activeMember?.image && (
-                        <img 
-                          src={activeMember.image} 
-                          alt={activeMember.name} 
-                          loading="eager"
-                          decoding="async"
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className="split-image-detail">
-                    <div className="placeholder-img" style={{ backgroundColor: getMemberColor(content.team.members.indexOf(activeMember)), opacity: 0.1 }}>
-                      <Microscope size={120} className="text-sage" />
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
-                        <div>
-                          <Microscope size={40} className="text-sage/30 mx-auto mb-4" />
-                          <p className="text-sm font-playfair italic text-gray-500">{activeMember?.specialization}</p>
-                        </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="member-info-content">
-                  <aside className="info-sidebar">
-                    <div className="info-block">
-                      <h4>Ученая степень</h4>
-                      <p className="font-bold text-sm">{activeMember?.title}</p>
-                    </div>
-                    <div className="info-block">
-                      <h4>Специализация</h4>
-                      <p className="text-sm text-text-light">{activeMember?.specialization}</p>
-                    </div>
-                  </aside>
-
-                  <main className="info-main">
-                    <div className="mb-12 pb-8 border-b border-gray-100">
-                      <h1 className="text-4xl font-playfair font-bold text-text mb-3">{activeMember?.name}</h1>
-                      <p className="text-sage font-bold tracking-widest uppercase text-sm">{activeMember?.role}</p>
-                    </div>
-                    <section>
-                      <h2>О специалисте</h2>
-                      <p className="text-lg leading-relaxed text-text-light">{activeMember?.bio}</p>
-                    </section>
-                    
-                    <section>
-                      <h2>Достижения</h2>
-                      <div className="p-6 bg-sage/5 rounded-3xl border border-sage/10">
-                        <p className="text-text-light leading-relaxed">{activeMember?.achievements}</p>
-                      </div>
-                    </section>
-
-                    <section>
-                      <h2>Публикации</h2>
-                      <div className="space-y-3">
-                        {activeMember?.publications.map((pub, i) => (
-                          <div key={i} className="publication-item">
-                             <p>{pub}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  </main>
-                </div>
-              </div>
-            </motion.div>
           ) : (
             <motion.div key="main-landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {/* Header removed as grant number moved to Hero section */}
-
-
+              
+              {/* HERO SECTION (MUSEMIND CLINICAL RESEARCH STYLE) */}
               <section className="hero-section">
-                <div className="hero-content-wrapper">
-                  <div className="container relative z-10">
-                    <div className="max-w-4xl mx-auto">
-                      <div className="hero-header-logos">
-                        <div className="hero-logo-group">
-                          <span className="hero-grant-number">Проект РНФ № 23-18-00480-П</span>
-                          <div className="hero-logo-box">
-                            <img src="/logos/rnf-logo-perfect.png" alt="РНФ" className="hero-logo-img rnf" />
+                <div className="container relative z-10">
+                  {/* Institutional Top Bar */}
+                  <div className="hero-institution-bar">
+                    <div className="hero-grant-pill">
+                      <span className="pulse-dot"></span>
+                      <span>Проект РНФ № 23-18-00480-П</span>
+                    </div>
+                    <div className="hero-logos-inline">
+                      <div className="hero-logo-box" title="Российский научный фонд">
+                        <img src="/logos/rnf-logo-perfect.png" alt="РНФ" />
+                      </div>
+                      <div className="hero-logo-box" title="Пермский государственный национальный исследовательский университет">
+                        <img src="/logos/psu-logo.png" alt="ПГНИУ" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Split Hero Layout */}
+                  <div className="hero-inner-split">
+                    <div className="hero-content-col">
+                      <span className="hero-tag">Исследовательский проект 2026–2027</span>
+                      <h1 className="hero-title">{content.hero.title}</h1>
+                      <p className="hero-subtitle">
+                        Фундаментальное междисциплинарное исследование трансформации моделей заботы о здоровье, рисков и восприятия цифровых технологий в российском обществе.
+                      </p>
+                      
+                      {/* Nav Chips */}
+                      <div className="hero-nav-chips">
+                        <a href="#about" className="chip-btn primary">
+                          <span>О проекте</span>
+                          <ArrowRight size={14} />
+                        </a>
+                        <a href="#events" className="chip-btn">Новости & События</a>
+                        <a href="#team" className="chip-btn">Исследователи</a>
+                        <a href="#materials" className="chip-btn">Материалы</a>
+                        <a href="#contacts" className="chip-btn">Контакты</a>
+                      </div>
+                    </div>
+
+                    {/* Right Hero Visual Card (As in Musemind Reference) */}
+                    <div className="hero-visual-col">
+                      <div className="hero-visual-card">
+                        <div className="hero-visual-image-box">
+                          <img src="/hero-bg.png" alt="Цифровые стратегии здоровья" />
+                          <div className="hero-visual-floating-badge">
+                            <h4>Здоровье в цифровой среде</h4>
+                            <p>Исследование практик селф-трекинга, ИИ-консультаций и преодоления стресса в мегаполисах России</p>
                           </div>
                         </div>
-                        <div className="hero-logo-box">
-                          <img src="/logos/psu-logo.png" alt="ПГНИУ" className="hero-logo-img psu" />
-                        </div>
-                      </div>
-                      
-                      <div className="hero-text-content">
-                        <span className="inline-block px-3 py-1 rounded-full bg-sage/10 text-sage font-bold text-[10px] mb-6 uppercase tracking-widest">Исследовательский проект 2026–2027</span>
-                        <h1 className="text-4xl md:text-6xl leading-[1.1] font-playfair font-bold text-text">{content.hero.title}</h1>
-                        <div className="btn-group-custom mt-10">{menuItems.map((item) => (<a key={item.id} href={`#${item.id}`} className="btn">{item.title}</a>))}</div>
                       </div>
                     </div>
                   </div>
                 </div>
               </section>
 
+              {/* SECTION: METRICS ROW (MUSEMIND PISTACHIO / SAGE METRICS SECTION) */}
+              <section className="metrics-section">
+                <div className="container">
+                  <div className="metrics-grid">
+                    <div className="metric-item">
+                      <div className="metric-num">2026–27</div>
+                      <div className="metric-title">Период гранта РНФ</div>
+                      <div className="metric-subtitle">Двухлетний исследовательский цикл</div>
+                    </div>
+                    <div className="metric-item">
+                      <div className="metric-num">Scopus Q1</div>
+                      <div className="metric-title">Научные публикации</div>
+                      <div className="metric-subtitle">Индексируемые статьи и монографии</div>
+                    </div>
+                    <div className="metric-item">
+                      <div className="metric-num">3 города</div>
+                      <div className="metric-title">География проекта</div>
+                      <div className="metric-subtitle">Пермь, Н.Новгород, Новосибирск</div>
+                    </div>
+                    <div className="metric-item">
+                      <div className="metric-num">2 000+</div>
+                      <div className="metric-title">Эмпирическая база</div>
+                      <div className="metric-subtitle">Респондентов в репрезентативной выборке</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION: ABOUT (SPLIT REFERENCE FORMAT) */}
               <section id="about" className="py-24">
                 <div className="container">
-                  <div className="grid md:grid-cols-[1fr,2fr] gap-16">
-                    <div className="sticky top-32">
-                      <div className="w-20 h-20 bg-powdery rounded-[30px] flex items-center justify-center text-white mb-6 shadow-xl shadow-powdery/20 rotate-3"><BookOpen size={32} /></div>
-                      <h2 className="text-4xl font-playfair font-bold mb-4">{content.about.title}</h2>
-                      <div className="w-16 h-1 bg-sage rounded-full" />
+                  <div className="section-head">
+                    <span className="section-tag">Концепция исследования</span>
+                    <h2 className="section-title">{content.about.title}</h2>
+                  </div>
+
+                  <div className="about-split-row">
+                    <div className="about-card-left">
+                      <div>
+                        <div className="focus-bullet-icon mb-6">
+                          <Microscope size={24} />
+                        </div>
+                        <h3>{content.about.description[0]}</h3>
+                        <p className="mt-4">{content.about.description[1]}</p>
+                      </div>
+                      <div className="mt-8 pt-6 border-t border-gray-100 flex items-center gap-3 text-xs font-bold text-sage uppercase tracking-wider">
+                        <CheckCircle2 size={16} />
+                        <span>Методология смешанных методов (Mix-Methods Research)</span>
+                      </div>
                     </div>
-                    <div className="space-y-8">{content.about.description.map((p, i) => <p key={i} className="text-xl leading-relaxed text-text-light font-medium">{p}</p>)}</div>
+
+                    <div className="about-card-right">
+                      <div className="focus-bullet-card">
+                        <div className="focus-bullet-icon"><Users size={22} /></div>
+                        <div>
+                          <h4>Поколенческая специфика</h4>
+                          <p>Дифференциация практик: молодежь активно использует мобильные приложения и трекеры, старшее поколение опирается на традиционные каналы и избирательное доверие.</p>
+                        </div>
+                      </div>
+
+                      <div className="focus-bullet-card">
+                        <div className="focus-bullet-icon"><Lightbulb size={22} /></div>
+                        <div>
+                          <h4>Искусственный интеллект как фильтр</h4>
+                          <p>Изучение сценариев первичной самодиагностики через ИИ-ассистенты и влияния медицинского инфополя на уровень тревожности горожан.</p>
+                        </div>
+                      </div>
+
+                      <div className="focus-bullet-card">
+                        <div className="focus-bullet-icon"><Award size={22} /></div>
+                        <div>
+                          <h4>Практическая отдача</h4>
+                          <p>{content.about.description[2]}</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
 
-              <section id="events" className="py-24 bg-beige/5">
+              {/* SECTION: DARK BEYOND MEDICINE STATEMENT (FROM REFERENCE) */}
+              <section className="statement-section">
                 <div className="container">
-                  <h2 className="text-4xl font-playfair font-bold mb-16">{content.events.title}</h2>
-                  <div className="news-grid-custom">
+                  <div className="statement-content">
+                    <span className="statement-tag">Миссия исследовательского проекта</span>
+                    <h2 className="statement-headline">
+                      Самосохранение в эпоху цифровизации: от рисков к устойчивости
+                    </h2>
+                    <p className="statement-desc">
+                      Мы формируем доказательную базу того, как российские граждане сохраняют физическое и психоэмоциональное здоровье в условиях непрерывных информационных перегрузок, цифровой тревожности и новых технологических вызовов.
+                    </p>
+                    <div className="statement-badge-row">
+                      <div className="statement-badge">
+                        <CheckCircle2 size={16} className="text-sage-light" />
+                        <span>Российский научный фонд</span>
+                      </div>
+                      <div className="statement-badge">
+                        <CheckCircle2 size={16} className="text-sage-light" />
+                        <span>ПГНИУ • ННГУ • СПбГУ</span>
+                      </div>
+                      <div className="statement-badge">
+                        <CheckCircle2 size={16} className="text-sage-light" />
+                        <span>Социология здоровья и риска</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION: EVENTS & NEWS (RESEARCH ARTICLES) */}
+              <section id="events" className="py-24 bg-white">
+                <div className="container">
+                  <div className="section-head flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                      <span className="section-tag">Хроника исследований</span>
+                      <h2 className="section-title">{content.events.title}</h2>
+                    </div>
+                    <a href="#events/archive" className="chip-btn" onClick={(e) => { e.preventDefault(); window.location.hash = '#events/archive'; }}>
+                      <History size={16} />
+                      <span>Архив всех событий</span>
+                    </a>
+                  </div>
+
+                  <div className="news-cards-row">
                     {latestEvents.map((item, i) => (
-                      <div key={item.id} className="news-card-custom cursor-pointer" onClick={() => window.location.hash = `#events/${item.id}`}>
-                        <span className="card-number">{i + 1}</span>
-                        <div className="card-icon">{newsIcons[i % newsIcons.length]}</div>
-                        <h3 className="mb-4">{item.title}</h3>
-                        <p className="mb-8">{item.description}</p>
-                        <div className="card-link">ПОДРОБНОСТИ</div>
+                      <div 
+                        key={item.id} 
+                        className="article-card" 
+                        onClick={() => window.location.hash = `#events/${item.id}`}
+                      >
+                        <div className="article-card-meta">
+                          <span className="article-badge">{item.type || 'Новости'}</span>
+                          <span className="article-date">{item.date}</span>
+                        </div>
+                        <h3 className="article-title">{item.title}</h3>
+                        <p className="article-desc">{item.description}</p>
+                        <div className="article-footer">
+                          <span className="article-link">
+                            Подробнее <ArrowRight size={14} />
+                          </span>
+                        </div>
                       </div>
                     ))}
-                    <div className="news-card-custom cursor-pointer archive-card-custom" onClick={() => window.location.hash = '#events/archive'}>
-                        <span className="card-number">...</span>
-                        <div className="card-icon"><History size={32} /></div>
-                        <h3 className="mb-4">Архив новостей</h3>
-                        <p className="mb-8">Просмотреть все прошедшие события и публикации проекта.</p>
-                        <div className="card-link">ОТКРЫТЬ АРХИВ</div>
-                    </div>
                   </div>
                 </div>
               </section>
 
-              <section id="team" className="py-32 bg-white">
+              {/* SECTION: TEAM (HORIZONTAL SCROLL CAROUSEL WITH BUTTONS) */}
+              <section id="team" className="py-24 team-section">
                 <div className="container">
-                  <h2 className="text-5xl font-playfair font-bold mb-16">{content.team.title}</h2>
-                  <div className="team-carousel-container">
-                    <div className="carousel-track">
-                      {content.team.members.map((member, i) => {
-                        let status = 'hidden';
-                        if (i === currentMemberIndex) status = 'active';
-                        else if (i === (currentMemberIndex + 1) % content.team.members.length) status = 'next';
-                        
-                        return (
-                          <div key={member.id} className={`carousel-item-wrapper carousel-item-${status}`} onClick={() => { if (status === 'next') nextMember(); else if (status === 'active') window.location.hash = `#team/${member.id}`; }}>
-                            <div className="placeholder-img" style={{ backgroundColor: getMemberColor(i) }}>
-                            {member.image && <img src={member.image} alt={member.name} loading="eager" decoding="async" />}
-                          </div>
-                            {status !== 'hidden' && (
-                              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="carousel-member-info">
-                                <h3 className={status === 'next' ? 'text-lg opacity-50' : 'text-2xl'}>{member.name}</h3>
-                                <p className={status === 'next' ? 'text-[8px] opacity-50' : 'text-xs'}>{member.role}</p>
-                              </motion.div>
+                  <div className="section-head flex items-end justify-between">
+                    <div>
+                      <span className="section-tag">Научный коллектив</span>
+                      <h2 className="section-title">{content.team.title}</h2>
+                    </div>
+                    <div className="team-carousel-controls">
+                      <button 
+                        onClick={scrollTeamLeft} 
+                        className="carousel-arrow-btn" 
+                        aria-label="Листать влево"
+                        title="Назад"
+                      >
+                        <ChevronLeft size={22} />
+                      </button>
+                      <button 
+                        onClick={scrollTeamRight} 
+                        className="carousel-arrow-btn" 
+                        aria-label="Листать вправо"
+                        title="Вперед"
+                      >
+                        <ChevronRight size={22} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="team-horizontal-track" ref={teamScrollRef}>
+                    {content.team.members.map((member) => (
+                      <div 
+                        key={member.id} 
+                        className={`member-card-slide ${selectedMember === member.id ? 'expanded' : ''}`}
+                        onClick={() => setSelectedMember(selectedMember === member.id ? null : member.id)}
+                      >
+                        <div className="member-photo-frame">
+                          {member.image ? (
+                            <img src={member.image} alt={member.name} loading="lazy" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <User size={48} />
+                            </div>
+                          )}
+
+                          {/* Hover / Expand Overlay with Bio right on the card */}
+                          <div className="member-hover-popover">
+                            <span className="popover-specialization-badge">Специализация</span>
+                            <p className="popover-specialization-text">{member.specialization}</p>
+                            
+                            {member.bio && (
+                              <p className="popover-bio-snippet">{member.bio}</p>
+                            )}
+                            
+                            {member.publications && member.publications.length > 0 && (
+                              <div className="popover-pubs-count">
+                                <BookOpen size={13} />
+                                <span>{member.publications.length} публ. в Scopus / РИНЦ</span>
+                              </div>
                             )}
                           </div>
-                        );
-                      })}
-                    </div>
-                    <div className="carousel-nav">
-                       <button onClick={prevMember} className="nav-btn" aria-label="Предыдущий"><ArrowLeft size={24} /></button>
-                       <button onClick={nextMember} className="nav-btn" aria-label="Следующий"><ArrowRight size={24} /></button>
-                    </div>
-                  </div>
-                </div>
-              </section>
+                        </div>
 
-              <section id="materials" className="py-24 bg-sage/5">
-                <div className="container">
-                  <h2 className="text-4xl font-playfair font-bold mb-16 text-center">{content.materials.title}</h2>
-                  <div className="news-grid-custom max-w-5xl mx-auto">
-                    {content.materials.items.map((item, i) => (
-                      <div key={item.id} className="news-card-custom cursor-pointer" onClick={() => window.location.hash = `#materials/${item.id}`}>
-                        <span className="card-number">{i + 1}</span>
-                        <div className="card-icon">{materialIcons[item.id]}</div>
-                        <h3>{item.title}</h3>
-                        <p>{item.description}</p>
-                        <div className="card-link">ПЕРЕЙТИ</div>
+                        <div className="member-info-box">
+                          <span className="member-role">{member.role}</span>
+                          <h3 className="member-name">{member.name}</h3>
+                          <p className="member-degree">{member.title}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               </section>
 
-              <section id="contacts" className="py-32 border-t border-gray-100">
-                <div className="container text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-sage/10 rounded-[30px] text-sage mb-8">
-                    <MessageCircle size={40} />
+              {/* SECTION: MATERIALS */}
+              <section id="materials" className="py-24 bg-beige/40">
+                <div className="container">
+                  <div className="section-head text-center max-w-2xl mx-auto">
+                    <span className="section-tag">Открытые данные и методология</span>
+                    <h2 className="section-title">{content.materials.title}</h2>
                   </div>
-                  <h2 className="text-5xl font-playfair font-bold mb-4">Остались вопросы?</h2>
-                  <p className="text-xl text-text-light max-w-2xl mx-auto mb-16">Свяжитесь с нашей командой любым удобным способом — мы всегда открыты к научному диалогу и сотрудничеству.</p>
+
+                  <div className="materials-grid">
+                    {content.materials.items.map((item) => (
+                      <div 
+                        key={item.id} 
+                        className="material-card" 
+                        onClick={() => window.location.hash = `#materials/${item.id}`}
+                      >
+                        <div className="material-icon-box">
+                          {materialIcons[item.id] || <FileSearch size={28} />}
+                        </div>
+                        <h3>{item.title}</h3>
+                        <p>{item.description}</p>
+                        <div className="material-btn-row">
+                          <span className="material-btn-label">Изучить материалы</span>
+                          <ArrowRight size={18} className="text-sage" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION: CONTACTS (REFINED LIGHT CARDS) */}
+              <section id="contacts" className="py-24 contacts-section">
+                <div className="container text-center">
+                  <div className="max-w-2xl mx-auto mb-12">
+                    <span className="section-tag">Связь с исследователями</span>
+                    <h2 className="section-title mb-4">Остались вопросы?</h2>
+                    <p className="text-text-light text-base">
+                      Свяжитесь с нашей исследовательской группой — мы открыты к академическому партнерству, обмену данными и экспертному диалогу.
+                    </p>
+                  </div>
                   
                   <div className="contacts-grid">
-                    <div className="contact-card">
-                      <div className="contact-card-icon"><Mail size={32} /></div>
-                      <h3>Почта</h3>
+                    <div className="contact-card-v2">
+                      <div className="contact-icon-pill"><Mail size={26} /></div>
+                      <h3>Электронная почта</h3>
                       <p>{content.contacts.email}</p>
-                      <button className="contact-card-btn" onClick={() => setIsFeedbackOpen(true)}>НАПИСАТЬ</button>
+                      <button className="contact-action-btn" onClick={() => setIsFeedbackOpen(true)}>Написать нам</button>
                     </div>
                     
-                    <div className="contact-card">
-                      <div className="contact-card-icon"><VKIcon size={32} /></div>
+                    <div className="contact-card-v2">
+                      <div className="contact-icon-pill"><VKIcon size={26} /></div>
                       <h3>ВКонтакте</h3>
-                      <p>Официальное сообщество проекта (в процессе создания).</p>
-                      <button className="contact-card-btn opacity-50 cursor-default">СКОРО</button>
+                      <p>Официальное сообщество проекта</p>
+                      <span className="contact-badge-disabled">Скоро запуск</span>
                     </div>
                     
-                    <div className="contact-card">
-                      <div className="contact-card-icon"><DzenIcon size={32} /></div>
+                    <div className="contact-card-v2">
+                      <div className="contact-icon-pill"><DzenIcon size={26} /></div>
                       <h3>Дзен</h3>
-                      <p>Наш блог на платформе Дзен (в процессе создания).</p>
-                      <button className="contact-card-btn opacity-50 cursor-default">СКОРО</button>
+                      <p>Научно-популярный блог проекта</p>
+                      <span className="contact-badge-disabled">Скоро запуск</span>
                     </div>
                     
-                    <div className="contact-card">
-                      <div className="contact-card-icon"><Send size={32} /></div>
+                    <div className="contact-card-v2">
+                      <div className="contact-icon-pill"><Send size={26} /></div>
                       <h3>Telegram</h3>
-                      <p>Следите за оперативными новостями проекта в нашем канале.</p>
-                      <button className="contact-card-btn" onClick={() => window.open(content.contacts.telegram, '_blank')}>ПОДПИСАТЬСЯ</button>
+                      <p>Канал с оперативными результатами</p>
+                      <button className="contact-action-btn" onClick={() => window.open(content.contacts.telegram, '_blank')}>Подписаться</button>
                     </div>
                   </div>
                 </div>
               </section>
 
-              <footer className="py-12 border-t border-gray-50 text-center">
-                <p className="text-[10px] uppercase tracking-widest text-gray-300">© 2026 Проект «Стратегии самосохранения россиян»</p>
+              <footer className="py-8 border-t border-gray-100 text-center bg-white">
+                <p className="text-xs uppercase tracking-widest text-gray-400">© 2026 Проект «Самосохранительные стратегии россиян в условиях новой нормальности» • Грант РНФ № 23-18-00480-П</p>
               </footer>
             </motion.div>
           )}
