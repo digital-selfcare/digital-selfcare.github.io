@@ -26,7 +26,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text-dark);
-            line-height: 1.5;
+            line-height: 1.36; font-size: 0.9rem;
             padding-bottom: 90px;
         }
         header {
@@ -137,7 +137,7 @@
             color: var(--text-muted);
         }
         .patient-question-box {
-            padding: 18px 20px;
+            padding: 12px 16px;
             background: #ffffff;
             border-bottom: 2px solid #e2e8f0;
         }
@@ -148,20 +148,20 @@
             margin-bottom: 8px;
         }
         .patient-text {
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             color: #334155;
-            line-height: 1.6;
+            line-height: 1.35;
             white-space: pre-wrap;
             background: #f8fafc;
-            padding: 14px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
             border-left: 4px solid var(--primary);
         }
         .answers-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            padding: 20px;
+            gap: 12px;
+            padding: 12px;
             background: #f8fafc;
         }
         .answer-row {
@@ -218,10 +218,10 @@
             100% { opacity: 1; }
         }
         .answer-body {
-            padding: 18px 20px;
-            font-size: 0.95rem;
+            padding: 10px 14px;
+            font-size: 0.88rem;
             color: #1e293b;
-            line-height: 1.65;
+            line-height: 1.35;
             white-space: pre-wrap;
             flex-grow: 1;
             background: #ffffff;
@@ -230,10 +230,10 @@
             flex: 0 0 35%;
             min-width: 300px;
             background: #fcfdfe;
-            padding: 16px 18px;
+            padding: 10px 14px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 8px;
         }
         .scale-group {
             display: flex;
@@ -478,6 +478,134 @@
                 min-width: 100%;
             }
         }
+    
+        @media (max-width: 640px) {
+            body {
+                padding-bottom: 70px;
+            }
+            main {
+                margin: 8px auto;
+                padding: 0 8px;
+            }
+            /* Компактная мобильная шапка (не более трети экрана, ровно ~62-68px) */
+            header {
+                padding: 6px 10px;
+                gap: 5px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                gap: 6px;
+            }
+            .header-title h1 {
+                font-size: 0.86rem;
+                font-weight: 700;
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 185px;
+            }
+            .header-title p {
+                display: none !important; /* скрываем подзаголовок на смартфонах ради компактности */
+            }
+            .header-controls {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 4px;
+                width: 100%;
+                flex-wrap: nowrap;
+            }
+            .header-controls .btn {
+                padding: 4px 6px;
+                font-size: 0.72rem;
+                height: 28px;
+                gap: 2px;
+                white-space: nowrap;
+            }
+            .header-controls .btn-primary {
+                padding: 4px 6px;
+                font-size: 0.72rem;
+            }
+            .nav-select {
+                padding: 2px 4px;
+                font-size: 0.74rem;
+                height: 28px;
+                max-width: 110px;
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+            .progress-pill {
+                padding: 2px 6px;
+                font-size: 0.70rem;
+                white-space: nowrap;
+            }
+            /* Компактные отступы на смартфонах */
+            .case-card {
+                border-radius: 8px;
+                margin-bottom: 12px;
+            }
+            .case-header {
+                padding: 6px 10px;
+            }
+            .patient-question-box {
+                padding: 8px 10px;
+            }
+            .patient-title {
+                font-size: 0.90rem;
+                margin-bottom: 4px;
+            }
+            .patient-text {
+                font-size: 0.84rem;
+                line-height: 1.32;
+                padding: 8px 10px;
+            }
+            .answers-container {
+                padding: 8px;
+                gap: 8px;
+            }
+            .answer-card-header {
+                padding: 6px 10px;
+            }
+            .answer-label {
+                font-size: 0.85rem;
+            }
+            .answer-body {
+                padding: 8px 10px;
+                font-size: 0.84rem;
+                line-height: 1.32;
+            }
+            .answer-sidebar {
+                padding: 8px 10px;
+                gap: 6px;
+            }
+            .scale-group label {
+                font-size: 0.76rem;
+                margin-bottom: 2px;
+            }
+            .eval-select {
+                font-size: 0.78rem;
+                padding: 4px 6px;
+                height: 30px;
+            }
+            .btn-submit-floating {
+                padding: 9px 16px;
+                font-size: 0.84rem;
+                bottom: 10px;
+                right: 10px;
+            }
+            .toast-warning {
+                top: 75px;
+                width: 92%;
+                font-size: 0.82rem;
+                padding: 8px 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -561,7 +689,7 @@ function init() {
     updateProgress();
 }
 
-function renderCase(idx) {
+function renderCase(idx, scrollToTop = true) {
     if (idx < 0 || idx >= CASES_DATA.length) return;
     currentCaseIndex = idx;
     document.getElementById('caseSelect').value = idx;
@@ -665,7 +793,7 @@ function renderCase(idx) {
     
     html += `</div></div>`;
     container.innerHTML = html;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (scrollToTop) { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
 function saveRating(ansKey, scale, val, selectElem) {
@@ -740,6 +868,27 @@ function updateProgress() {
 }
 
 // ВАЛИДАЦИЯ ТЕКУЩЕГО КЕЙСА ПЕРЕД ПЕРЕХОДОМ
+
+function scrollToFirstMissing() {
+    setTimeout(() => {
+        const first = document.querySelector('.eval-select.missing') || document.querySelector('.answer-row.has-error');
+        if (first) {
+            const h = document.getElementById('mainHeader');
+            const offset = (h ? h.offsetHeight : 68) + 14;
+            const pos = first.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top: Math.max(0, pos), behavior: 'smooth' });
+            try {
+                if (first.tagName === 'SELECT') {
+                    first.focus({ preventScroll: true });
+                } else {
+                    const sel = first.querySelector('.eval-select.missing');
+                    if (sel) sel.focus({ preventScroll: true });
+                }
+            } catch(e) {}
+        }
+    }, 70);
+}
+
 function validateCurrentCase() {
     const c = CASES_DATA[currentCaseIndex];
     let missingCount = 0;
@@ -768,8 +917,9 @@ function validateCurrentCase() {
     }
 
     if (missingCount > 0) {
-        renderCase(currentCaseIndex); // Перерисовываем с красной подсветкой
+        renderCase(currentCaseIndex, false); // НЕ скроллим наверх!
         showToastWarning(`⚠️ В текущем кейсе не заполнены обязательные шкалы (${missingCount} пропусков)! Заполните их перед переходом.`);
+        scrollToFirstMissing();
         return false;
     }
     return true;
