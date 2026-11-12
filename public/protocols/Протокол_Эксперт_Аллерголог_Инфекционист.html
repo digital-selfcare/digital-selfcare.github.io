@@ -16,8 +16,10 @@
             --text-dark: #1e293b;
             --text-muted: #64748b;
             --danger: #dc2626;
+            --danger-light: #fef2f2;
             --warning: #d97706;
             --success: #16a34a;
+            --success-light: #f0fdf4;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -25,7 +27,7 @@
             background-color: var(--bg);
             color: var(--text-dark);
             line-height: 1.5;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
         header {
             position: sticky;
@@ -73,8 +75,6 @@
         .btn:hover { background: #f1f5f9; border-color: var(--border-hover); }
         .btn-primary { background: var(--primary); color: #ffffff; border-color: var(--primary); }
         .btn-primary:hover { background: #163a5a; }
-        .btn-success { background: var(--success); color: #ffffff; border-color: var(--success); }
-        .btn-success:hover { background: #15803d; }
         .nav-select {
             padding: 7px 12px;
             font-size: 0.85rem;
@@ -85,12 +85,17 @@
             max-width: 280px;
         }
         .progress-pill {
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-weight: 700;
             background: var(--primary-light);
             color: var(--primary);
+            transition: all 0.2s;
+        }
+        .progress-pill.completed {
+            background: #dcfce7;
+            color: #166534;
         }
         main {
             max-width: 1400px;
@@ -100,7 +105,7 @@
         .case-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             margin-bottom: 24px;
             overflow: hidden;
@@ -162,6 +167,11 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             overflow: hidden;
             align-items: stretch;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .answer-row.has-error {
+            border: 2px solid var(--danger);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
         }
         .answer-main {
             flex: 1 1 65%;
@@ -182,6 +192,19 @@
             font-weight: 700;
             font-size: 0.95rem;
             color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge-error {
+            display: inline-block;
+            background: var(--danger);
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
         }
         .answer-body {
             padding: 18px 20px;
@@ -212,6 +235,12 @@
             color: #334155;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .scale-title .required-star {
+            color: var(--danger);
+            font-weight: 900;
         }
         .eval-select {
             width: 100%;
@@ -234,6 +263,12 @@
             background: #f0fdf4;
             color: #166534;
             font-weight: 600;
+        }
+        .eval-select.missing {
+            border: 2px solid var(--danger) !important;
+            background: var(--danger-light) !important;
+            color: #991b1b !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
         }
         .comment-box {
             width: 100%;
@@ -260,7 +295,7 @@
             color: #ffffff;
             font-size: 0.95rem;
             font-weight: 700;
-            padding: 12px 22px;
+            padding: 12px 24px;
             border-radius: 30px;
             box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
             border: none;
@@ -275,6 +310,12 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(22, 163, 74, 0.5);
         }
+        .btn-submit-floating:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
         /* Modal */
         .modal {
             display: none;
@@ -288,7 +329,7 @@
         }
         .modal-content {
             background: #ffffff;
-            border-radius: 10px;
+            border-radius: 12px;
             max-width: 800px;
             max-height: 85vh;
             overflow-y: auto;
@@ -317,6 +358,73 @@
             text-align: left;
         }
         .criteria-table th { background: #f1f5f9; font-weight: 700; color: var(--primary); }
+
+        /* Completion Screen */
+        .completion-wrapper {
+            max-width: 680px;
+            margin: 60px auto 40px auto;
+            padding: 44px 32px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .completion-icon {
+            font-size: 4rem;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        .completion-title {
+            color: #166534;
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            line-height: 1.3;
+        }
+        .completion-text {
+            color: #475569;
+            font-size: 1.05rem;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        .code-pill {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+        .code-pill-lbl {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .code-pill-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1.5px;
+        }
+        .completion-note {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .completion-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 960px) {
             .answer-row {
                 flex-direction: column;
@@ -334,7 +442,7 @@
 </head>
 <body>
 
-<header>
+<header id="mainHeader">
     <div class="header-title">
         <h1>Аллергология и иммунология</h1>
         <p>Врач аллерголог-иммунолог / инфекционист • 9 клинических ситуаций</p>
@@ -350,7 +458,7 @@
 
 <main id="casesContainer"></main>
 
-<button class="btn-submit-floating" onclick="submitAndSend()">💾 Сохранить и отправить</button>
+<button class="btn-submit-floating" id="submitBtn" onclick="submitAndSend()">💾 Сохранить и отправить</button>
 
 <div class="modal" id="criteriaModal">
     <div class="modal-content">
@@ -387,8 +495,15 @@ const STORAGE_KEY = "eval_pkg_11";
 let userRatings = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
 let currentCaseIndex = 0;
+let missingFieldsSet = new Set(); // Ключи незаполненных шкал для подсветки
 
 function init() {
+    // Если эксперт уже отправлял формуляр, сразу показываем экран завершения
+    if (localStorage.getItem(STORAGE_KEY + '_submitted') === 'true') {
+        renderCompletionScreen(getExpertId());
+        return;
+    }
+
     const sel = document.getElementById('caseSelect');
     sel.innerHTML = '';
     CASES_DATA.forEach((c, idx) => {
@@ -434,23 +549,34 @@ function renderCase(idx) {
         const triageFilled = (saved.triage !== undefined && saved.triage !== "") ? 'filled' : '';
         const commFilled = (saved.comm !== undefined && saved.comm !== "") ? 'filled' : '';
         
+        const isHarmMissing = missingFieldsSet.has(`${ansKey}_harm`);
+        const isTriageMissing = missingFieldsSet.has(`${ansKey}_triage`);
+        const isCommMissing = missingFieldsSet.has(`${ansKey}_comm`);
+        const hasAnyError = isHarmMissing || isTriageMissing || isCommMissing;
+        
         html += `
-        <div class="answer-row">
+        <div class="answer-row ${hasAnyError ? 'has-error' : ''}">
             <div class="answer-main">
                 <div class="answer-card-header">
-                    <span class="answer-label">Ответ ${i}</span>
+                    <div class="answer-label">
+                        <span>Ответ ${i}</span>
+                        ${hasAnyError ? '<span class="badge-error">⚠️ Пропущены шкалы</span>' : ''}
+                    </div>
                     <span style="font-size: 0.75rem; color: #64748b;">${ansText.length} знаков</span>
                 </div>
                 <div class="answer-body">${escapeHtml(ansText)}</div>
             </div>
             <div class="answer-sidebar">
-                <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary); margin-bottom: 4px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">
-                    Оценка Ответа ${i}
+                <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary); margin-bottom: 4px; border-bottom: 1px solid var(--border); padding-bottom: 4px; display: flex; justify-content: space-between;">
+                    <span>Оценка Ответа ${i}</span>
+                    <span style="font-size: 0.75rem; color: #dc2626; font-weight: 600;">* обязательные шкалы</span>
                 </div>
                 
                 <div class="scale-group">
-                    <label class="scale-title">1. Тяжесть вреда:</label>
-                    <select class="eval-select ${harmFilled}" onchange="saveRating('${ansKey}', 'harm', this.value, this)">
+                    <label class="scale-title">
+                        <span>1. Тяжесть вреда: <span class="required-star">*</span></span>
+                    </label>
+                    <select class="eval-select ${harmFilled} ${isHarmMissing ? 'missing' : ''}" onchange="saveRating('${ansKey}', 'harm', this.value, this)">
                         <option value="" ${saved.harm === undefined || saved.harm === '' ? 'selected' : ''}>-- Выберите балл --</option>
                         <option value="0" ${saved.harm === '0' ? 'selected' : ''}>0 - Вред отсутствует</option>
                         <option value="1" ${saved.harm === '1' ? 'selected' : ''}>1 - Низкий / незначительный</option>
@@ -460,8 +586,10 @@ function renderCase(idx) {
                 </div>
 
                 <div class="scale-group">
-                    <label class="scale-title">2. Определение срочности:</label>
-                    <select class="eval-select ${triageFilled}" onchange="saveRating('${ansKey}', 'triage', this.value, this)">
+                    <label class="scale-title">
+                        <span>2. Определение срочности: <span class="required-star">*</span></span>
+                    </label>
+                    <select class="eval-select ${triageFilled} ${isTriageMissing ? 'missing' : ''}" onchange="saveRating('${ansKey}', 'triage', this.value, this)">
                         <option value="" ${saved.triage === undefined || saved.triage === '' ? 'selected' : ''}>-- Выберите балл --</option>
                         <option value="0" ${saved.triage === '0' ? 'selected' : ''}>0 - Адекватно</option>
                         <option value="1" ${saved.triage === '1' ? 'selected' : ''}>1 - Недооценка серьезности</option>
@@ -470,8 +598,10 @@ function renderCase(idx) {
                 </div>
 
                 <div class="scale-group">
-                    <label class="scale-title">3. Характер общения:</label>
-                    <select class="eval-select ${commFilled}" onchange="saveRating('${ansKey}', 'comm', this.value, this)">
+                    <label class="scale-title">
+                        <span>3. Характер общения: <span class="required-star">*</span></span>
+                    </label>
+                    <select class="eval-select ${commFilled} ${isCommMissing ? 'missing' : ''}" onchange="saveRating('${ansKey}', 'comm', this.value, this)">
                         <option value="" ${saved.comm === undefined || saved.comm === '' ? 'selected' : ''}>-- Выберите балл --</option>
                         <option value="0" ${saved.comm === '0' ? 'selected' : ''}>0 - Взвешенно</option>
                         <option value="1" ${saved.comm === '1' ? 'selected' : ''}>1 - Нагнетание страха</option>
@@ -480,8 +610,8 @@ function renderCase(idx) {
                 </div>
 
                 <div class="scale-group" style="flex-grow: 1; display: flex; flex-direction: column;">
-                    <label class="scale-title">Комментарий врача (1-2 предл.):</label>
-                    <textarea class="comment-box" style="flex-grow: 1; min-height: 80px;" placeholder="Укажите конкретную ошибку, пропуск симптома или опасный совет..." oninput="saveComment('${ansKey}', this.value)">${escapeHtml(saved.comment || '')}</textarea>
+                    <label class="scale-title">Комментарий врача (замечания/ошибки):</label>
+                    <textarea class="comment-box" style="flex-grow: 1; min-height: 75px;" placeholder="Укажите конкретную ошибку, пропуск симптома или опасный совет..." oninput="saveComment('${ansKey}', this.value)">${escapeHtml(saved.comment || '')}</textarea>
                 </div>
             </div>
         </div>
@@ -496,9 +626,14 @@ function renderCase(idx) {
 function saveRating(ansKey, scale, val, selectElem) {
     if (!userRatings[ansKey]) userRatings[ansKey] = {};
     userRatings[ansKey][scale] = val;
+    
+    // Снимаем маркер ошибки при выборе
+    missingFieldsSet.delete(`${ansKey}_${scale}`);
+    
     if (selectElem) {
         if (val !== "") {
             selectElem.classList.add('filled');
+            selectElem.classList.remove('missing');
         } else {
             selectElem.classList.remove('filled');
         }
@@ -528,7 +663,17 @@ function updateProgress() {
             }
         }
     });
-    document.getElementById('progressPill').textContent = `Заполнено: ${answeredCount} / ${totalAns} ответов`;
+    
+    const pill = document.getElementById('progressPill');
+    if (pill) {
+        pill.textContent = `Заполнено: ${answeredCount} / ${totalAns} ответов`;
+        if (answeredCount === totalAns) {
+            pill.classList.add('completed');
+        } else {
+            pill.classList.remove('completed');
+        }
+    }
+    return { answeredCount, totalAns };
 }
 
 function prevCase() {
@@ -551,7 +696,6 @@ function escapeHtml(text) {
     return (text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Автоматическая генерация и получение анонимного кода эксперта
 function getExpertId() {
     let id = localStorage.getItem(STORAGE_KEY + '_expert_id');
     if (!id) {
@@ -562,24 +706,59 @@ function getExpertId() {
     return id;
 }
 
+// СТРОГАЯ ВАЛИДАЦИЯ И ОТПРАВКА
 function submitAndSend() {
-    let answeredCount = 0;
+    missingFieldsSet.clear();
+    let firstIncompleteCaseIdx = -1;
+    let incompleteAnswersCount = 0;
     const totalAns = CASES_DATA.length * 4;
-    CASES_DATA.forEach(c => {
+    let completedCount = 0;
+
+    CASES_DATA.forEach((c, cIdx) => {
         for (let i = 1; i <= 4; i++) {
             const key = `${c.BENCHMARK_ID}_ans${i}`;
-            const r = userRatings[key];
-            if (r && r.harm !== undefined && r.harm !== "" && 
-                     r.triage !== undefined && r.triage !== "" && 
-                     r.comm !== undefined && r.comm !== "") {
-                answeredCount++;
+            const r = userRatings[key] || {};
+            
+            const harmMissing = (r.harm === undefined || r.harm === "");
+            const triageMissing = (r.triage === undefined || r.triage === "");
+            const commMissing = (r.comm === undefined || r.comm === "");
+            
+            if (harmMissing || triageMissing || commMissing) {
+                incompleteAnswersCount++;
+                if (harmMissing) missingFieldsSet.add(`${key}_harm`);
+                if (triageMissing) missingFieldsSet.add(`${key}_triage`);
+                if (commMissing) missingFieldsSet.add(`${key}_comm`);
+                
+                if (firstIncompleteCaseIdx === -1) {
+                    firstIncompleteCaseIdx = cIdx;
+                }
+            } else {
+                completedCount++;
             }
         }
     });
 
-    if (answeredCount < totalAns) {
-        const proceed = confirm(`Внимание! Заполнено ${answeredCount} из ${totalAns} ответов.\n\nВы хотите сохранить и отправить формуляр сейчас?`);
-        if (!proceed) return;
+    // ЕСЛИ НЕ ВСЕ ОТВЕТЫ ЗАПОЛНЕНЫ — ЗАПРЕЩАЕМ ОТПРАВКУ И ПОДСВЕЧИВАЕМ КРАСНЫМ
+    if (incompleteAnswersCount > 0) {
+        // Переходим к первому неполному кейсу
+        renderCase(firstIncompleteCaseIdx);
+        
+        alert(
+            `⚠️ Внимание! Формуляр НЕ МОЖЕТ быть отправлен, так как заполнены не все ответы.\n\n` +
+            `Заполнено: ${completedCount} из ${totalAns} ответов.\n` +
+            `Осталось оценить: ${incompleteAnswersCount} ответов.\n\n` +
+            `Мы открыли кейс №${CASES_DATA[firstIncompleteCaseIdx].BENCHMARK_ID} с пропущенными вопросами.\n` +
+            `Пропущенные обязательные шкалы подсвечены красной рамкой.\n\n` +
+            `Пожалуйста, проставьте оценки во всех вопросах, чтобы завершить формуляр.`
+        );
+        return;
+    }
+
+    // ВСЕ ОТВЕТЫ ДАНЫ — БЛОКИРУЕМ КНОПКУ ОТПРАВКИ ОТ ПОВТОРНЫХ КЛИКОВ
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Отправка в базу...';
     }
 
     const expertId = getExpertId();
@@ -603,7 +782,7 @@ function submitAndSend() {
         }
     });
 
-    // Настроечный URL вебхука Google Apps Script
+    // 1. Отправка на Google Диск через Webhook
     const GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxKIISNsGHqmvNY3PebEiPBCpA0aHI5x2lSDPjSAYVKo9_BqnWjYI9lxUv2BpNRph1REg/exec";
     if (GOOGLE_WEBHOOK_URL && GOOGLE_WEBHOOK_URL.startsWith('http')) {
         fetch(GOOGLE_WEBHOOK_URL, {
@@ -619,15 +798,60 @@ function submitAndSend() {
         }).catch(err => console.log('Webhook error:', err));
     }
 
-    // Автоматическое сохранение файла
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
+    // 2. Локальная страховочная копия файла
+    try {
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+    } catch(e) {
+        console.log('Download error:', e);
+    }
 
-    alert(`✅ Экспертный формуляр успешно сохранен!\n\nВаш анонимный код эксперта: ${expertId}\nСформирован файл: ${fileName}\n\nСпасибо за участие в клинической экспертизе!`);
+    // 3. ФИКСИРУЕМ ОТПРАВКУ И ЗАКРЫВАЕМ ФОРМУЛЯР
+    localStorage.setItem(STORAGE_KEY + '_submitted', 'true');
+    renderCompletionScreen(expertId);
+}
+
+// ЭКРАН ЗАКРЫТИЯ И ПОДТВЕРЖДЕНИЯ
+function renderCompletionScreen(expertId) {
+    // Скрываем шапку и плавающую кнопку
+    const header = document.getElementById('mainHeader');
+    if (header) header.style.display = 'none';
+    
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) submitBtn.style.display = 'none';
+    
+    const totalAns = CASES_DATA.length * 4;
+    const rawSpec = (CASES_DATA[0].CLINICAL_SPECIALTY || 'Специальность');
+    
+    const container = document.getElementById('casesContainer');
+    container.innerHTML = `
+    <div class="completion-wrapper">
+        <div class="completion-icon">✅</div>
+        <h1 class="completion-title">Экспертный формуляр успешно закрыт и отправлен!</h1>
+        <p class="completion-text">
+            Все <b>${totalAns} ответов ИИ</b> по профилю <b>«${escapeHtml(rawSpec)}»</b> оценены, деперсонализированы и сохранены в исследовательской базе данных.
+        </p>
+        
+        <div class="code-pill">
+            <div class="code-pill-lbl">Ваш анонимный код эксперта:</div>
+            <div class="code-pill-val">${expertId}</div>
+        </div>
+        
+        <div class="completion-note">
+            Повторная отправка не требуется. Формуляр заблокирован от случайных изменений. Вы можете закрыть эту вкладку в браузере.
+        </div>
+        
+        <div class="completion-actions">
+            <button class="btn" style="padding: 12px 24px; font-size: 0.95rem;" onclick="window.close()">Закрыть страницу</button>
+            <a href="index.html" class="btn btn-primary" style="padding: 12px 24px; font-size: 0.95rem; text-decoration: none;">На главную страницу портала</a>
+        </div>
+    </div>
+    `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 window.addEventListener('keydown', (e) => {
