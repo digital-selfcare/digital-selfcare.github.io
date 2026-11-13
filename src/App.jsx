@@ -468,12 +468,12 @@ function App() {
                      </div>
                      <a 
                         href={file.url || `/${file.name}`} 
-                        download={file.name}
-                        target="_blank"
+                        download={file.isLink ? undefined : file.name}
+                        target={file.isLink ? "_blank" : undefined}
                         rel="noopener noreferrer"
                         className="btn px-6 py-3 text-xs bg-sage/10 text-sage hover:bg-sage hover:text-white shadow-none text-center inline-block"
                       >
-                        СКАЧАТЬ
+                        {file.btnText || "СКАЧАТЬ"}
                       </a>
                    </div>
                  ))}
