@@ -38,19 +38,20 @@
             z-index: 100;
             background: #ffffff;
             border-bottom: 1px solid var(--border);
-            padding: 10px 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            padding: 8px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
+            flex-direction: column;
+            gap: 8px;
             box-sizing: border-box;
             width: 100%;
         }
         .header-top {
             display: flex;
             align-items: center;
-            gap: 16px;
+            justify-content: space-between;
+            width: 100%;
+            gap: 12px;
         }
         .header-title h1 {
             font-size: 1.15rem;
@@ -68,10 +69,86 @@
             align-items: center;
             gap: 8px;
         }
+        .header-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            box-sizing: border-box;
+            width: 100%;
+            flex-wrap: wrap;
+        }
         .header-nav {
             display: flex;
             align-items: center;
             gap: 8px;
+            flex: 1 1 450px;
+        }
+        .nav-select {
+            flex: 1 1 auto;
+            width: 100%;
+            min-width: 220px;
+            max-width: 600px;
+            height: 36px;
+            padding: 4px 10px;
+            font-size: 0.90rem;
+            font-weight: 600;
+            color: #1e293b;
+            border: 1.5px solid #0284c7;
+            border-radius: 6px;
+            background: #ffffff;
+            cursor: pointer;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .nav-select:hover, .nav-select:focus {
+            border-color: #0369a1;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        .header-expert-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .exp-id-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.86rem;
+            color: #334155;
+            font-weight: 600;
+        }
+        .exp-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 800;
+            font-size: 0.92rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #bae6fd;
+        }
+        .btn-edit-id {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.72rem;
+            cursor: pointer;
+        }
+        .exp-counter {
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: #166534;
+            background: #dcfce7;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #bbf7d0;
         }
         .btn {
             display: inline-flex;
@@ -856,27 +933,25 @@
         <div class="header-top-actions">
             <button class="btn btn-secondary btn-memo-top" onclick="toggleMemoModal(true)" title="Инструкция для эксперта">📋 <span class="btn-txt">Инструкция</span></button>
             <button class="btn btn-primary btn-criteria" onclick="toggleModal(true)" title="Справочник критериев">📖 <span class="btn-txt">Критерии</span></button>
-            <span class="progress-pill" id="progressPill">0 / 60</span>
-            <button class="btn btn-reset" onclick="resetForm()" title="Очистить сохраненные ответы на этом устройстве">🔄</button>
+            <button class="btn btn-reset" onclick="resetForm()" title="Очистить сохраненные ответы">🔄</button>
         </div>
     </div>
-        <div class="expert-banner" style="background: #f0f7ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 14px; margin: 6px 0 8px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-sizing: border-box; width: 100%;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 0.88rem; color: #334155; font-weight: 600;">Регистрационный номер эксперта:</span>
-            <span id="topExpId" style="font-weight: 800; color: #1F4E78; font-size: 1rem; background: #e0f2fe; padding: 2px 10px; border-radius: 4px; letter-spacing: 0.5px; border: 1px solid #bae6fd;">EXP-...</span>
-            <button class="btn" style="padding: 3px 8px; font-size: 0.76rem; font-weight: 600;" onclick="promptCustomId()" title="Ввести свой номер или контакт">✏️ Изменить</button>
+    
+    <div class="header-nav-bar">
+        <div class="header-nav">
+            <button class="btn btn-prev" onclick="prevCase()" title="Предыдущий кейс">◀ <span class="nav-btn-txt">Пред. кейс</span></button>
+            <select class="nav-select" id="caseSelect" onchange="jumpToCase(this.value)" title="Быстрый выбор кейса из списка"></select>
+            <button class="btn btn-next" onclick="nextCase()" title="Следующий кейс"><span class="nav-btn-txt">След. кейс</span> ▶</button>
         </div>
-        <div style="font-size: 0.86rem; color: #1e293b; font-weight: 700;">
-            Сохраните этот номер для учета выполненного объема работы
+        <div class="header-expert-box">
+            <div class="exp-id-tag">
+                <span>Рег. номер:</span>
+                <b id="topExpId" class="exp-badge">EXP-...</b>
+                <button class="btn-edit-id" onclick="promptCustomId()" title="Ввести свой номер или контакт">✏️</button>
+            </div>
+            <div style="font-size: 0.82rem; color: #1e293b; font-weight: 700;">Сохраните номер для учета объема работы</div>
+            <div class="exp-counter" id="topDoneCount">Учтено: 0 из 15</div>
         </div>
-        <div style="font-size: 0.88rem; font-weight: 800; color: #166534;" id="topDoneCount">
-            Учтено: 0 из 15 кейсов
-        </div>
-    </div>
-    <div class="header-nav">
-        <button class="btn btn-prev" onclick="prevCase()">◀ <span class="nav-btn-txt">Пред.</span></button>
-        <select class="nav-select" id="caseSelect" onchange="jumpToCase(this.value)"></select>
-        <button class="btn btn-next" onclick="nextCase()"><span class="nav-btn-txt">След.</span> ▶</button>
     </div>
 </header>
 
@@ -1025,22 +1100,26 @@ let currentCaseIndex = 0;
 let missingFieldsSet = new Set(); // Ключи незаполненных шкал для красной подсветки
 
 function init() {
-    if (localStorage.getItem(STORAGE_KEY + '_submitted') === 'true') {
-        renderCompletionScreen(getExpertId());
-        return;
-    }
-
-    const sel = document.getElementById('caseSelect');
-    sel.innerHTML = '';
-    CASES_DATA.forEach((c, idx) => {
-        const opt = document.createElement('option');
-        opt.value = idx;
-        opt.textContent = `Кейс №${c.BENCHMARK_ID}: ${c.TITLE || 'Без темы'}`.slice(0, 40) + '...';
-        sel.appendChild(opt);
-    });
+    refreshCaseSelect();
     renderCase(currentCaseIndex);
     updateExpertTop();
     updateProgress();
+}
+
+function refreshCaseSelect() {
+    const sel = document.getElementById('caseSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    CASES_DATA.forEach((c, idx) => {
+        const isDone = (submittedCases[c.BENCHMARK_ID] !== undefined);
+        const opt = document.createElement('option');
+        opt.value = idx;
+        const icon = isDone ? '✅ ' : '⏳ ';
+        const suffix = isDone ? ' [Принят]' : '';
+        const cleanTitle = (c.TITLE || 'Клинический случай').slice(0, 45);
+        opt.textContent = `${icon}Кейс ${idx + 1} из ${CASES_DATA.length} (№${c.BENCHMARK_ID}): ${cleanTitle}${suffix}`;
+        sel.appendChild(opt);
+    });
 }
 
 function renderCase(idx, scrollToTop = true) {
@@ -1151,7 +1230,7 @@ function renderCase(idx, scrollToTop = true) {
         <div class="case-submission-bar" style="background: #f8fafc; border-top: 2px solid #e2e8f0; padding: 14px 18px; margin-top: 8px; border-radius: 0 0 10px 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
             <div>
                 <div style="font-size: 0.88rem; color: #334155;">
-                    <b>Регистрационный номер:</b> <span style="font-weight: 800; color: #1F4E78; font-size: 0.95rem; background: #e0f2fe; padding: 2px 8px; border-radius: 4px; border: 1px solid #bae6fd;">${escapeHtml(expId)}</span>
+                    <b>Регистрационный номер эксперта:</b> <span style="font-weight: 800; color: #1F4E78; font-size: 0.95rem; background: #e0f2fe; padding: 2px 8px; border-radius: 4px; border: 1px solid #bae6fd;">${escapeHtml(expId)}</span>
                     <button class="btn" style="padding: 2px 6px; font-size: 0.72rem; margin-left: 6px;" onclick="promptCustomId()">✏️</button>
                 </div>
                 <div style="font-size: 0.82rem; color: #1e293b; font-weight: 700; margin-top: 3px;">
@@ -1641,6 +1720,9 @@ function submitSingleCase(idx) {
     localStorage.setItem(STORAGE_KEY + '_submitted_cases', JSON.stringify(submittedCases));
 
     updateExpertTop();
+    refreshCaseSelect();
+    document.getElementById('caseSelect').value = idx;
+
     if (btn) {
         btn.disabled = false;
         btn.style.background = '#0f766e';
