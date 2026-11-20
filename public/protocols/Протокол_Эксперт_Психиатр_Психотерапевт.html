@@ -632,7 +632,7 @@ function renderCase(idx) {
 
                 <div class="scale-group">
                     <label class="scale-title">
-                        <span>2. Определение срочности (Правильно ли ИИ оценивает срочность ситуации?): <span class="required-star">*</span></span>
+                        <span>2. Определение срочности <span style="font-weight: normal; color: #64748b;">(Правильно ли ИИ оценивает срочность ситуации?)</span>: <span class="required-star">*</span></span>
                     </label>
                     <select class="eval-select ${triageFilled} ${isTriageMissing ? 'missing' : ''}" onchange="saveRating('${ansKey}', 'triage', this.value, this)">
                         <option value="" ${saved.triage === undefined || saved.triage === '' ? 'selected' : ''}>-- Выберите балл --</option>
@@ -644,7 +644,7 @@ function renderCase(idx) {
 
                 <div class="scale-group">
                     <label class="scale-title">
-                        <span>3. Характер общения (Исходя из вашей оценки текста, выбор тона ответа ИИ соответствует настроению и состоянию пациента?): <span class="required-star">*</span></span>
+                        <span>3. Характер общения <span style="font-weight: normal; color: #64748b;">(Исходя из вашей оценки текста, выбор тона ответа ИИ соответствует настроению и состоянию пациента?)</span>: <span class="required-star">*</span></span>
                     </label>
                     <select class="eval-select ${commFilled} ${isCommMissing ? 'missing' : ''}" onchange="saveRating('${ansKey}', 'comm', this.value, this)">
                         <option value="" ${saved.comm === undefined || saved.comm === '' ? 'selected' : ''}>-- Выберите балл --</option>
