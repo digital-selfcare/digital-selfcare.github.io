@@ -900,13 +900,20 @@
             box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
         }
         .btn-memo-top {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
+            background: #ffffff;
+            color: #991b1b;
+            border: 1.5px solid #f87171;
             font-weight: 700;
         }
         .btn-memo-top:hover {
-            background: #e2e8f0;
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #7f1d1d;
+        }
+        .icon-memo-svg {
+            display: inline-block;
+            vertical-align: -2px;
+            margin-right: 4px;
         }
         .memo-header {
             display: flex;
@@ -1005,6 +1012,12 @@
                 font-size: 0.70rem !important;
                 height: 26px !important;
                 border-radius: 4px !important;
+            }
+            .btn-memo-top .icon-memo-svg {
+                width: 12px !important;
+                height: 12px !important;
+                margin-right: 2px !important;
+                vertical-align: -1px !important;
             }
             .btn-criteria {
                 padding: 3px 6px !important;
@@ -1236,7 +1249,7 @@
             <p class="header-subtitle" style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Врач-пульмонолог / терапевт / ЛОР-врач • 18 клинических ситуаций</p>
         </div>
         <div class="header-top-actions" style="display: flex; align-items: center; gap: 8px;">
-            <button class="btn btn-secondary btn-memo-top" onclick="toggleMemoModal(true)" title="Инструкция для эксперта">📋 <span class="btn-txt">Инструкция</span></button>
+            <button class="btn btn-secondary btn-memo-top" onclick="toggleMemoModal(true)" title="Инструкция для эксперта"><svg class="icon-memo-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1" fill="#fee2e2" stroke="#dc2626"></rect><path d="M9 12h6"></path><path d="M9 16h6"></path></svg><span class="btn-txt">Инструкция</span></button>
             <button class="btn btn-primary btn-criteria" onclick="toggleModal(true)" title="Справочник критериев">📖 <span class="btn-txt">Критерии</span></button>
             <button class="btn" onclick="downloadAllCSV()" style="background: #f8fafc; border-color: #cbd5e1; font-weight: 700; color: #1e293b;" title="Скачать заполненные оценки в CSV-файл">💾 <span class="btn-txt">Скачать CSV</span></button>
             <button class="btn btn-reset" onclick="resetForm()" title="Очистить сохраненные ответы">🔄</button>
@@ -1306,7 +1319,7 @@
 <div class="modal" id="memoModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>📋 Инструкция для эксперта</h2>
+            <h2><svg class="icon-memo-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dc2626" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 8px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1" fill="#fee2e2" stroke="#dc2626"></rect><path d="M9 12h6"></path><path d="M9 16h6"></path></svg>Инструкция для эксперта</h2>
             <span class="close-modal" onclick="toggleMemoModal(false)" title="Закрыть">&times;</span>
         </div>
         <p class="modal-disclaimer" style="font-weight: 700; color: #0f172a; border-left-color: #0284c7;">
@@ -1318,7 +1331,7 @@
             <li style="margin-bottom: 8px;"><b>Обязательно оставьте свой комментарий и замечания к каждому ответу ИИ (<span style="color: #dc2626;">*</span>).</b> Поясните, что именно вас насторожило в ответе ИИ, какие есть ошибки, положительные и отрицательные компоненты, чего не хватает, а что избыточно</li>
             <li style="margin-bottom: 8px;"><b>Комплексная сравнительная оценка (<span style="color: #dc2626;">*</span>):</b> под 4 ответами выберите наиболее адекватный ответ ИИ (разрешено выбрать <b>не более 2 ответов</b> из 1–4, либо вариант <b>«5. Все ответы одинаковы»</b>)</li>
             <li style="margin-bottom: 8px;">Внизу каждого клинического случая нажмите кнопку <b>«Отправить экспертное заключение по кейсу»</b>. Вы можете оценивать кейсы в любом порядке и отправлять их по одному в удобное время — результат сразу фиксируется в исследовательской базе под вашим регистрационным номером</li>
-            <li style="margin-bottom: 8px; background: #fffbeb; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #f59e0b; color: #92400e;"><b>💡 Рекомендация по заполнению:</b> рекомендуем работать с личного компьютера, ноутбука, планшета или смартфона (через домашний интернет или мобильную сеть). На рабочих компьютерах некоторых государственных медицинских учреждений (ЕГИСЗ/МИАЦ) действуют строгие ведомственные брандмауэры, блокирующие запросы во внешние облачные сервисы. При заполнении в таких сетях данные сохраняются в браузере, и вы всегда можете нажать кнопку <b>«💾 Скачать CSV»</b> (в верхней шапке, под каталогом ситуаций или внизу каждого кейса) и переслать файл координаторам, чтобы переслать файл координаторам.</li>
+            <li style="margin-bottom: 8px; background: #fffbeb; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #f59e0b; color: #92400e;"><b>💡 Рекомендация по заполнению:</b> рекомендуем работать с личного компьютера, ноутбука, планшета или смартфона (через домашний интернет или мобильную сеть). На рабочих компьютерах некоторых государственных медицинских учреждений (ЕГИСЗ/МИАЦ) действуют строгие ведомственные брандмауэры, блокирующие запросы во внешние облачные сервисы. При заполнении в таких сетях данные сохраняются в браузере, и вы всегда можете нажать кнопку <b>«💾 Скачать CSV»</b> (в верхней шапке, под каталогом ситуаций или внизу каждого кейса) и переслать файл координаторам проекта (aobarg@gmail.com).</li>
         </ol>
         <button class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 0.9rem;" onclick="toggleMemoModal(false)">Понятно, приступить к оценке</button>
     </div>
