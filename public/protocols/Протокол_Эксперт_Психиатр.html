@@ -381,8 +381,9 @@
         }
         .answer-body a {
             pointer-events: none;
-            color: #0284c7;
-            text-decoration: underline;
+            cursor: default;
+            color: inherit;
+            text-decoration: none;
         }
         .answer-body img {
             display: none;
@@ -1251,7 +1252,6 @@
         <div class="header-top-actions" style="display: flex; align-items: center; gap: 8px;">
             <button class="btn btn-secondary btn-memo-top" onclick="toggleMemoModal(true)" title="Инструкция для эксперта"><svg class="icon-memo-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1" fill="#fee2e2" stroke="#dc2626"></rect><path d="M9 12h6"></path><path d="M9 16h6"></path></svg><span class="btn-txt">Инструкция</span></button>
             <button class="btn btn-primary btn-criteria" onclick="toggleModal(true)" title="Справочник критериев">📖 <span class="btn-txt">Критерии</span></button>
-            <button class="btn" onclick="downloadAllCSV()" style="background: #f8fafc; border-color: #cbd5e1; font-weight: 700; color: #1e293b;" title="Скачать заполненные оценки в CSV-файл">💾 <span class="btn-txt">Скачать CSV</span></button>
             <button class="btn btn-reset" onclick="resetForm()" title="Очистить сохраненные ответы">🔄</button>
         </div>
     </div>
@@ -1287,11 +1287,11 @@
         <div class="catalog-grid" id="catalogGridContainer"></div>
         <div style="margin-top: 24px; padding: 18px 24px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
             <div>
-                <div style="font-weight: 700; color: #0f172a; font-size: 0.96rem;">Резервная выгрузка экспертных оценок</div>
-                <div style="font-size: 0.84rem; color: #64748b; margin-top: 2px;">Если автоматическая облачная отправка заблокирована файрволом вашей сети, выгрузите файл и передайте координаторам</div>
+                <div style="font-weight: 700; color: #0f172a; font-size: 0.96rem;">Сервисная выгрузка завершенных кейсов</div>
+                <div style="font-size: 0.84rem; color: #64748b; margin-top: 2px;">Если автоматическая облачная отправка была недоступна, выгрузите все завершенные кейсы одним файлом и передайте координаторам</div>
             </div>
-            <button class="btn" onclick="downloadAllCSV()" style="background: #1F4E78; color: #ffffff; border-color: #1F4E78; padding: 10px 20px; font-weight: 700; font-size: 0.92rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(31,78,120,0.25);">
-                💾 Скачать файл всех оценок (CSV)
+            <button class="btn" onclick="exportCompletedCases()" style="background: #1F4E78; color: #ffffff; border-color: #1F4E78; padding: 10px 20px; font-weight: 700; font-size: 0.92rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(31,78,120,0.25);">
+                📦 Выгрузить завершенные кейсы (CSV)
             </button>
         </div>
     </div>
@@ -2068,74 +2068,7 @@ function scrollToFirstMissing() {
 }
 
 function validateCurrentCase() {
-    const c = CASES_DATA[currentCaseIndex];
-    let missingCount = 0;
-    let missingCommentAns = [];
-
-    for (let i = 1; i <= 4; i++) {
-        const ansKey = `${c.BENCHMARK_ID}_ans${i}`;
-        const r = userRatings[ansKey] || {};
-        
-        const harmMissing = (r.harm === undefined || r.harm === "");
-        const triageMissing = (r.triage === undefined || r.triage === "");
-        const commMissing = (r.comm === undefined || r.comm === "");
-        const commentMissing = (!r.comment || r.comment.trim() === "");
-        
-        if (harmMissing) {
-            missingFieldsSet.add(`${ansKey}_harm`);
-            missingCount++;
-        }
-        if (triageMissing) {
-            missingFieldsSet.add(`${ansKey}_triage`);
-            missingCount++;
-        }
-        if (commMissing) {
-            missingFieldsSet.add(`${ansKey}_comm`);
-            missingCount++;
-        }
-        if (commentMissing) {
-            missingFieldsSet.add(`${ansKey}_comment`);
-            missingCount++;
-            missingCommentAns.push(i);
-        }
-    }
-
-    const preUrgent = getPreEval(c.BENCHMARK_ID, 'urgent');
-    const preUrgentMissing = (!preUrgent || preUrgent === '');
-    if (preUrgentMissing) {
-        missingFieldsSet.add(`${c.BENCHMARK_ID}_pre_urgent`);
-        missingCount++;
-    }
-
-    const prePanic = getPreEval(c.BENCHMARK_ID, 'panic');
-    const prePanicMissing = (!prePanic || prePanic === '');
-    if (prePanicMissing) {
-        missingFieldsSet.add(`${c.BENCHMARK_ID}_pre_panic`);
-        missingCount++;
-    }
-
-    const bestChoice = getBestChoice(c.BENCHMARK_ID);
-    const bestMissing = (!bestChoice || bestChoice.length === 0);
-    if (bestMissing) {
-        missingFieldsSet.add(`${c.BENCHMARK_ID}_best`);
-        missingCount++;
-    }
-
-    if (missingCount > 0) {
-        renderCase(currentCaseIndex, false); // НЕ скроллим наверх!
-        let msg = `⚠️ В кейсе №${c.BENCHMARK_ID} не заполнены обязательные поля!`;
-        if (preUrgentMissing || prePanicMissing) {
-            msg = `В кейсе №${c.BENCHMARK_ID} ответьте на предварительные вопросы 1 и 2 по ситуации пациента!`;
-        } else if (missingCommentAns.length > 0) {
-            msg = `В ответе №${missingCommentAns[0]} обязательно заполните комментарий врача!`;
-        } else if (bestMissing) {
-            msg = `В кейсе №${c.BENCHMARK_ID} обязательно выберите наиболее адекватный ответ ИИ!`;
-        }
-        showToastWarning(msg);
-        scrollToFirstMissing();
-        return false;
-    }
-    return true;
+    return validateCase(currentCaseIndex);
 }
 
 function showToastWarning(text) {
@@ -2177,7 +2110,8 @@ function nextCase() {
     if (currentCaseIndex < CASES_DATA.length - 1) {
         renderCase(currentCaseIndex + 1);
     } else {
-        submitAndSend();
+        showToastSuccess('Вы дошли до завершающего кейса этого профиля.');
+        showCatalog();
     }
 }
 
@@ -2238,106 +2172,9 @@ function resetForm() {
     }
 }
 
-// СТРОГАЯ ВАЛИДАЦИЯ И ФИНАЛЬНАЯ ОТПРАВКА
+// СЕРВИСНАЯ ВЫГРУЗКА ЗАВЕРШЕННЫХ КЕЙСОВ (V2.7)
 function submitAndSend() {
-    missingFieldsSet.clear();
-    let firstIncompleteCaseIdx = -1;
-    let incompleteAnswersCount = 0;
-    const totalAns = CASES_DATA.length * 4;
-    let completedCount = 0;
-
-    CASES_DATA.forEach((c, cIdx) => {
-        for (let i = 1; i <= 4; i++) {
-            const key = `${c.BENCHMARK_ID}_ans${i}`;
-            const r = userRatings[key] || {};
-            
-            const harmMissing = (r.harm === undefined || r.harm === "");
-            const triageMissing = (r.triage === undefined || r.triage === "");
-            const commMissing = (r.comm === undefined || r.comm === "");
-            
-            if (harmMissing || triageMissing || commMissing) {
-                incompleteAnswersCount++;
-                if (harmMissing) missingFieldsSet.add(`${key}_harm`);
-                if (triageMissing) missingFieldsSet.add(`${key}_triage`);
-                if (commMissing) missingFieldsSet.add(`${key}_comm`);
-                
-                if (firstIncompleteCaseIdx === -1) {
-                    firstIncompleteCaseIdx = cIdx;
-                }
-            } else {
-                completedCount++;
-            }
-        }
-    });
-
-    if (incompleteAnswersCount > 0) {
-        renderCase(firstIncompleteCaseIdx);
-        alert(
-            `⚠️ Внимание! Формуляр НЕ МОЖЕТ быть отправлен, так как заполнены не все ответы.\n\n` +
-            `Заполнено: ${completedCount} из ${totalAns} ответов.\n` +
-            `Осталось оценить: ${incompleteAnswersCount} ответов.\n\n` +
-            `Мы открыли кейс №${CASES_DATA[firstIncompleteCaseIdx].BENCHMARK_ID} с пропущенными вопросами.\n` +
-            `Пропущенные обязательные шкалы подсвечены красной рамкой.\n\n` +
-            `Пожалуйста, проставьте оценки во всех вопросах, чтобы завершить формуляр.`
-        );
-        return;
-    }
-
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '⏳ Отправка в базу...';
-    }
-
-    const expertId = getExpertId();
-    const now = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
-    const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const rawSpec = (CASES_DATA[0].CLINICAL_SPECIALTY || 'Специальность');
-    const cleanSpec = rawSpec.replace(/[\s\/\\,]+/g, '_');
-    const fileName = `Протокол_${cleanSpec}_${expertId}_${timestamp}.csv`;
-
-    let csv = "ID_КЕЙСА;ПАЦИЕНТ_СРОЧНОСТЬ;ПАЦИЕНТ_ПАНИКА;НОМЕР_ОТВЕТА;ТЯЖЕСТЬ_ВРЕДА;ОПРЕДЕЛЕНИЕ_СРОЧНОСТИ;ХАРАКТЕР_ОБЩЕНИЯ;КОММЕНТАРИЙ;ЛУЧШИЙ_ОТВЕТ\n";
-    CASES_DATA.forEach(c => {
-        for (let i = 1; i <= 4; i++) {
-            const key = `${c.BENCHMARK_ID}_ans${i}`;
-            const r = userRatings[key] || {};
-            const harm = r.harm || '';
-            const triage = r.triage || '';
-            const comm = r.comm || '';
-            const comment = (r.comment || '').replace(/\n/g, ' ').replace(/;/g, ',');
-            const preU = getPreEval(c.BENCHMARK_ID, 'urgent'); const preP = getPreEval(c.BENCHMARK_ID, 'panic'); const bestChoice = getBestChoice(c.BENCHMARK_ID).join(','); csv += `${c.BENCHMARK_ID};${preU};${preP};Ответ ${i};${harm};${triage};${comm};"${comment}";${bestChoice}\n`;
-        }
-    });
-
-    const GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxKIISNsGHqmvNY3PebEiPBCpA0aHI5x2lSDPjSAYVKo9_BqnWjYI9lxUv2BpNRph1REg/exec";
-    if (GOOGLE_WEBHOOK_URL && GOOGLE_WEBHOOK_URL.startsWith('http')) {
-        fetch(GOOGLE_WEBHOOK_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                expertId: expertId,
-                specialty: rawSpec,
-                fileName: fileName,
-                csvData: csv,
-                timestamp: timestamp
-            })
-        }).catch(err => console.log('Webhook error:', err));
-    }
-
-    try {
-        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        a.click();
-    } catch(e) {
-        console.log('Download error:', e);
-    }
-
-    localStorage.setItem(STORAGE_KEY + '_submitted', 'true');
-    renderCompletionScreen(expertId);
+    exportCompletedCases();
 }
 
 function renderCompletionScreen(expertId) {
@@ -2504,78 +2341,42 @@ function downloadCSVFile(csvContent, fileName) {
     }
 }
 
-function downloadCaseCSV(idx) {
-    const c = CASES_DATA[idx];
-    const expertId = getExpertId();
+function sanitizeCsvValue(val) {
+    if (val === null || val === undefined) return '';
+    let s = String(val);
+    if (/^[=@+\-]/.test(s)) {
+        s = "'" + s;
+    }
+    return s;
+}
+
+function getExactTimestamp() {
     const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
-    const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const rawSpec = (c.CLINICAL_SPECIALTY || 'Психиатрия');
-    const cleanSpec = rawSpec.replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_');
-    const fileName = `Протокол_${cleanSpec}_${expertId}_Кейс_${c.BENCHMARK_ID}_${timestamp}.csv`;
+    return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+}
 
-    const NL = String.fromCharCode(10);
+function isCaseComplete(idx) {
+    const c = CASES_DATA[idx];
+    const preU = getPreEval(c.BENCHMARK_ID, 'urgent');
+    const preP = getPreEval(c.BENCHMARK_ID, 'panic');
+    if (preU === '' || preU === undefined || preP === '' || preP === undefined) return false;
     const bestChoice = getBestChoice(c.BENCHMARK_ID);
-    const bestChoiceStr = bestChoice.join(',');
-
-    let csv = 'ID_КЕЙСА;ПАЦИЕНТ_СРОЧНОСТЬ;ПАЦИЕНТ_ПАНИКА;НОМЕР_ОТВЕТА;ТЯЖЕСТЬ_ВРЕДА;ОПРЕДЕЛЕНИЕ_СРОЧНОСТИ;ХАРАКТЕР_ОБЩЕНИЯ;КОММЕНТАРИЙ;ЛУЧШИЙ_ОТВЕТ' + NL;
+    if (!bestChoice || bestChoice.length === 0) return false;
     for (let i = 1; i <= 4; i++) {
         const key = `${c.BENCHMARK_ID}_ans${i}`;
         const r = userRatings[key] || {};
-        const harm = r.harm || '';
-        const triage = r.triage || '';
-        const comm = r.comm || '';
-        const preU = getPreEval(c.BENCHMARK_ID, 'urgent');
-        const preP = getPreEval(c.BENCHMARK_ID, 'panic');
-        const rawComment = (r.comment || '').split(NL).join(' ').split(';').join(',');
-        csv += `${c.BENCHMARK_ID};${preU};${preP};Ответ ${i};${harm};${triage};${comm};"${rawComment}";${bestChoiceStr}` + NL;
-    }
-
-    downloadCSVFile(csv, fileName);
-}
-
-function downloadAllCSV() {
-    const expertId = getExpertId();
-    const now = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
-    const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const rawSpec = 'Психиатрия';
-    const cleanSpec = rawSpec.replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_');
-    const fileName = `Протокол_${cleanSpec}_${expertId}_ВСЕ_ОЦЕНКИ_${timestamp}.csv`;
-
-    const NL = String.fromCharCode(10);
-    let csv = 'ID_КЕЙСА;ПАЦИЕНТ_СРОЧНОСТЬ;ПАЦИЕНТ_ПАНИКА;НОМЕР_ОТВЕТА;ТЯЖЕСТЬ_ВРЕДА;ОПРЕДЕЛЕНИЕ_СРОЧНОСТИ;ХАРАКТЕР_ОБЩЕНИЯ;КОММЕНТАРИЙ;ЛУЧШИЙ_ОТВЕТ' + NL;
-    let filledCount = 0;
-
-    CASES_DATA.forEach(c => {
-        const bestChoice = getBestChoice(c.BENCHMARK_ID);
-        const bestChoiceStr = bestChoice.join(',');
-        for (let i = 1; i <= 4; i++) {
-            const key = `${c.BENCHMARK_ID}_ans${i}`;
-            const r = userRatings[key] || {};
-            const harm = r.harm || '';
-            const triage = r.triage || '';
-            const comm = r.comm || '';
-            const rawComment = (r.comment || '').split(NL).join(' ').split(';').join(',');
-            const preU = getPreEval(c.BENCHMARK_ID, 'urgent');
-            const preP = getPreEval(c.BENCHMARK_ID, 'panic');
-            if (harm || triage || comm || rawComment || preU || preP) {
-                filledCount++;
-            }
-            csv += `${c.BENCHMARK_ID};${preU};${preP};Ответ ${i};${harm};${triage};${comm};"${rawComment}";${bestChoiceStr}` + NL;
-        }
-    });
-
-    if (filledCount === 0) {
-        if (!confirm('Вы пока не заполнили ни одной оценки в этом профиле. Скачать пустой бланк CSV?')) {
-            return;
+        if (r.harm === undefined || r.harm === '' ||
+            r.triage === undefined || r.triage === '' ||
+            r.comm === undefined || r.comm === '' ||
+            !r.comment || r.comment.trim() === '') {
+            return false;
         }
     }
-
-    downloadCSVFile(csv, fileName);
+    return true;
 }
 
-function submitSingleCase(idx) {
+function validateCase(idx) {
     const c = CASES_DATA[idx];
     let missingCount = 0;
     let missingCommentAns = [];
@@ -2632,80 +2433,181 @@ function submitSingleCase(idx) {
         }
         showToastWarning(msg);
         scrollToFirstMissing();
+        return false;
+    }
+    return true;
+}
+
+function buildCaseCsv(c, expertId, cleanSpec, timestamp) {
+    const NL = String.fromCharCode(10);
+    const bestChoiceStr = getBestChoice(c.BENCHMARK_ID).join(',');
+    const preU = getPreEval(c.BENCHMARK_ID, 'urgent');
+    const preP = getPreEval(c.BENCHMARK_ID, 'panic');
+
+    let csv = `# METADATA;EXPERT_ID=${expertId};SPECIALTY=${cleanSpec};TIMESTAMP=${timestamp}` + NL;
+    csv += 'ID_КЕЙСА;EXPERT_ID;SPECIALTY;TIMESTAMP;ПАЦИЕНТ_СРОЧНОСТЬ;ПАЦИЕНТ_ПАНИКА;НОМЕР_ОТВЕТА;ТЯЖЕСТЬ_ВРЕДА;ОПРЕДЕЛЕНИЕ_СРОЧНОСТИ;ХАРАКТЕР_ОБЩЕНИЯ;КОММЕНТАРИЙ;ЛУЧШИЙ_ОТВЕТ' + NL;
+
+    for (let i = 1; i <= 4; i++) {
+        const key = `${c.BENCHMARK_ID}_ans${i}`;
+        const r = userRatings[key] || {};
+        const harm = r.harm !== undefined ? r.harm : '';
+        const triage = r.triage !== undefined ? r.triage : '';
+        const comm = r.comm !== undefined ? r.comm : '';
+        let commentText = (r.comment || '').split(NL).join(' ').split(';').join(',');
+        commentText = sanitizeCsvValue(commentText).replace(/"/g, '""');
+        csv += `${c.BENCHMARK_ID};${expertId};${cleanSpec};${timestamp};${preU};${preP};Ответ ${i};${harm};${triage};${comm};"${commentText}";${bestChoiceStr}` + NL;
+    }
+    return csv;
+}
+
+function downloadCaseCSV(idx) {
+    if (!validateCase(idx)) return;
+
+    const c = CASES_DATA[idx];
+    const expertId = getExpertId();
+    const timestamp = getExactTimestamp();
+    const rawSpec = (c.CLINICAL_SPECIALTY || 'Психиатрия');
+    const cleanSpec = rawSpec.replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_');
+    const fileName = `Протокол_${cleanSpec}_${expertId}_Кейс_${c.BENCHMARK_ID}_${timestamp}.csv`;
+    const csv = buildCaseCsv(c, expertId, cleanSpec, timestamp);
+
+    downloadCSVFile(csv, fileName);
+    showToastSuccess(`CSV кейса №${c.BENCHMARK_ID} успешно сохранен на устройство`);
+}
+
+function exportCompletedCases() {
+    const completedIndices = [];
+    CASES_DATA.forEach((c, idx) => {
+        if (isCaseComplete(idx)) {
+            completedIndices.push(idx);
+        }
+    });
+
+    if (completedIndices.length === 0) {
+        showToastWarning('В памяти браузера еще нет ни одного полностью заполненного кейса для выгрузки!');
+        alert('⚠️ В формуляре пока нет ни одного полностью заполненного кейса!
+
+Заполните оценки хотя бы в одной клинической ситуации перед сервисной выгрузкой.');
         return;
     }
+
+    const expertId = getExpertId();
+    const timestamp = getExactTimestamp();
+    const rawSpec = 'Психиатрия';
+    const cleanSpec = rawSpec.replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_');
+    const fileName = `Протокол_${cleanSpec}_${expertId}_ЗАВЕРШЕННЫЕ_КЕЙСЫ_${timestamp}.csv`;
+
+    const NL = String.fromCharCode(10);
+    let csv = `# METADATA;EXPERT_ID=${expertId};SPECIALTY=${cleanSpec};TIMESTAMP=${timestamp}` + NL;
+    csv += 'ID_КЕЙСА;EXPERT_ID;SPECIALTY;TIMESTAMP;ПАЦИЕНТ_СРОЧНОСТЬ;ПАЦИЕНТ_ПАНИКА;НОМЕР_ОТВЕТА;ТЯЖЕСТЬ_ВРЕДА;ОПРЕДЕЛЕНИЕ_СРОЧНОСТИ;ХАРАКТЕР_ОБЩЕНИЯ;КОММЕНТАРИЙ;ЛУЧШИЙ_ОТВЕТ' + NL;
+
+    completedIndices.forEach(idx => {
+        const c = CASES_DATA[idx];
+        const caseTs = (submittedCases[c.BENCHMARK_ID] && submittedCases[c.BENCHMARK_ID].timestamp) ? submittedCases[c.BENCHMARK_ID].timestamp : timestamp;
+        const bestChoiceStr = getBestChoice(c.BENCHMARK_ID).join(',');
+        const preU = getPreEval(c.BENCHMARK_ID, 'urgent');
+        const preP = getPreEval(c.BENCHMARK_ID, 'panic');
+
+        for (let i = 1; i <= 4; i++) {
+            const key = `${c.BENCHMARK_ID}_ans${i}`;
+            const r = userRatings[key] || {};
+            const harm = r.harm !== undefined ? r.harm : '';
+            const triage = r.triage !== undefined ? r.triage : '';
+            const comm = r.comm !== undefined ? r.comm : '';
+            let commentText = (r.comment || '').split(NL).join(' ').split(';').join(',');
+            commentText = sanitizeCsvValue(commentText).replace(/"/g, '""');
+            csv += `${c.BENCHMARK_ID};${expertId};${cleanSpec};${caseTs};${preU};${preP};Ответ ${i};${harm};${triage};${comm};"${commentText}";${bestChoiceStr}` + NL;
+        }
+    });
+
+    downloadCSVFile(csv, fileName);
+    showToastSuccess(`Выгружено завершенных кейсов: ${completedIndices.length} из ${CASES_DATA.length}`);
+}
+
+function submitSingleCase(idx) {
+    if (!validateCase(idx)) return;
+
+    const c = CASES_DATA[idx];
+    const expertId = getExpertId();
+    const timestamp = getExactTimestamp();
+    const rawSpec = (c.CLINICAL_SPECIALTY || 'Психиатрия');
+    const cleanSpec = rawSpec.replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_');
+    const fileName = `Протокол_${cleanSpec}_${expertId}_Кейс_${c.BENCHMARK_ID}_${timestamp}.csv`;
+    const csv = buildCaseCsv(c, expertId, cleanSpec, timestamp);
+
+    // Pre-commit locally
+    submittedCases[c.BENCHMARK_ID] = { timestamp: timestamp, expertId: expertId };
+    localStorage.setItem(STORAGE_KEY + '_submitted_cases', JSON.stringify(submittedCases));
 
     const btn = document.getElementById(`btnCaseSub_${c.BENCHMARK_ID}`);
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '⏳ Отправка в базу данных...';
-    }
-
-    const expertId = getExpertId();
-    const now = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
-    const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const rawSpec = (c.CLINICAL_SPECIALTY || 'Психиатрия');
-    const cleanSpec = rawSpec.replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_');
-    const fileName = `Протокол_${cleanSpec}_${expertId}_Кейс_${c.BENCHMARK_ID}_${timestamp}.csv`;
-
-    const NL = String.fromCharCode(10);
-    const bestChoiceStr = bestChoice.join(',');
-    let csv = 'ID_КЕЙСА;ПАЦИЕНТ_СРОЧНОСТЬ;ПАЦИЕНТ_ПАНИКА;НОМЕР_ОТВЕТА;ТЯЖЕСТЬ_ВРЕДА;ОПРЕДЕЛЕНИЕ_СРОЧНОСТИ;ХАРАКТЕР_ОБЩЕНИЯ;КОММЕНТАРИЙ;ЛУЧШИЙ_ОТВЕТ' + NL;
-    for (let i = 1; i <= 4; i++) {
-        const key = `${c.BENCHMARK_ID}_ans${i}`;
-        const r = userRatings[key] || {};
-        const harm = r.harm || '';
-        const triage = r.triage || '';
-        const comm = r.comm || '';
-        const preU = getPreEval(c.BENCHMARK_ID, 'urgent');
-        const preP = getPreEval(c.BENCHMARK_ID, 'panic');
-        const rawComment = (r.comment || '').split(NL).join(' ').split(';').join(',');
-        csv += `${c.BENCHMARK_ID};${preU};${preP};Ответ ${i};${harm};${triage};${comm};"${rawComment}";${bestChoiceStr}` + NL;
+        btn.style.background = '#0284c7';
+        btn.style.borderColor = '#0369a1';
+        btn.innerHTML = '⏳ Отправка в облако...';
     }
 
     const GOOGLE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxKIISNsGHqmvNY3PebEiPBCpA0aHI5x2lSDPjSAYVKo9_BqnWjYI9lxUv2BpNRph1REg/exec';
-    if (GOOGLE_WEBHOOK_URL && GOOGLE_WEBHOOK_URL.startsWith('http')) {
-        fetch(GOOGLE_WEBHOOK_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                expertId: expertId,
-                specialty: rawSpec,
-                benchmarkId: c.BENCHMARK_ID,
-                fileName: fileName,
-                csvData: csv,
-                bestChoice: bestChoiceStr,
-                timestamp: timestamp
-            })
-        }).catch(err => console.log('Webhook error:', err));
-    }
+    
+    const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 28000) : null;
 
-    submittedCases[c.BENCHMARK_ID] = { timestamp: timestamp, expertId: expertId };
-    localStorage.setItem(STORAGE_KEY + '_submitted_cases', JSON.stringify(submittedCases));
+    fetch(GOOGLE_WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        signal: controller ? controller.signal : undefined,
+        body: JSON.stringify({
+            expertId: expertId,
+            specialty: rawSpec,
+            benchmarkId: c.BENCHMARK_ID,
+            fileName: fileName,
+            csvData: csv,
+            bestChoice: getBestChoice(c.BENCHMARK_ID).join(','),
+            timestamp: timestamp
+        })
+    }).then(() => {
+        if (timeoutId) clearTimeout(timeoutId);
+        updateExpertTop();
+        refreshCaseSelect();
+        updateDetailToolbarStatus(c.BENCHMARK_ID);
 
-    updateExpertTop();
-    refreshCaseSelect();
-    updateDetailToolbarStatus(c.BENCHMARK_ID);
+        if (btn) {
+            btn.disabled = false;
+            btn.style.background = '#0f766e';
+            btn.style.borderColor = '#0f766e';
+            btn.innerHTML = `✅ Кейс №${c.BENCHMARK_ID} принят (нажмите для обновления)`;
+        }
 
-    if (btn) {
-        btn.disabled = false;
-        btn.style.background = '#0f766e';
-        btn.style.borderColor = '#0f766e';
-        btn.innerHTML = `✅ Кейс №${c.BENCHMARK_ID} принят (нажмите для обновления)`;
-    }
+        showToastSuccess(`Кейс №${c.BENCHMARK_ID}: зафиксировано локально и передано в сетевой шлюз`);
 
-    const totalDone = Object.keys(submittedCases).length;
-    const msg = `✅ Экспертное заключение по кейсу №${c.BENCHMARK_ID} успешно принято!` + NL + NL +
-                `Регистрационный номер эксперта: ${expertId}` + NL +
-                `Сохраните этот номер для учета выполненного объема работы.` + NL + NL +
-                `Всего вами выполнено в этом профиле: ${totalDone} из ${CASES_DATA.length} кейсов.` + NL + NL +
-                (idx < CASES_DATA.length - 1 ? `Перейти к следующему кейсу №${CASES_DATA[idx+1].BENCHMARK_ID}?` : `Все кейсы в этом профиле оценены!`);
+        const totalDone = Object.keys(submittedCases).length;
+        const NL = String.fromCharCode(10);
+        const msg = `✅ Экспертное заключение по кейсу №${c.BENCHMARK_ID} успешно отправлено!` + NL + NL +
+                    `Регистрационный номер эксперта: ${expertId}` + NL +
+                    `Сохраните этот номер для учета выполненного объема работы.` + NL + NL +
+                    `Всего вами выполнено в этом профиле: ${totalDone} из ${CASES_DATA.length} кейсов.` + NL + NL +
+                    (idx < CASES_DATA.length - 1 ? `Перейти к следующему кейсу №${CASES_DATA[idx+1].BENCHMARK_ID}?` : `Все кейсы в этом профиле оценены!`);
 
-    const proceed = confirm(msg);
-    if (proceed && idx < CASES_DATA.length - 1) {
-        renderCase(idx + 1);
-    }
+        const proceed = confirm(msg);
+        if (proceed && idx < CASES_DATA.length - 1) {
+            renderCase(idx + 1);
+        }
+    }).catch(err => {
+        if (timeoutId) clearTimeout(timeoutId);
+        console.warn('Network send issue (fallback to retry mode):', err);
+        updateExpertTop();
+        refreshCaseSelect();
+        updateDetailToolbarStatus(c.BENCHMARK_ID);
+
+        if (btn) {
+            btn.disabled = false;
+            btn.style.background = '#d97706';
+            btn.style.borderColor = '#b45309';
+            btn.innerHTML = `🔄 Сбой сети. Нажмите, чтобы повторить отправку в облако`;
+        }
+
+        showToastWarning(`Сбой сети при отправке в облако. Данные сохранены локально. Нажмите кнопку для повторной отправки или сохраните файл через «💾 Скачать CSV кейса».`);
+    });
 }
 
 window.addEventListener('keydown', (e) => {
